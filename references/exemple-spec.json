@@ -1,0 +1,22 @@
+{
+  "numero": "000101012026", "date": "01/01/2026", "volume": 6, "formule": "Standard",
+  "total_ttc": 400,
+  "client": {"nom": "ESSAI Client", "adresse_depart": "1 rue de l'Exemple, 33000 Bordeaux", "adresse_arrivee": "2 rue de l'Exemple, 33400 Talence",
+             "date_demenagement": "entre le 03/11/2026 et le 11/11/2026",
+             "telephone": "06.00.00.00.00", "email": "essai@exemple.fr"},
+  "depart": {"logement": "Maison", "etage_sans_ascenseur": "RDC",
+             "portage_entree": "< 10 mètres", "portage_interieur": "< 10 mètres", "intervenants": 1},
+  "arrivee": {"logement": "Appartement", "etage_ascenseur": 4,
+              "portage_entree": "< 10 mètres", "portage_interieur": "< 10 mètres", "intervenants": 1},
+  "notes_manutention": [],
+  "inventaire": ["Cartons standards : 25", "Matelas 140 cm : 1"],
+  "lignes": [
+    {"type": "transport", "montant": 0, "ajuste": true},
+    {"type": "manutention", "montant": 128.80},
+    {"type": "formule", "montant": 0},
+    {"type": "autre", "libelle": "Frais de déplacement", "montant": 43.00},
+    {"type": "autre", "libelle": "Frais de dossier", "montant": 34.00}
+  ],
+  "annulation": "J-14 avant la date du déménagement.",
+  "conditions": []
+}

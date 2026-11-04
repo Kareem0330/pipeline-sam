@@ -1,0 +1,2608 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atelier devis Sam'Déménage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --ground: #f6f4ef;
+    --surface: #ffffff;
+    --sunk: #efece4;
+    --ink: #211d1a;
+    --ink-soft: #5d564e;
+    --ink-faint: #8c8479;
+    --line: #e3ddd1;
+    --line-strong: #cec5b5;
+    --accent: #2b3f57;
+    --accent-ink: #ffffff;
+    --accent-soft: #e9edf2;
+    --burgundy: #7a2e3a;
+    --good: #2f7d55;
+    --good-soft: #e6f0ea;
+    --warn: #a9761d;
+    --warn-soft: #f4ebda;
+    --crit: #b23b2e;
+    --crit-soft: #f5e6e3;
+    --shadow: 0 1px 2px rgba(33,29,26,.05), 0 8px 24px rgba(33,29,26,.06);
+    --radius: 10px;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --ground: #16130f;
+      --surface: #211d18;
+      --sunk: #100e0b;
+      --ink: #efe8dc;
+      --ink-soft: #b4a996;
+      --ink-faint: #877d6d;
+      --line: #332e26;
+      --line-strong: #463f34;
+      --accent: #86a4c6;
+      --accent-ink: #10141a;
+      --accent-soft: #22303d;
+      --burgundy: #cf8f9a;
+      --good: #5fb387;
+      --good-soft: #1a2c22;
+      --warn: #d19b4d;
+      --warn-soft: #302617;
+      --crit: #d97a6d;
+      --crit-soft: #33211d;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #16130f;
+    --surface: #211d18;
+    --sunk: #100e0b;
+    --ink: #efe8dc;
+    --ink-soft: #b4a996;
+    --ink-faint: #877d6d;
+    --line: #332e26;
+    --line-strong: #463f34;
+    --accent: #86a4c6;
+    --accent-ink: #10141a;
+    --accent-soft: #22303d;
+    --burgundy: #cf8f9a;
+    --good: #5fb387;
+    --good-soft: #1a2c22;
+    --warn: #d19b4d;
+    --warn-soft: #302617;
+    --crit: #d97a6d;
+    --crit-soft: #33211d;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  header {
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .head-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 14px 22px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .wordmark {
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+  }
+  .wordmark b { color: var(--burgundy); font-weight: 700; }
+  .wordmark span {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 500;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    letter-spacing: 0;
+  }
+  .head-meta {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+  .theme-btn {
+    font: inherit;
+    font-size: 12px;
+    background: var(--sunk);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    border-radius: 999px;
+    padding: 4px 11px;
+    cursor: pointer;
+  }
+  .theme-btn:hover { border-color: var(--line-strong); }
+
+  .layout {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 22px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+    align-items: start;
+  }
+  @media (min-width: 980px) {
+    .layout { grid-template-columns: minmax(0, 1fr) 390px; }
+    .results {
+      position: sticky;
+      top: 14px;
+      max-height: calc(100vh - 28px);
+      overflow-y: auto;
+    }
+  }
+
+  .example-banner {
+    background: var(--accent-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px 13px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .example-banner strong { color: var(--ink); font-weight: 600; }
+  .example-banner button {
+    font: inherit;
+    font-size: 12px;
+    margin-left: auto;
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    color: var(--ink);
+    border-radius: 7px;
+    padding: 4px 10px;
+    cursor: pointer;
+  }
+  .example-banner button:hover { background: var(--sunk); }
+
+  form { display: flex; flex-direction: column; gap: 14px; }
+
+  fieldset {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 0;
+    margin: 0;
+    box-shadow: var(--shadow);
+  }
+  fieldset > legend { display: none; }
+  .fs-head {
+    padding: 11px 15px;
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 600;
+    font-size: 13.5px;
+    letter-spacing: 0.01em;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .fs-head .idx {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+    font-weight: 500;
+  }
+  details.fieldset > summary {
+    padding: 11px 15px;
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  details.fieldset > summary::-webkit-details-marker { display: none; }
+  details.fieldset > summary::after {
+    content: "+";
+    margin-left: auto;
+    font-family: "IBM Plex Mono", monospace;
+    color: var(--ink-faint);
+    font-size: 15px;
+  }
+  details.fieldset[open] > summary::after { content: "–"; }
+  details.fieldset[open] > summary { border-bottom: 1px solid var(--line); }
+  .fs-body {
+    padding: 14px 15px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px 13px;
+  }
+  .fs-body.one { grid-template-columns: 1fr; }
+
+  .f { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .f.wide { grid-column: 1 / -1; }
+  .f label {
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+  .f label .hint { color: var(--ink-faint); font-weight: 400; }
+  .f input[type="number"], .f input[type="text"], .f input[type="date"], .f select {
+    font: inherit;
+    font-size: 13px;
+    padding: 7px 9px;
+    border: 1px solid var(--line-strong);
+    border-radius: 7px;
+    background: var(--ground);
+    color: var(--ink);
+    width: 100%;
+  }
+  .f input:focus, .f select:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: -1px;
+    border-color: var(--accent);
+  }
+  .f input[type="number"] { font-family: "IBM Plex Mono", monospace; }
+
+  .chk {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--ink);
+    padding: 6px 0;
+    cursor: pointer;
+  }
+  .chk input { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; }
+  .chk input:disabled { opacity: .45; cursor: default; }
+
+  /* matériel de conditionnement */
+  .mat-list { display: flex; flex-direction: column; }
+  .mat {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) 64px;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0;
+    font-size: 12.5px;
+    border-top: 1px solid var(--line);
+  }
+  .mat:first-child { border-top: 0; }
+  .mat > span .hint { color: var(--ink-faint); font-weight: 400; font-size: 10.5px; }
+  .mat input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+  .mat input[type="number"] {
+    font: inherit;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    text-align: right;
+    padding: 5px 6px;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    background: var(--ground);
+    color: var(--ink);
+    width: 100%;
+  }
+  .mat input[type="number"]:disabled { opacity: .35; }
+  .mat.livr { border-top: 2px solid var(--line-strong); margin-top: 5px; padding-top: 10px; font-weight: 600; }
+  .mat-sub {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 0 2px;
+    margin-top: 5px;
+    border-top: 1px solid var(--line);
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+  .mat-sub:empty { display: none; }
+  .mat-sub .v { font-family: "IBM Plex Mono", monospace; }
+  .mat-note { font-size: 11px; color: var(--ink-faint); margin: 7px 0 0; line-height: 1.4; }
+
+  #recapText, #loadText {
+    width: 100%;
+    margin-top: 10px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    line-height: 1.45;
+    padding: 9px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: 7px;
+    background: var(--ground);
+    color: var(--ink);
+    resize: vertical;
+  }
+  #loadBox { margin-top: 10px; }
+  #dossiersBox { flex-wrap: wrap; }
+  #dossiersBox button { margin-left: 0; }
+  #dossiersBox .att { font-weight: 600; color: var(--ink); }
+  .var-ctl { display: flex; align-items: center; gap: 9px; }
+  .var-ctl label { font-size: 12px; color: var(--ink-soft); font-weight: 500; }
+  .var-ctl input {
+    flex: 1;
+    font: inherit;
+    font-size: 13px;
+    padding: 6px 9px;
+    border: 1px solid var(--line-strong);
+    border-radius: 7px;
+    background: var(--ground);
+    color: var(--ink);
+    min-width: 0;
+  }
+  .mat-extra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 0;
+    margin-top: 3px;
+    border-top: 2px solid var(--line-strong);
+  }
+  .mat-extra label { font-size: 12.5px; color: var(--ink-soft); font-weight: 500; }
+  .mat-extra input[type="number"] {
+    width: 96px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    text-align: right;
+    padding: 5px 7px;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    background: var(--ground);
+    color: var(--ink);
+  }
+
+  /* stockage garde-meuble (indicatif) */
+  .stock-box { margin-top: 6px; padding-top: 11px; border-top: 1px solid var(--line); }
+  .stock-row { display: flex; align-items: center; gap: 8px; margin-top: 5px; font-size: 12.5px; color: var(--ink-soft); }
+  .stock-row input[type="number"] {
+    width: 64px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    text-align: right;
+    padding: 5px 7px;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    background: var(--ground);
+    color: var(--ink);
+  }
+  .stock-cout { margin-top: 7px; font-size: 12px; color: var(--ink-soft); line-height: 1.5; }
+  .stock-cout b { color: var(--ink); }
+
+  /* Results */
+  .results { display: flex; flex-direction: column; gap: 14px; }
+  .results > * { flex: 0 0 auto; }
+  .panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .panel-head {
+    padding: 10px 15px;
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-body { padding: 14px 15px; }
+
+  .price-block { text-align: left; }
+  .price-block .ttc {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 700;
+    font-size: 32px;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+  }
+  .price-block .ttc-lbl { font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.06em; }
+  .price-block .ht {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .price-block .ht .mono { color: var(--ink); }
+  .ecart { margin-top: 7px; font-size: 12px; color: var(--ink-faint); }
+  .ecart b { font-weight: 600; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+  }
+  .badge .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .badge.good { color: var(--good); background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 25%, transparent); }
+  .badge.warn { color: var(--warn); background: var(--warn-soft); border-color: color-mix(in srgb, var(--warn) 25%, transparent); }
+  .badge.crit { color: var(--crit); background: var(--crit-soft); border-color: color-mix(in srgb, var(--crit) 25%, transparent); }
+
+  .margin-ctl { margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--line); }
+  .margin-ctl .row1 { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
+  .margin-ctl .row1 .lbl { font-size: 12px; color: var(--ink-soft); font-weight: 500; }
+
+  .ttc-ctl { margin-top: 11px; padding-top: 11px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .ttc-ctl .lbl { font-size: 12px; color: var(--ink-soft); font-weight: 500; }
+  .ttc-ctl .ttc-input { display: flex; align-items: center; gap: 5px; font-family: "IBM Plex Mono", monospace; }
+  .ttc-ctl .ttc-input input {
+    width: 90px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: right;
+    padding: 4px 6px;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    background: var(--ground);
+    color: var(--ink);
+  }
+  .ttc-ctl .cap { flex: 1 1 100%; font-size: 10.5px; color: var(--ink-faint); margin-top: 2px; line-height: 1.4; }
+  .margin-input {
+    display: flex; align-items: center; gap: 5px;
+    font-family: "IBM Plex Mono", monospace;
+  }
+  .margin-input input {
+    width: 58px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: right;
+    padding: 4px 6px;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    background: var(--ground);
+    color: var(--ink);
+  }
+  .margin-track { position: relative; padding-top: 3px; }
+  input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+  .cible-mark { position: absolute; left: 66.7%; top: 0; width: 2px; height: 15px; background: var(--good); border-radius: 2px; pointer-events: none; }
+  .ticks { display: flex; justify-content: space-between; font-size: 10px; color: var(--ink-faint); margin-top: 2px; font-family: "IBM Plex Mono", monospace; }
+  .ticks .c { color: var(--good); font-weight: 600; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .chip {
+    font: inherit;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    background: var(--ground);
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--ink); }
+  .chip.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+  table.vent { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.vent td { padding: 4px 0; }
+  table.vent td.amt { text-align: right; font-family: "IBM Plex Mono", monospace; color: var(--ink); white-space: nowrap; }
+  table.vent tr.sep td { border-top: 1px solid var(--line); padding-top: 7px; }
+  table.vent tr.tot td { font-weight: 600; }
+  table.vent tr.grand td { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 14px; padding-top: 6px; }
+  table.vent tr.grand td.amt { font-family: "IBM Plex Mono", monospace; }
+  table.vent tr.bloc td { padding-top: 11px; border-top: 1px dashed var(--line-strong); font-family: "Bricolage Grotesque", sans-serif; font-weight: 600; font-size: 12px; color: var(--accent); }
+  table.vent tr.bloc:first-child td { border-top: 0; padding-top: 0; }
+  table.vent tr.sous td { font-weight: 600; color: var(--ink-soft); }
+  table.vent tr.sous .hint { display: block; font-weight: 400; color: var(--ink-faint); font-size: 10.5px; }
+  .vent-cap { font-size: 11px; color: var(--ink-faint); margin-top: 8px; }
+
+  .btn {
+    font: inherit;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 9px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: var(--accent-ink);
+    cursor: pointer;
+    width: 100%;
+  }
+  .btn:hover { filter: brightness(1.06); }
+  .btn.ghost { background: var(--surface); color: var(--ink); border-color: var(--line-strong); }
+  .btn.ghost:hover { background: var(--sunk); filter: none; }
+  .btn-row { display: flex; gap: 8px; margin-top: 12px; }
+  .btn-row .btn { width: auto; flex: 1; }
+
+  .times .phase { border-top: 1px solid var(--line); padding: 12px 0 4px; }
+  .times .phase:first-child { border-top: 0; padding-top: 2px; }
+  .times .phase h4 {
+    margin: 0 0 7px;
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .tline { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-soft); padding: 2px 0; gap: 10px; }
+  .tline .v { font-family: "IBM Plex Mono", monospace; color: var(--ink); white-space: nowrap; }
+  .tline.muted, .tline.muted .v { color: var(--ink-faint); }
+  .tedit {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    margin: 7px 0;
+    padding: 8px 9px;
+    background: var(--sunk);
+    border: 1px solid var(--line);
+    border-radius: 7px;
+  }
+  .tedit label { font-size: 11.5px; color: var(--ink-soft); font-weight: 500; flex: 1 1 88px; }
+  .tedit input.th, .tedit input.tm { width: 44px; }
+  .tedit input {
+    width: 66px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    text-align: right;
+    padding: 5px 7px;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    background: var(--ground);
+    color: var(--ink);
+  }
+  .tedit .tu { font-size: 11px; color: var(--ink-faint); min-width: 26px; }
+  .tedit .rst {
+    font: inherit; font-size: 14px; line-height: 1;
+    background: none; border: 0; color: var(--ink-faint); cursor: pointer;
+    padding: 2px 4px;
+  }
+  .tedit .rst:hover { color: var(--ink); }
+  .ov-tag { font-size: 10.5px; font-weight: 600; color: var(--warn); background: var(--warn-soft); padding: 1px 6px; border-radius: 999px; }
+  .times-total {
+    margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 12.5px; gap: 10px;
+  }
+  .times-total b { font-family: "Bricolage Grotesque", sans-serif; font-size: 15px; }
+
+  .notes { display: flex; flex-direction: column; gap: 7px; }
+  .note {
+    font-size: 12px;
+    line-height: 1.45;
+    padding: 8px 11px;
+    border-radius: 8px;
+    border-left: 3px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--ink-soft);
+  }
+  .note.good { border-left-color: var(--good); background: var(--good-soft); color: var(--ink); }
+  .note.warn { border-left-color: var(--warn); background: var(--warn-soft); color: var(--ink); }
+  .note.crit { border-left-color: var(--crit); background: var(--crit-soft); color: var(--ink); }
+  .note b { font-weight: 600; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: var(--ground);
+    padding: 9px 16px; border-radius: 999px; font-size: 12.5px; font-weight: 500;
+    opacity: 0; pointer-events: none; transition: opacity .18s, transform .18s;
+    z-index: 50;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  footer {
+    max-width: 1180px; margin: 0 auto; padding: 8px 22px 34px;
+    font-size: 11px; color: var(--ink-faint);
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+  /* tablette / téléphone */
+  @media (max-width: 720px) {
+    .head-inner { padding: 12px 15px; gap: 8px 14px; }
+    .head-meta { margin-left: 0; width: 100%; }
+    .layout { padding: 15px; gap: 16px; }
+    .fs-body { grid-template-columns: 1fr; padding: 13px; }
+    .f.wide > div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+    .btn-row { flex-wrap: wrap; }
+    .btn-row .btn { min-width: 140px; }
+  }
+  @media (max-width: 720px) {
+    /* ≥ 16px évite le zoom auto de Safari iOS au focus */
+    .f input[type="number"], .f input[type="text"], .f input[type="date"], .f select,
+    .tedit input, .mat input[type="number"], .margin-input input { font-size: 16px; }
+    .tedit input.th, .tedit input.tm { width: 52px; }
+    .tedit label { flex: 1 1 100%; }
+    .price-block .ttc { font-size: 27px; }
+    .mat { grid-template-columns: 18px minmax(0, 1fr) 72px; }
+  }
+
+  @media print {
+    header .head-meta, .example-banner, form, .margin-ctl .chips, .btn-row, .theme-btn { display: none !important; }
+    .layout { display: block; }
+    .results { position: static; max-height: none; }
+    .panel { box-shadow: none; break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-inner">
+    <div class="wordmark">
+      <span style="font-family:'Bricolage Grotesque'">Sam<b>'</b>Déménage</span>
+      <span>Calculateur de devis</span>
+    </div>
+    <div class="head-meta">
+      <span>Barème 31/08/2026 · maj 09/09/2026 · ATELIER · cible 35 % · sans commission · dossiers chargés depuis la file</span>
+      <button class="theme-btn" id="themeBtn" type="button">Thème</button>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <main>
+    <div class="example-banner" id="dossiersBox" hidden></div>
+    <div class="example-banner" id="exBanner">
+      <span>Exemple pré-rempli — un déménagement local de 30 m³. Modifiez les champs, ou repartez d'un devis vierge.</span>
+      <button type="button" id="loadBtn">Charger un dossier</button>
+      <button type="button" id="blankBtn">Nouveau devis vierge</button>
+    </div>
+    <div id="loadBox" hidden>
+      <textarea id="loadText" rows="5" placeholder="Coller ici le JSON de pré-remplissage (pipeline.py --prefill), puis « Remplir le formulaire »."></textarea>
+      <div class="btn-row"><button type="button" class="btn" id="loadApply">Remplir le formulaire</button></div>
+    </div>
+
+    <form id="form" autocomplete="off">
+      <fieldset>
+        <div class="fs-head"><span class="idx">01</span> Mission</div>
+        <div class="fs-body">
+          <div class="f wide">
+            <label>Nom et prénom du client</label>
+            <input type="text" name="clientNom" placeholder="Ex. Sarah Labarthe" value="Sarah Labarthe">
+          </div>
+          <div class="f">
+            <label>Volume <span class="hint">m³</span></label>
+            <input type="number" name="volume" step="0.5" min="0" inputmode="decimal" value="30">
+          </div>
+          <div class="f">
+            <label>Formule tarifaire</label>
+            <select name="formule">
+              <option>Standard</option>
+              <option>Confort</option>
+              <option>Premium</option>
+            </select>
+          </div>
+          <div class="f">
+            <label>Proportion de jaille <span class="hint">petits objets</span></label>
+            <select name="jaille">
+              <option>Faible (&lt; 50%)</option>
+              <option>Moyenne (50–75%)</option>
+              <option>Élevée (&gt; 75%)</option>
+            </select>
+          </div>
+          <div class="f">
+            <label>Date de création <span class="hint">forfait déplac.</span></label>
+            <input type="date" name="dateCreation" value="2026-08-31">
+          </div>
+          <div class="f wide" style="display:grid;grid-template-columns:repeat(2,1fr);gap:2px 12px">
+            <label class="chk"><input type="checkbox" name="groupage"> Groupage</label>
+            <label class="chk"><input type="checkbox" name="weekend"> Mission week-end</label>
+            <label class="chk"><input type="checkbox" name="dimanche"> Intervention le dimanche</label>
+            <label class="chk"><input type="checkbox" name="nextStories"> Devis Next Stories</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <div class="fs-head"><span class="idx">02</span> Adresse de départ</div>
+        <div class="fs-body">
+          <div class="f">
+            <label>Type de logement</label>
+            <select name="tlDepart"><option>Appartement</option><option selected>Maison</option><option>Box</option><option>Duplex</option></select>
+          </div>
+          <div class="f">
+            <label>Étage <span class="hint">0 = RDC</span></label>
+            <input type="number" name="etageDepart" step="1" min="0" value="1">
+          </div>
+          <div class="f">
+            <label>Distance de portage <span class="hint">m</span></label>
+            <input type="number" name="portageDepart" step="1" min="0" value="20">
+          </div>
+          <div class="f">
+            <label>Nombre de déménageurs</label>
+            <input type="number" name="nbDepart" step="1" min="1" value="3">
+          </div>
+          <div class="f">
+            <label>Taux horaire chargement <span class="hint">€/h · plancher 28</span></label>
+            <input type="number" name="tauxDepart" step="1" min="28" value="28">
+          </div>
+          <div class="f" style="justify-content:flex-end">
+            <label class="chk"><input type="checkbox" name="ascDepart"> Ascenseur</label>
+            <label class="chk"><input type="checkbox" name="ascDepartPetit"> Ascenseur petit format</label>
+          </div>
+          <div class="f wide">
+            <label>Monte-meubles départ</label>
+            <select name="mmDepart">
+              <option value="">Sans monte-meubles</option>
+              <option value="2h">2 h — 300 € HT</option>
+              <option value="demi">½ journée — 360 € HT</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <div class="fs-head"><span class="idx">03</span> Adresse d'arrivée</div>
+        <div class="fs-body">
+          <div class="f">
+            <label>Type de logement</label>
+            <select name="tlArrivee"><option>Appartement</option><option selected>Maison</option><option>Box</option><option>Duplex</option></select>
+          </div>
+          <div class="f">
+            <label>Étage <span class="hint">0 = RDC</span></label>
+            <input type="number" name="etageArrivee" step="1" min="0" value="1">
+          </div>
+          <div class="f">
+            <label>Distance de portage <span class="hint">m</span></label>
+            <input type="number" name="portageArrivee" step="1" min="0" value="20">
+          </div>
+          <div class="f">
+            <label>Nombre de déménageurs</label>
+            <input type="number" name="nbArrivee" step="1" min="1" value="3">
+          </div>
+          <div class="f">
+            <label>Taux horaire déchargement <span class="hint">€/h · plancher 28</span></label>
+            <input type="number" name="tauxArrivee" step="1" min="28" value="28">
+          </div>
+          <div class="f" style="justify-content:flex-end">
+            <label class="chk"><input type="checkbox" name="ascArrivee"> Ascenseur</label>
+            <label class="chk"><input type="checkbox" name="ascArriveePetit"> Ascenseur petit format</label>
+          </div>
+          <div class="f wide">
+            <label>Monte-meubles arrivée</label>
+            <select name="mmArrivee">
+              <option value="">Sans monte-meubles</option>
+              <option value="2h">2 h — 300 € HT</option>
+              <option value="demi">½ journée — 360 € HT</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <div class="fs-head"><span class="idx">04</span> Trajet &amp; véhicules</div>
+        <div class="fs-body">
+          <div class="f">
+            <label>Heures de route <span class="hint">A/R total</span></label>
+            <input type="number" name="heuresRouteAR" step="0.5" min="0" inputmode="decimal" value="0.5">
+          </div>
+          <div class="f">
+            <label>Kilométrage <span class="hint">A/R, km</span></label>
+            <input type="number" name="kmAR" step="1" min="0">
+          </div>
+          <div class="f">
+            <label>Nombre de camions</label>
+            <input type="number" name="nbCamions" step="1" min="1" value="1">
+          </div>
+          <div class="f">
+            <label>Coût déplacement forcé <span class="hint">€ HT / camion</span></label>
+            <input type="number" name="coutDeplManuel" step="1" min="0">
+          </div>
+        </div>
+        <details class="fieldset" style="border:0;border-top:1px solid var(--line);box-shadow:none;border-radius:0">
+          <summary style="font-size:12px;font-family:'IBM Plex Sans',sans-serif;font-weight:600;color:var(--ink-soft)">Options longue distance / location</summary>
+          <div class="fs-body">
+            <div class="f"><label>Passagers <span class="hint">hors conducteur</span></label><input type="number" name="nbPassagers" step="1" min="0"></div>
+            <div class="f"><label>Taux conducteur route <span class="hint">€/h, auto</span></label><input type="number" name="tauxConducteur" step="1" min="0"></div>
+            <div class="f"><label>Péage A/R <span class="hint">€ HT / camion</span></label><input type="number" name="peageAR" step="1" min="0"></div>
+            <div class="f"><label>Camions de location <span class="hint">nb</span></label><input type="number" name="nbCamionsLoc" step="1" min="0"></div>
+            <div class="f"><label>Coût camion location <span class="hint">€ HT, hors carburant</span></label><input type="number" name="camionLocHT" step="1" min="0"></div>
+            <div class="f"><label>Autre coût déplacement <span class="hint">€ HT</span></label><input type="number" name="autreCoutDepl" step="1" min="0"></div>
+            <div class="f"><label>Réservation stationnement <span class="hint">€ HT</span></label><input type="number" name="reservStat" step="1" min="0"></div>
+            <div class="f" style="justify-content:flex-end"><label class="chk"><input type="checkbox" name="gerantConduit"> Le gérant conduit</label></div>
+          </div>
+        </details>
+      </fieldset>
+
+      <details class="fieldset">
+        <summary><span class="idx">05</span> Étape intermédiaire / garde-meuble</summary>
+        <div class="fs-body">
+          <div class="f">
+            <label>Type d'étape</label>
+            <select name="typeEtape"><option value="">— inactive —</option><option>Box / Garde-meuble</option><option>Adresse intermédiaire</option><option>Autre</option></select>
+          </div>
+          <div class="f"><label>Étage étape</label><input type="number" name="etageEtape" step="1" min="0"></div>
+          <div class="f"><label>Volume chargé <span class="hint">m³</span></label><input type="number" name="volEtapeCharge" step="0.5" min="0"></div>
+          <div class="f"><label>Volume déchargé <span class="hint">m³</span></label><input type="number" name="volEtapeDecharge" step="0.5" min="0"></div>
+          <div class="f"><label>Portage étape <span class="hint">m</span></label><input type="number" name="portageEtape" step="1" min="0"></div>
+          <div class="f" style="justify-content:flex-end">
+            <label class="chk"><input type="checkbox" name="ascEtape"> Ascenseur</label>
+            <label class="chk"><input type="checkbox" name="ascEtapePetit"> Ascenseur petit format</label>
+          </div>
+          <div class="f wide stock-box" id="stockEtape" hidden>
+            <label>Stockage garde-meuble <span class="hint">indicatif, hors devis</span></label>
+            <div class="stock-row"><span>Durée</span><input type="number" name="dureeStockEtape" step="1" min="0" value="30"><span class="hint">jours</span></div>
+            <div class="stock-cout" id="stockCoutEtape"></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="fieldset">
+        <summary><span class="idx">06</span> Point 2 (seconde adresse)</summary>
+        <div class="fs-body">
+          <div class="f">
+            <label>Type point 2</label>
+            <select name="typePoint2"><option value="">— inactive —</option><option>Box / Garde-meuble</option><option>Adresse intermédiaire</option><option>Autre</option></select>
+          </div>
+          <div class="f"><label>Étage point 2</label><input type="number" name="etagePoint2" step="1" min="0"></div>
+          <div class="f"><label>Volume chargé <span class="hint">m³</span></label><input type="number" name="volPoint2Charge" step="0.5" min="0"></div>
+          <div class="f"><label>Volume déchargé <span class="hint">m³</span></label><input type="number" name="volPoint2Decharge" step="0.5" min="0"></div>
+          <div class="f"><label>Portage point 2 <span class="hint">m</span></label><input type="number" name="portagePoint2" step="1" min="0"></div>
+          <div class="f" style="justify-content:flex-end">
+            <label class="chk"><input type="checkbox" name="ascPoint2"> Ascenseur</label>
+            <label class="chk"><input type="checkbox" name="ascPoint2Petit"> Ascenseur petit format</label>
+          </div>
+          <div class="f wide stock-box" id="stockPoint2" hidden>
+            <label>Stockage garde-meuble <span class="hint">indicatif, hors devis</span></label>
+            <div class="stock-row"><span>Durée</span><input type="number" name="dureeStockPoint2" step="1" min="0" value="30"><span class="hint">jours</span></div>
+            <div class="stock-cout" id="stockCoutPoint2"></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="fieldset">
+        <summary><span class="idx">07</span> Point 3 (troisième adresse)</summary>
+        <div class="fs-body">
+          <div class="f">
+            <label>Type point 3</label>
+            <select name="typePoint3"><option value="">— inactive —</option><option>Box / Garde-meuble</option><option>Adresse intermédiaire</option><option>Autre</option></select>
+          </div>
+          <div class="f"><label>Étage point 3</label><input type="number" name="etagePoint3" step="1" min="0"></div>
+          <div class="f"><label>Volume chargé <span class="hint">m³</span></label><input type="number" name="volPoint3Charge" step="0.5" min="0"></div>
+          <div class="f"><label>Volume déchargé <span class="hint">m³</span></label><input type="number" name="volPoint3Decharge" step="0.5" min="0"></div>
+          <div class="f"><label>Portage point 3 <span class="hint">m</span></label><input type="number" name="portagePoint3" step="1" min="0"></div>
+          <div class="f" style="justify-content:flex-end">
+            <label class="chk"><input type="checkbox" name="ascPoint3"> Ascenseur</label>
+            <label class="chk"><input type="checkbox" name="ascPoint3Petit"> Ascenseur petit format</label>
+          </div>
+          <div class="f wide stock-box" id="stockPoint3" hidden>
+            <label>Stockage garde-meuble <span class="hint">indicatif, hors devis</span></label>
+            <div class="stock-row"><span>Durée</span><input type="number" name="dureeStockPoint3" step="1" min="0" value="30"><span class="hint">jours</span></div>
+            <div class="stock-cout" id="stockCoutPoint3"></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="fieldset">
+        <summary><span class="idx">08</span> Relivraison <span class="hint">sortie de garde-meuble, autre jour</span></summary>
+        <div class="fs-body">
+          <div class="f wide"><label class="chk"><input type="checkbox" name="relivActif"> Relivraison active — seconde opération du même devis</label></div>
+          <div class="f">
+            <label>Lieu de départ</label>
+            <select name="relivTlDepart"><option>Appartement</option><option>Maison</option><option selected>Box</option><option>Duplex</option></select>
+          </div>
+          <div class="f"><label>Étage départ <span class="hint">0 = RDC</span></label><input type="number" name="relivEtageDepart" step="1" min="0"></div>
+          <div class="f"><label>Portage départ <span class="hint">m</span></label><input type="number" name="relivPortageDepart" step="1" min="0"></div>
+          <div class="f" style="justify-content:flex-end">
+            <label class="chk"><input type="checkbox" name="relivAscDepart"> Ascenseur</label>
+            <label class="chk"><input type="checkbox" name="relivAscDepartPetit"> Ascenseur petit format</label>
+          </div>
+          <div class="f">
+            <label>Logement d'arrivée</label>
+            <select name="relivTlArrivee"><option selected>Appartement</option><option>Maison</option><option>Box</option><option>Duplex</option></select>
+          </div>
+          <div class="f"><label>Étage arrivée <span class="hint">0 = RDC</span></label><input type="number" name="relivEtageArrivee" step="1" min="0"></div>
+          <div class="f"><label>Portage arrivée <span class="hint">m</span></label><input type="number" name="relivPortageArrivee" step="1" min="0"></div>
+          <div class="f" style="justify-content:flex-end">
+            <label class="chk"><input type="checkbox" name="relivAscArrivee"> Ascenseur</label>
+            <label class="chk"><input type="checkbox" name="relivAscArriveePetit"> Ascenseur petit format</label>
+          </div>
+          <div class="f"><label>Volume relivré <span class="hint">m³ · vide = volume déposé</span></label><input type="number" name="relivVolume" step="0.5" min="0"></div>
+          <div class="f"><label>Déménageurs au chargement</label><input type="number" name="relivNbDepart" step="1" min="1"></div>
+          <div class="f"><label>Déménageurs au déchargement</label><input type="number" name="relivNbArrivee" step="1" min="1"></div>
+          <div class="f"><label>Taux horaire <span class="hint">€/h · plancher 28</span></label><input type="number" name="relivTaux" step="1" min="28"></div>
+          <div class="f"><label>Heures de route <span class="hint">A/R du jour</span></label><input type="number" name="relivHeuresRouteAR" step="0.25" min="0" inputmode="decimal"></div>
+          <div class="f"><label>Kilométrage <span class="hint">A/R du jour, km</span></label><input type="number" name="relivKmAR" step="1" min="0"></div>
+          <div class="f"><label>Nombre de camions</label><input type="number" name="relivNbCamions" step="1" min="1"></div>
+          <div class="f"><label>Péage A/R <span class="hint">€ HT / camion</span></label><input type="number" name="relivPeageAR" step="1" min="0"></div>
+          <div class="f"><label>Réservation stationnement <span class="hint">€ HT</span></label><input type="number" name="relivReservStat" step="1" min="0"></div>
+          <div class="f wide">
+            <label>Monte-meubles arrivée</label>
+            <select name="relivMmArrivee">
+              <option value="">Sans monte-meubles</option>
+              <option value="2h">2 h — 300 € HT</option>
+              <option value="demi">½ journée — 360 € HT</option>
+            </select>
+          </div>
+          <p class="mat-note" style="grid-column:1 / -1">Chiffrée comme une opération à part entière pour la manutention et la logistique (trajet, déplacement, péage, paniers repas au-delà de 6 h ce jour-là). Frais de dossier, options et matériel ne sont comptés qu'une fois, dans le devis. Une seule cible de marge sur l'ensemble.</p>
+        </div>
+      </details>
+
+      <details class="fieldset">
+        <summary><span class="idx">09</span> Options</summary>
+        <div class="fs-body">
+          <div class="f"><label>Mise en carton <span class="hint">h</span></label><input type="number" name="cartonH" step="0.5" min="0" inputmode="decimal"></div>
+          <div class="f"><label>Démontage / remontage <span class="hint">h</span></label><input type="number" name="demontageH" step="0.5" min="0" inputmode="decimal"></div>
+          <div class="f"><label>Protection fragile <span class="hint">h</span></label><input type="number" name="fragileH" step="0.5" min="0" inputmode="decimal"></div>
+          <div class="f"><label>Volume déchetterie <span class="hint">m³</span></label><input type="number" name="volDechetterie" step="1" min="0"></div>
+          <div class="f"><label>Options manuelles <span class="hint">€ HT</span></label><input type="number" name="optionsManuelles" step="1" min="0"></div>
+          <div class="f">
+            <label>Paniers repas <span class="hint">16 € HT / pers.</span></label>
+            <select name="paniersRepas">
+              <option value="auto">Auto — si chantier &gt; 6 h</option>
+              <option value="force">Forcer</option>
+              <option value="off">Aucun</option>
+            </select>
+          </div>
+          <div class="f wide"><label class="chk"><input type="checkbox" name="piano"> Piano (+300 € HT)</label></div>
+        </div>
+      </details>
+
+      <details class="fieldset">
+        <summary><span class="idx">10</span> Matériel de conditionnement</summary>
+        <div class="fs-body one">
+          <div class="f wide">
+            <div class="mat-list" id="matList"></div>
+            <div class="mat-extra">
+              <label>Autre matériel <span class="hint">€ HT, non listé</span></label>
+              <input type="number" name="coutMateriel" step="1" min="0">
+            </div>
+            <div class="mat-sub" id="matSub"></div>
+            <p class="mat-note">Cochez le matériel fourni et ajustez les quantités. « Livraison » ajoute 30 € HT (cartons penderies : pas de livraison).</p>
+          </div>
+        </div>
+      </details>
+
+      <fieldset>
+        <div class="fs-head"><span class="idx">11</span> Facteurs de risque <span class="idx">durée uniquement</span></div>
+        <div class="fs-body one">
+          <label class="chk"><input type="checkbox" name="volumeSerre"> Volume serré dans le camion</label>
+          <label class="chk"><input type="checkbox" name="objetLourd"> Objet lourd hors électroménager</label>
+          <label class="chk"><input type="checkbox" name="trajetAR2h" disabled> Trajet aller-retour &gt; 2 h <span class="hint" style="color:var(--ink-faint)">— coché automatiquement d'après les heures de route</span></label>
+        </div>
+      </fieldset>
+    </form>
+  </main>
+
+  <aside class="results">
+    <div class="panel">
+      <div class="panel-head"><span id="devisTitle">Devis</span> <span id="marginBadgeSlot" style="margin-left:auto"></span></div>
+      <div class="panel-body">
+        <div class="price-block">
+          <div class="ttc-lbl">Total TTC</div>
+          <div class="ttc mono" id="ttcOut">—</div>
+          <div class="ht">HT <span class="mono" id="htOut">—</span><span id="commWrap" hidden> · commission <span class="mono" id="commOut">—</span></span></div>
+          <div class="ecart" id="ecartOut"></div>
+        </div>
+
+        <div class="margin-ctl">
+          <div class="row1">
+            <span class="lbl">Taux de marge appliqué <span class="hint" style="color:var(--ink-faint)">(proxy commercial)</span></span>
+            <span class="margin-input"><input type="number" id="marginNum" min="10" max="45" step="0.5">%</span>
+          </div>
+          <div class="margin-track">
+            <input type="range" id="marginRange" min="15" max="45" step="0.5">
+            <span class="cible-mark" aria-hidden="true"></span>
+          </div>
+          <div class="ticks"><span>15 %</span><span class="c">cible 35 %</span><span>45 %</span></div>
+          <div class="chips" id="marginChips">
+            <button type="button" class="chip" data-x="baseme">Barème</button>
+            <button type="button" class="chip" data-x="0.21">21 % · NS</button>
+            <button type="button" class="chip" data-x="0.305">30,5 %</button>
+            <button type="button" class="chip" data-x="0.32">32 %</button>
+            <button type="button" class="chip" data-x="0.35">35 % · cible</button>
+          </div>
+          <div class="ttc-ctl">
+            <span class="lbl">Fixer le total TTC</span>
+            <span class="ttc-input"><input type="number" id="ttcTargetNum" min="0" step="10" inputmode="decimal" placeholder="auto">&nbsp;€</span>
+            <span class="cap">Saisir un montant repositionne le transport pour l'atteindre ; HT, marge et ventilation se recalculent. Vider le champ ou cliquer « Barème » rétablit le prix calculé.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">Ventilation</div>
+      <div class="panel-body">
+        <table class="vent"><tbody id="ventBody"></tbody></table>
+        <div class="vent-cap" id="ventCap"></div>
+        <div class="btn-row">
+          <button type="button" class="btn" id="validateBtn">Valider &amp; voir les temps</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="timesPanel" hidden>
+      <div class="panel-head">Estimations de temps <span class="hint" style="margin-left:auto;font-weight:400;color:var(--ink-faint)">le barème guide, vous ajustez</span></div>
+      <div class="panel-body times" id="timesBody"></div>
+    </div>
+
+    <div class="panel" id="exportPanel" hidden>
+      <div class="panel-body">
+        <div class="var-ctl">
+          <label for="varianteNom">Variante</label>
+          <input type="text" id="varianteNom" spellcheck="false"
+                 aria-label="Nom de la variante de devis">
+        </div>
+        <div id="varianteAlerte" role="alert" hidden
+             style="margin:8px 0 2px;padding:8px 10px;border-radius:6px;border:1px solid #d9534f;background:#fdecea;color:#7a1f16;font-size:12px;line-height:1.45"></div>
+        <div class="btn-row">
+          <button type="button" class="btn ghost" id="copyBtn">Copier le texte</button>
+          <button type="button" class="btn" id="jsonBtn">Exporter JSON</button>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn ghost" id="jsonSuiteBtn">Exporter — autre variante à suivre</button>
+        </div>
+        <textarea id="recapText" hidden readonly rows="16" aria-label="Récapitulatif texte, sélectionnable"></textarea>
+        <p style="font-size:11px;color:var(--ink-faint);margin:9px 0 0">Chaque variante s'écrit dans son propre bloc sur la fiche, sous son nom — une variante n'écrase jamais sa voisine. Enchaînez-les avec « autre variante à suivre » (la fiche s'écrit, l'équipe n'est pas prévenue), et terminez par « Exporter JSON » : un seul message récapitule alors toutes les variantes. « Exporter JSON » copie le devis au format attendu par <span class="mono">finalisation.py</span>, qui remplit la fiche Notion (bloc de chiffrage + propriétés) sans repasser par un modèle. « Copier le texte » met le récap dans le presse-papier. Si la copie automatique est bloquée (tablette, navigateur), le texte s'affiche ci-dessus : appui long → Tout sélectionner → Copier.</p>
+      </div>
+    </div>
+
+    <div class="notes" id="notesOut"></div>
+  </aside>
+</div>
+
+<footer>
+  Calcul indicatif d'après la rétro-spécification du calculateur Notion (barème 31/08/2026).
+  Ajouts locaux hors barème Notion : carburant des camions loués (0,40 € HT/km en plus de la location, au lieu de 0,60 € HT/km pour nos camions), tarif monte-meubles (300 € / 360 € HT par côté), point 3, cible de marge 35 %, saisie d'un total TTC cible (repositionne le transport), prime de dimanche (37,50 € HT / salarié), et paniers repas (16 € HT / personne au-delà de 6 h de chantier). Depuis le 03/11/2026, la marge ne bloque plus l'export.
+  <b>Commission retirée des devis le 09/09/2026</b> (décision Karim) : plus aucune commission n'est ajoutée au prix, y compris sur un devis <b>Next Stories</b> — la case ne joue plus que sur les frais de dossier (34 € au lieu de 45 €). Cible de marge relevée de 32 % à 35 % dans le même mouvement.
+  <b>Next Stories, 10/09/2026</b> : cocher la case ramène automatiquement la marge à <b>21 %</b> après tous les autres calculs (transport repositionné) ; sur ces dossiers 21 % sert de cible.
+  Branches <b>étape / point 2 / point 3 / groupage / Premium</b> non validées sur devis réel. Notion reste la source de vérité.
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const form = $("#form");
+const root = document.documentElement;
+
+/* ---------- thème ---------- */
+try { const t = localStorage.getItem("sd-theme"); if (t === "dark" || t === "light") root.dataset.theme = t; } catch (e) {}
+$("#themeBtn").addEventListener("click", () => {
+  const dark = root.dataset.theme
+    ? root.dataset.theme === "dark"
+    : matchMedia("(prefers-color-scheme: dark)").matches;
+  root.dataset.theme = dark ? "light" : "dark";
+  try { localStorage.setItem("sd-theme", root.dataset.theme); } catch (e) {}
+});
+
+/* ---------- état ---------- */
+const EX = {
+  clientNom: "Sarah Labarthe",
+  volume: 30, formule: "Standard", jaille: "Faible (< 50%)", dateCreation: "2026-08-31",
+  groupage: false, weekend: false, dimanche: false, nextStories: false, paniersRepas: "auto",
+  tlDepart: "Maison", etageDepart: 1, portageDepart: 20, nbDepart: 3, tauxDepart: 28,
+  ascDepart: false, ascDepartPetit: false, mmDepart: "",
+  tlArrivee: "Maison", etageArrivee: 1, portageArrivee: 20, nbArrivee: 3, tauxArrivee: 28,
+  ascArrivee: false, ascArriveePetit: false, mmArrivee: "",
+  heuresRouteAR: 0.5, kmAR: 0, nbCamions: 1, coutDeplManuel: 0,
+  nbPassagers: 0, tauxConducteur: "", peageAR: 0, nbCamionsLoc: 0, camionLocHT: 0, autreCoutDepl: 0, reservStat: 0, gerantConduit: false,
+  typeEtape: "", etageEtape: 0, volEtapeCharge: 0, volEtapeDecharge: 0, portageEtape: 20, ascEtape: false, ascEtapePetit: false,
+  typePoint2: "", etagePoint2: 0, volPoint2Charge: 0, volPoint2Decharge: 0, portagePoint2: 20, ascPoint2: false, ascPoint2Petit: false,
+  typePoint3: "", etagePoint3: 0, volPoint3Charge: 0, volPoint3Decharge: 0, portagePoint3: 20, ascPoint3: false, ascPoint3Petit: false,
+  cartonH: 0, demontageH: 0, fragileH: 0, volDechetterie: 0, optionsManuelles: 0, coutMateriel: 0, piano: false,
+  volumeSerre: false, objetLourd: false, trajetAR2h: false,
+  matLivraison: false,
+  relivActif: false, relivVolume: "", relivTlDepart: "Box", relivEtageDepart: 0, relivPortageDepart: 20,
+  relivAscDepart: false, relivAscDepartPetit: false,
+  relivTlArrivee: "Appartement", relivEtageArrivee: 0, relivPortageArrivee: 20,
+  relivAscArrivee: false, relivAscArriveePetit: false, relivMmArrivee: "",
+  relivNbDepart: 3, relivNbArrivee: 3, relivTaux: 28,
+  relivHeuresRouteAR: 0, relivKmAR: 0, relivNbCamions: 1, relivPeageAR: 0, relivReservStat: 0,
+};
+const BLANK = { ...EX, clientNom: "", volume: 20, etageDepart: 0, portageDepart: 20, tauxDepart: 28, etageArrivee: 0, portageArrivee: 20, tauxArrivee: 28,
+  heuresRouteAR: 0, coutMateriel: 0, dateCreation: new Date().toISOString().slice(0, 10) };
+
+/* Dossier injecte par pipeline.py --devis dans la COPIE locale : { ex, fiche, banniere }.
+   Reste null dans le maitre et dans l'artefact en ligne, qui se chargent par le bouton. */
+const PREFILL = null;
+
+/* ---------- matériel de conditionnement — prix unitaires HT, NON affichés dans l'UI ---------- */
+const MATERIEL = [
+  { key: "standard",       nom: "Cartons standards",     ht: 1.25,   livrable: true  },
+  { key: "livres",         nom: "Cartons livres",        ht: 1.00,   livrable: true  },
+  { key: "vaisselle",      nom: "Cartons vaisselle",     ht: 4.75,   livrable: true  },
+  { key: "bouteilles",     nom: "Cartons bouteilles",    ht: 1.75,   livrable: true  },
+  { key: "penderies",      nom: "Cartons penderies",     ht: 0.00,   livrable: false },
+  { key: "informatiques",  nom: "Cartons informatiques", ht: 1.25,   livrable: true  },
+  { key: "tableaux",       nom: "Cartons tableaux",      ht: 7.00,   livrable: true  },
+  { key: "scotch",         nom: "Rouleau scotch",        ht: 2.50,   livrable: true  },
+  { key: "bulles",         nom: "Rouleau bulles 20 m",   ht: 12.50,  livrable: true  },
+  { key: "barrelVerres",   nom: "Barrel verres",         ht: 5.00,   livrable: true  },
+  { key: "barrelAssiettes",nom: "Barrel assiettes",      ht: 5.00,   livrable: true  },
+  { key: "kraft",          nom: "Rouleau Kraft",         ht: 120.00, livrable: true  },
+];
+const MATERIEL_BY_KEY = Object.fromEntries(MATERIEL.map(m => [m.key, m]));
+const LIVRAISON_HT = 30;
+// Démontage / remontage facturé pour 2 personnes, quel que soit l'effectif du chantier (Karim, 06/10/2026).
+const EQUIPE_DEMONTAGE = 2;
+// Groupage (Karim, 15/09/2026) : forfait frais de déplacement 60 € HT au lieu du forfait daté
+// (40/30 €), en plus des 20 € HT par camion — soit une ligne à 80 € HT avec un camion.
+const FORFAIT_DEPL_GROUPAGE = 60;
+// Forfait deplacement hors groupage (Karim, 23/09/2026) : 10 EUR HT quelle que soit la date.
+// Remplace le forfait date 40 EUR (fenetre 24/08 -> 30/09/2026) / 30 EUR hors fenetre, supprime.
+// Le groupage garde le sien (60 EUR + 20 EUR/camion) et le plancher de 43 EUR reste entier.
+const FORFAIT_DEPL = 10;
+// Camion loué (Karim, 11/09/2026) : un camion à nous est facturé 0,60 € HT/km (ex-0,50, hausse carburant 15/09/2026) (carburant + usure
+// + réserve d'entretien) ; un camion loué ne coûte que sa location et son carburant, soit
+// 0,40 € HT/km en plus du coût de location saisi.
+const KM_LOCATION_HT = 0.40;   // Karim 03/11/2026 ; 0,50 du 16/10 au 03/11/2026, 0,40 du 15/09 au 16/10/2026, 0,35 avant
+
+/* ---------- prime de dimanche & paniers repas — règle Samuel 08/09/2026 ---------- */
+const PRIME_DIMANCHE_HT = 37.5;      // 30 € HT de coût par salarié, margé à 25 %
+const PRIME_DIMANCHE_COUT = 30;
+const PANIER_REPAS_HT = 16;          // par personne présente sur le chantier
+const PANIER_SEUIL_MIN = 360;        // déclenché au-delà de 6 h de chantier
+
+/* ---------- marge : cible — le plancher d'envoi a été retiré (Karim, 03/11/2026) ---------- */
+const MARGE_CIBLE = 0.35;            // cible commerciale (35 % depuis le 09/09/2026, était 32 %)
+// Next Stories (Karim, 10/09/2026) : cocher la case ramene la marge a 21 %, une fois tous les
+// autres calculs faits — le solveur repositionne le transport. Sur ces dossiers 21 % vaut
+// cible. Le curseur reste libre apres coup.
+const MARGE_NS = 0.21;
+const cibleMarge = ns => ns ? MARGE_NS : MARGE_CIBLE;
+// le solveur atteint la cible au flottant pres (0,21 sort parfois a 0.20999999999999996) :
+// toute comparaison de marge a un seuil passe par cette tolerance.
+const margeAtteint = (m, seuil) => m >= seuil - 1e-9;
+
+/* ---------- plancher de taux horaire de main d'œuvre — règle Karim 08/09/2026 ---------- */
+const TAUX_MIN = 28;                 // toute saisie inférieure est remontée à 28 €/h (départ, arrivée, étapes, points, options, trajets)
+
+/* ---------- coût de revient stockage garde-meuble (indicatif, hors devis) — grille Karim 04/09 ---------- */
+const GRILLE_STOCKAGE = [
+  [5, 50], [8, 65], [10, 75], [12, 85], [15, 105], [20, 130], [25, 160], [30, 190],
+  [35, 220], [40, 250], [45, 270], [50, 290], [55, 315], [60, 340], [65, 365], [70, 385], [75, 405], [80, 430],
+];
+function coutStockageMoisHT(v) {
+  if (v <= 0) return 0;
+  for (const [vol, prix] of GRILLE_STOCKAGE) { if (v <= vol) return prix; }
+  const last = GRILLE_STOCKAGE[GRILLE_STOCKAGE.length - 1];
+  return Math.round(v * (last[1] / last[0]) * 100) / 100;   // extrapolation au-delà de 80 m³, au dernier taux connu
+}
+
+const emptyOverrides = () => ({ chargeMin: null, dechargeMin: null, tempsEtapeTotal: null, tempsPoint2Total: null, tempsPoint3Total: null,
+  relivChargeMin: null, relivDechargeMin: null });
+let overrides = emptyOverrides();
+let marginTarget = null;   // null = barème
+let timesShown = false;
+
+function fill(obj) {
+  for (const [k, v] of Object.entries(obj)) {
+    const el = form.elements[k];
+    if (!el) continue;
+    if (el.type === "checkbox") el.checked = !!v;
+    else el.value = v;
+  }
+}
+
+/* auto-coche « trajet A/R > 2 h » d'après les heures de route */
+function syncDerived() {
+  const h = parseFloat(String(form.elements.heuresRouteAR.value).replace(",", ".")) || 0;
+  form.elements.trajetAR2h.checked = h > 2;   // > 2 h = trajet long, 2 h pile = court (Karim, 21/10/2026)
+  form.elements.trajetAR2h.disabled = true;
+}
+
+/* ---------- lecture ---------- */
+function gv(n) { const el = form.elements[n]; if (!el) return ""; return el.type === "checkbox" ? el.checked : el.value.trim(); }
+function gn(n) { const v = gv(n); if (v === "" || v === true || v === false) return v === true ? 1 : 0; const x = parseFloat(String(v).replace(",", ".")); return isNaN(x) ? 0 : x; }
+function graw(n) { const v = gv(n); if (v === "") return ""; const x = parseFloat(String(v).replace(",", ".")); return isNaN(x) ? "" : x; }
+
+function readInputs() {
+  return {
+    clientNom: gv("clientNom"),
+    volume: gn("volume"), formule: gv("formule"), jaille: gv("jaille"), dateCreation: gv("dateCreation"),
+    groupage: gv("groupage"), weekend: gv("weekend"), dimanche: gv("dimanche"), nextStories: gv("nextStories"),
+    paniersRepas: gv("paniersRepas") || "auto",
+    tlDepart: gv("tlDepart"), etageDepart: gn("etageDepart"), portageDepart: gn("portageDepart"),
+    nbDepart: Math.max(1, gn("nbDepart") || 1), tauxDepart: Math.max(TAUX_MIN, gn("tauxDepart") || 28),
+    tauxDepartSaisi: gn("tauxDepart"),
+    ascDepart: gv("ascDepart"), ascDepartPetit: gv("ascDepartPetit"), mmDepart: gv("mmDepart"),
+    tlArrivee: gv("tlArrivee"), etageArrivee: gn("etageArrivee"), portageArrivee: gn("portageArrivee"),
+    nbArrivee: Math.max(1, gn("nbArrivee") || 1), tauxArrivee: Math.max(TAUX_MIN, gn("tauxArrivee") || 28),
+    tauxArriveeSaisi: gn("tauxArrivee"),
+    ascArrivee: gv("ascArrivee"), ascArriveePetit: gv("ascArriveePetit"), mmArrivee: gv("mmArrivee"),
+    heuresRouteAR: gn("heuresRouteAR"), kmAR: gn("kmAR"), nbCamions: Math.max(1, gn("nbCamions") || 1),
+    coutDeplManuel: gn("coutDeplManuel"), nbPassagers: gn("nbPassagers"), tauxConducteur: graw("tauxConducteur"),
+    peageAR: gn("peageAR"), nbCamionsLoc: gn("nbCamionsLoc"), camionLocHT: gn("camionLocHT"),
+    autreCoutDepl: gn("autreCoutDepl"), reservStat: gn("reservStat"), gerantConduit: gv("gerantConduit"),
+    typeEtape: gv("typeEtape"), etageEtape: gn("etageEtape"), volEtapeCharge: gn("volEtapeCharge"),
+    volEtapeDecharge: gn("volEtapeDecharge"), portageEtape: gn("portageEtape"), ascEtape: gv("ascEtape"), ascEtapePetit: gv("ascEtapePetit"),
+    dureeStockEtape: gn("dureeStockEtape"),
+    typePoint2: gv("typePoint2"), etagePoint2: gn("etagePoint2"), volPoint2Charge: gn("volPoint2Charge"),
+    volPoint2Decharge: gn("volPoint2Decharge"), portagePoint2: gn("portagePoint2"), ascPoint2: gv("ascPoint2"), ascPoint2Petit: gv("ascPoint2Petit"),
+    dureeStockPoint2: gn("dureeStockPoint2"),
+    typePoint3: gv("typePoint3"), etagePoint3: gn("etagePoint3"), volPoint3Charge: gn("volPoint3Charge"),
+    volPoint3Decharge: gn("volPoint3Decharge"), portagePoint3: gn("portagePoint3"), ascPoint3: gv("ascPoint3"), ascPoint3Petit: gv("ascPoint3Petit"),
+    dureeStockPoint3: gn("dureeStockPoint3"),
+    cartonH: gn("cartonH"), demontageH: gn("demontageH"), fragileH: gn("fragileH"),
+    volDechetterie: gn("volDechetterie"), optionsManuelles: gn("optionsManuelles"), coutMateriel: gn("coutMateriel"), piano: gv("piano"),
+    volumeSerre: gv("volumeSerre"), objetLourd: gv("objetLourd"), trajetAR2h: gv("trajetAR2h"),
+    matLivraison: gv("matLivraison"),
+    materiel: MATERIEL.map(m => ({ key: m.key, on: gv("mat_" + m.key), qte: Math.max(0, gn("qte_" + m.key)) })),
+    relivActif: gv("relivActif"), relivVolume: gn("relivVolume"),
+    relivTlDepart: gv("relivTlDepart") || "Box", relivEtageDepart: gn("relivEtageDepart"), relivPortageDepart: gn("relivPortageDepart"),
+    relivAscDepart: gv("relivAscDepart"), relivAscDepartPetit: gv("relivAscDepartPetit"),
+    relivTlArrivee: gv("relivTlArrivee") || "Appartement", relivEtageArrivee: gn("relivEtageArrivee"), relivPortageArrivee: gn("relivPortageArrivee"),
+    relivAscArrivee: gv("relivAscArrivee"), relivAscArriveePetit: gv("relivAscArriveePetit"), relivMmArrivee: gv("relivMmArrivee"),
+    relivNbDepart: Math.max(1, gn("relivNbDepart") || 1), relivNbArrivee: Math.max(1, gn("relivNbArrivee") || 1),
+    relivTaux: Math.max(TAUX_MIN, gn("relivTaux") || 28),
+    relivHeuresRouteAR: gn("relivHeuresRouteAR"), relivKmAR: gn("relivKmAR"), relivNbCamions: Math.max(1, gn("relivNbCamions") || 1),
+    relivPeageAR: gn("relivPeageAR"), relivReservStat: gn("relivReservStat"),
+  };
+}
+
+/* ---------- barèmes ---------- */
+const GRILLE = [
+  ["<=",8,250],["<=",9,250],["<",10,265],["<=",10,280],["<=",11,280],["<",12,290],["<=",12,300],["<=",13,300],
+  ["<",15,315],["<=",15,330],["<=",16,330],["<",20,365],["<=",20,400],["<=",21,400],["<",24,450],["<=",25,500],
+  ["<=",26,500],["<",29,550],["<=",30,600],["<=",31,600],["<",34,650],["<=",35,700],["<=",36,700],["<",39,725],
+  ["<=",40,750],["<=",41,750],["<",44,800],["<=",45,850],["<=",46,850],["<",49,875],["<=",50,900],["<=",51,900],
+  ["<",54,925],["<=",55,950],["<=",56,950],["<",59,975],["<=",60,1000],["<=",61,1000],["<",64,1050],["<=",65,1100],
+  ["<=",66,1100],["<",69,1150],["<=",70,1200],["<=",71,1200],["<",74,1250],["<=",75,1300],["<=",76,1300],["<",79,1400],
+  ["<=",80,1500],["<=",81,1500],["<",84,1550],["<=",85,1600],["<=",86,1600],["<",89,1675],["<=",90,1750],["<=",91,1750],
+  ["<",94,1800],["<=",95,1850],["<=",96,1850],["<",99,1925],
+];
+function grilleStd(v) { for (const [op, thr, p] of GRILLE) { if (op === "<=" ? v <= thr : v < thr) return p; } return 2000; }
+// Groupage (Karim, 12/10/2026) : transport = volume x 50 EUR HT (4 m3 -> 200 EUR), minimum par
+// palier prioritaire : 150 EUR jusqu'a 1 m3, 200 EUR jusqu'a 3 m3, 250 EUR jusqu'a 5 m3.
+// Ni majoration week-end, ni garde-meuble, ni Premium ; le curseur de marge reste libre.
+const TRANSPORT_GROUPAGE_M3 = 50;
+function grilleGroupage(v) {
+  const a = Math.ceil(v);
+  const mini = a <= 1 ? 150 : a <= 3 ? 200 : a <= 5 ? 250 : 0;
+  return Math.max(TRANSPORT_GROUPAGE_M3 * v, mini);
+}
+function baremeEtages(n, asc, petit) {
+  if (n <= 0) return 0;
+  let b;
+  if (asc || petit) {
+    b = n <= 1 ? 20 : n <= 2 ? 30 : n <= 3 ? 37 : n <= 4 ? 42 : 42 + (n - 4) * 4;
+    if (petit) b *= 1.4;
+  } else {
+    b = n <= 3 ? n * 30 : n <= 4 ? 123 : n <= 5 ? 159 : 159 + (n - 5) * 40;
+  }
+  return b;
+}
+function forfaitDechetterie(d) { return d < 1 ? 0 : d <= 3 ? 90 : d <= 6 ? 130 : 200; }
+function tempsLieuCore(vol, nb, portage, etageBrut, asc, petit, box, refMin) {
+  const etageEff = asc ? Math.round(Math.max(0, etageBrut - 1) / 2) : etageBrut;
+  const baseMin = refMin * (vol / 20) * (3 / nb);
+  const adjEtage = baremeEtages(etageEff, asc, petit);
+  const adjPortage = portage > 20 ? Math.floor((portage - 20) / 20) * 30 * (vol / 20) * (3 / nb) : 0;
+  return Math.round(baseMin + adjEtage + adjPortage) * (box ? 0.7 : 1);
+}
+const MM_AMOUNT = t => t === "2h" ? 300 : t === "demi" ? 360 : 0;
+
+/* ---------- relivraison (Karim, 14/10/2026) ----------
+   Seconde opération du même devis (sortie de garde-meuble, un autre jour) : chiffrée par le
+   moteur lui-même, comme un devis à part entière réduit à sa manutention et sa logistique
+   (transport, manutention, trajet, déplacement, péage, paniers repas propres à ce jour).
+   Frais de dossier, options et matériel ne sont comptés qu'une fois, dans le devis principal ;
+   la marge se règle sur l'ensemble. Pas de week-end ni de groupage côté relivraison. */
+function relivVolumeDefaut(i) {
+  const gm = (t, v) => t === "Box / Garde-meuble" ? v : 0;
+  const depose = gm(i.typeEtape, i.volEtapeDecharge) + gm(i.typePoint2, i.volPoint2Decharge) + gm(i.typePoint3, i.volPoint3Decharge);
+  return depose > 0 ? depose : i.volume;
+}
+function relivOperation(i, ov) {
+  const volume = i.relivVolume > 0 ? i.relivVolume : relivVolumeDefaut(i);
+  const iR = {
+    ...i, relivActif: false, volume, groupage: false, weekend: false, dimanche: false,
+    tlDepart: i.relivTlDepart, etageDepart: i.relivEtageDepart, portageDepart: i.relivPortageDepart,
+    nbDepart: i.relivNbDepart, tauxDepart: i.relivTaux, tauxDepartSaisi: i.relivTaux,
+    ascDepart: i.relivAscDepart, ascDepartPetit: i.relivAscDepartPetit, mmDepart: "",
+    tlArrivee: i.relivTlArrivee, etageArrivee: i.relivEtageArrivee, portageArrivee: i.relivPortageArrivee,
+    nbArrivee: i.relivNbArrivee, tauxArrivee: i.relivTaux, tauxArriveeSaisi: i.relivTaux,
+    ascArrivee: i.relivAscArrivee, ascArriveePetit: i.relivAscArriveePetit, mmArrivee: i.relivMmArrivee,
+    heuresRouteAR: i.relivHeuresRouteAR, kmAR: i.relivKmAR, nbCamions: i.relivNbCamions,
+    coutDeplManuel: 0, nbPassagers: 0, tauxConducteur: "", peageAR: i.relivPeageAR,
+    nbCamionsLoc: 0, camionLocHT: 0, autreCoutDepl: 0, reservStat: i.relivReservStat, gerantConduit: false,
+    typeEtape: "", volEtapeCharge: 0, volEtapeDecharge: 0,
+    typePoint2: "", volPoint2Charge: 0, volPoint2Decharge: 0,
+    typePoint3: "", volPoint3Charge: 0, volPoint3Decharge: 0,
+    cartonH: 0, demontageH: 0, fragileH: 0, volDechetterie: 0, optionsManuelles: 0, coutMateriel: 0, piano: false,
+    materiel: [], matLivraison: false, trajetAR2h: i.relivHeuresRouteAR > 2,
+  };
+  const r = computeDevis(iR, { chargeMin: ov.relivChargeMin, dechargeMin: ov.relivDechargeMin });
+  const monteMeubles = r.mmDepAmount + r.mmArrAmount;
+  return {
+    i: iR, r, volume,
+    transport: r.transportFinal,
+    manutDepart: r.sousTotalManutentionDepart, manutArrivee: r.sousTotalManutentionArrivee,
+    forfaitTrajet: r.forfaitTrajetCD, routeLD: r.coutRouteEquipeLD,
+    trajetDepot: r.forfaitDeplacementFixe, retourChef: r.retourChefEquipe,
+    monteMeubles, deplacement: r.coutDeplacementTotal - monteMeubles,
+    paniers: r.paniersRepasTotal, reservation: r.reservation,
+    // l'opération entière moins l'administratif (frais de dossier) : options et matériel y valent 0
+    total: r.totalHTAvantCommission - r.fraisDossier,
+  };
+}
+
+/* ---------- moteur ---------- */
+function computeDevis(i, ov) {
+  const premium = i.formule === "Premium";
+  const coefOptions = premium ? 1.25 : 1.15;
+  const tauxOptions = premium ? 0.25 : 0.15;
+  const hasAscDep = i.ascDepart || i.ascDepartPetit;
+  const hasAscArr = i.ascArrivee || i.ascArriveePetit;
+
+  const mmDepOn = i.mmDepart !== "";
+  const mmArrOn = i.mmArrivee !== "";
+  const mmDepAmount = MM_AMOUNT(i.mmDepart);
+  const mmArrAmount = MM_AMOUNT(i.mmArrivee);
+
+  const etapeActif = i.typeEtape !== "";
+  const point2Actif = i.typePoint2 !== "";
+  const point3Actif = i.typePoint3 !== "";
+  const anyLieu = etapeActif || point2Actif || point3Actif;
+  const volCharge = i.volEtapeCharge + i.volPoint2Charge + i.volPoint3Charge;
+  const volDepose = i.volEtapeDecharge + i.volPoint2Decharge + i.volPoint3Decharge;
+
+  const volDepEff = (anyLieu && volCharge > 0) ? Math.max(0, i.volume - volCharge) : i.volume;
+  const volArrEff = (anyLieu && volDepose > 0) ? Math.max(0, i.volume - volDepose) : i.volume;
+
+  const coefJaille = i.jaille === "Élevée (> 75%)" ? 1.25 : i.jaille === "Moyenne (50–75%)" ? 1.125 : 1;
+
+  // étages
+  const etageEffDep = i.etageDepart + (i.tlDepart === "Duplex" ? 0.35 : 0);
+  const etageEffArr = i.etageArrivee + (i.tlArrivee === "Duplex" ? 0.35 : 0);
+  const coefMaisonDep = (i.tlDepart === "Maison" && etageEffDep > 0 && !hasAscDep && !mmDepOn) ? etageEffDep * 0.35 : 1;
+  const coefMaisonArr = (i.tlArrivee === "Maison" && etageEffArr > 0 && !hasAscArr && !mmArrOn) ? etageEffArr * 0.25 : 1;
+  const tempsBaseChargement = 150 * (volDepEff / 20) * (3 / i.nbDepart);
+  const tempsBaseDechargement = 80 * (volArrEff / 20) * (3 / i.nbArrivee);
+  const ajEtagesDep = baremeEtages(etageEffDep, hasAscDep, i.ascDepartPetit) * (mmDepOn ? 0 : 1) * (volDepEff / 20) * (3 / i.nbDepart) * coefMaisonDep;
+  const ajEtagesArr = baremeEtages(etageEffArr, hasAscArr, i.ascArriveePetit) * (mmArrOn ? 0 : 1) * (volArrEff / 20) * (3 / i.nbArrivee) * coefMaisonArr;
+
+  const portageAdj = (p, vol, nb) => p > 10 ? Math.floor((p - 10) / 20) * 30 * (vol / 20) * (3 / nb) : 0;
+  const duoDep = i.nbDepart === 2 ? 1.1 : 1;
+  const duoArr = i.nbArrivee === 2 ? 1.1 : 1;
+  const boxDep = i.tlDepart === "Box" ? 0.7 : 1;
+  const boxArr = i.tlArrivee === "Box" ? 0.7 : 1;
+  const mmDepC = mmDepOn ? 0.75 : 1;
+  const mmArrC = mmArrOn ? 0.75 : 1;
+
+  const chargeCheck = (tempsBaseChargement + ajEtagesDep + portageAdj(i.portageDepart, volDepEff, i.nbDepart)) * mmDepC * coefJaille * duoDep * boxDep;
+  const dechargeStd = (tempsBaseDechargement + ajEtagesArr + portageAdj(i.portageArrivee, volArrEff, i.nbArrivee)) * mmArrC * coefJaille * duoArr * boxArr;
+  const dureeCheck = chargeCheck + dechargeStd;
+  const nbDepartCalcul = (i.volume > 35 && i.etageDepart > 0 && hasAscDep && dureeCheck / 60 > 10) ? 4 : i.nbDepart;
+  const overrideEffectif = nbDepartCalcul !== i.nbDepart;
+
+  const ajPortageDep = portageAdj(i.portageDepart, volDepEff, nbDepartCalcul);
+  const chargeStd = (tempsBaseChargement + ajEtagesDep + ajPortageDep) * mmDepC * coefJaille * duoDep * boxDep;
+  const chargeMin = ov.chargeMin != null ? ov.chargeMin : chargeStd;
+  const dechargeMin = ov.dechargeMin != null ? ov.dechargeMin : dechargeStd;
+
+  // manutention
+  const majEtDep = (!mmDepOn && i.etageDepart >= 3 && !hasAscDep) ? 1 + 0.05 * (i.tlDepart === "Maison" ? 0.35 : 1) : 1;
+  const majEtArr = (!mmArrOn && i.etageArrivee >= 3 && !hasAscArr) ? 1 + 0.05 * (i.tlArrivee === "Maison" ? 0.35 : 1) : 1;
+  // Groupage : 2 h facturees au minimum par phase, mais un temps ajuste a la main passe avant
+  // le plancher, pour les cas ou il faut descendre sous 2 h (Karim, 28/10/2026).
+  const minFactDep = (i.groupage && ov.chargeMin == null) ? Math.max(chargeMin * majEtDep, 120) : chargeMin * majEtDep;
+  const plancherArr = (i.groupage && ov.dechargeMin == null) || (!i.groupage && i.heuresRouteAR > 2 && i.nbPassagers <= 0 && i.nbArrivee > 1);
+  const minFactArr = plancherArr ? Math.max(dechargeMin * majEtArr, 120) : dechargeMin * majEtArr;
+  const sousTotalManutentionDepart = (minFactDep / 60) * nbDepartCalcul * i.tauxDepart;
+  const sousTotalManutentionArrivee = (minFactArr / 60) * i.nbArrivee * i.tauxArrivee;
+  const sousTotalManutention = sousTotalManutentionDepart + sousTotalManutentionArrivee;
+
+  // étape + point 2 + point 3
+  function lieuCout(actif, refChg, refDch, volC, volD, etageBrut, asc, petit, box, portage) {
+    const nb = nbDepartCalcul;
+    const p = portage > 0 ? portage : 20;
+    const eb = etageBrut >= 0 ? etageBrut : 0;
+    const tChg = (!actif || volC === 0) ? 0 : tempsLieuCore(volC, nb, p, eb, asc, petit, box, refChg);
+    const tDch = (!actif) ? 0 : tempsLieuCore(volD, nb, p, eb, asc, petit, box, refDch);
+    return { tChg, tDch, nb };
+  }
+  const eL = lieuCout(etapeActif, 130, 100, i.volEtapeCharge, i.volEtapeDecharge, i.etageEtape, i.ascEtape, i.ascEtapePetit, i.typeEtape === "Box / Garde-meuble", i.portageEtape);
+  const pL = lieuCout(point2Actif, 130, 100, i.volPoint2Charge, i.volPoint2Decharge, i.etagePoint2, i.ascPoint2, i.ascPoint2Petit, i.typePoint2 === "Box / Garde-meuble", i.portagePoint2);
+  const p3L = lieuCout(point3Actif, 130, 100, i.volPoint3Charge, i.volPoint3Decharge, i.etagePoint3, i.ascPoint3, i.ascPoint3Petit, i.typePoint3 === "Box / Garde-meuble", i.portagePoint3);
+  const tempsEtapeTotalStd = eL.tChg + eL.tDch;
+  const tempsPoint2TotalStd = pL.tChg + pL.tDch;
+  const tempsPoint3TotalStd = p3L.tChg + p3L.tDch;
+  const tempsEtapeTotal = ov.tempsEtapeTotal != null ? ov.tempsEtapeTotal : tempsEtapeTotalStd;
+  const tempsPoint2Total = ov.tempsPoint2Total != null ? ov.tempsPoint2Total : tempsPoint2TotalStd;
+  const tempsPoint3Total = ov.tempsPoint3Total != null ? ov.tempsPoint3Total : tempsPoint3TotalStd;
+  const hFactEtape = Math.ceil((tempsEtapeTotal / 60) * 2) / 2;
+  const hFactPoint2 = Math.ceil((tempsPoint2Total / 60) * 2) / 2;
+  const hFactPoint3 = Math.ceil((tempsPoint3Total / 60) * 2) / 2;
+  const coutManutentionGardeMeuble = etapeActif ? Math.round(hFactEtape * eL.nb * i.tauxDepart) : 0;
+  const coutManutentionPoint2 = point2Actif ? Math.round(hFactPoint2 * pL.nb * i.tauxDepart) : 0;
+  const coutManutentionPoint3 = point3Actif ? Math.round(hFactPoint3 * p3L.nb * i.tauxDepart) : 0;
+
+  // transport
+  const coefLongTrajet = i.heuresRouteAR >= 1 ? 1 + (i.heuresRouteAR / 2) * 0.1 : 1;
+  const coefLongTrajetPondere = i.groupage ? 1
+    : (anyLieu && i.volume > 0 && volDepose > 0 && i.heuresRouteAR > 0)
+      ? 1 + (i.heuresRouteAR / 2) * 0.1 * (Math.max(0, i.volume - volDepose) / i.volume)
+      : coefLongTrajet;
+  const coefGardeMeuble = (anyLieu && i.volume > 0 && volDepose > 0) ? 1 + 0.25 * (Math.min(volDepose, i.volume) / i.volume) : 1;
+  const transportBaseVolume = i.groupage ? grilleGroupage(i.volume) : grilleStd(i.volume);
+  const transportAjuste = transportBaseVolume * coefLongTrajetPondere;
+  const supWeekend = i.weekend && !i.groupage ? transportAjuste * 0.10 : 0;   // 10 % depuis le 08/09/2026 (était 15 %)
+  const transportGM = i.groupage ? transportAjuste : (transportAjuste + supWeekend) * coefGardeMeuble;
+  const transportFinal = premium && !i.groupage ? transportGM * 1.15 : transportGM;
+
+  // trajet
+  const hARcd = i.heuresRouteAR <= 0 ? 0.5 : i.heuresRouteAR;
+  const forfaitTrajetCD = hARcd > 2 ? 0 : hARcd * i.nbArrivee * i.tauxArrivee;
+  let coutRouteEquipeLD = 0;
+  if (!i.groupage) {
+    const hAR = i.heuresRouteAR > 0 ? i.heuresRouteAR : 0;
+    const nbProp = Math.max(0, i.nbCamions - i.nbCamionsLoc);
+    const nbConducteurs = Math.max(0, nbProp + i.nbCamionsLoc - (i.gerantConduit ? 1 : 0));   // le gérant remplace un conducteur, camion loué compris (Karim, 16/10/2026)
+    const tauxDef = hAR < 6 ? 30 : 20;
+    const tauxCond = i.tauxConducteur === "" ? tauxDef : i.tauxConducteur;
+    const base = hAR <= 2 ? 0 : hAR * nbConducteurs * tauxCond + hAR * i.nbPassagers * 20;
+    coutRouteEquipeLD = base;
+  }
+
+  // déplacement
+  const coutDeplKm = Math.round(i.kmAR * 0.6);
+  const forfaitDeplacementFixe = (i.groupage || i.heuresRouteAR <= 0.5) ? 0.5 * nbDepartCalcul * i.tauxDepart : 0;   // trajet dépôt : toujours en groupage, sinon seulement si route A/R ≤ 0,5 h (Karim, 20/10/2026)
+  const forfaitJour = FORFAIT_DEPL;
+  const nbCamionsFactures = Math.max(0, i.nbCamions - i.nbCamionsLoc);
+  const carburantLocHT = i.groupage ? 0 : Math.round(i.kmAR * KM_LOCATION_HT) * i.nbCamionsLoc;
+  const hotelHT = i.groupage ? 0 : (i.heuresRouteAR > 10 ? 102 * i.nbCamions : 0);
+  const deplBase = i.coutDeplManuel > 0 ? i.coutDeplManuel : (coutDeplKm > 0 ? coutDeplKm : 20);
+  const coutDeplBase = i.groupage
+    ? Math.max(20 * i.nbCamions + FORFAIT_DEPL_GROUPAGE, 43)
+    : Math.max(deplBase * nbCamionsFactures + forfaitJour, 43);
+  const monteCharges = mmDepAmount + mmArrAmount;
+  const peageHT = i.groupage ? 0 : i.peageAR * i.nbCamions;
+  const coutDeplacementTotal = coutDeplBase + hotelHT + i.autreCoutDepl + monteCharges + peageHT + i.camionLocHT + carburantLocHT;
+
+  // options
+  const montantDemontage = i.demontageH > 0 ? i.demontageH * i.tauxDepart * EQUIPE_DEMONTAGE * coefOptions : 0;
+  const prixCarton = i.cartonH > 0 ? i.cartonH * i.nbDepart * i.tauxDepart * coefOptions : 0;
+  const protFragile = i.fragileH > 0 ? i.fragileH * i.tauxDepart * i.nbDepart * coefOptions : 0;
+  const fDechetterie = forfaitDechetterie(i.volDechetterie);
+  const sousTotalOptions = montantDemontage + prixCarton + protFragile + i.optionsManuelles + fDechetterie + (i.piano ? 300 : 0);
+
+  // matériel de conditionnement (prix unitaires internes)
+  let materielHT = 0;
+  (i.materiel || []).forEach(x => {
+    if (!x.on) return;
+    const m = MATERIEL_BY_KEY[x.key];
+    if (m) materielHT += m.ht * Math.max(0, x.qte || 0);
+  });
+  materielHT = Math.round(materielHT * 100) / 100;
+  const livraisonHT = i.matLivraison ? LIVRAISON_HT : 0;
+  const materielTotalHT = materielHT + livraisonHT;
+
+  // prime de dimanche & paniers repas
+  const effectifChantier = Math.max(nbDepartCalcul, i.nbArrivee);
+  const optMinDuree = (i.cartonH + i.demontageH + i.fragileH) * 60;
+  const dureeChantierMin = chargeMin + dechargeMin + i.heuresRouteAR * 60 + optMinDuree
+    + tempsEtapeTotal + tempsPoint2Total + tempsPoint3Total;
+  const primeDimancheTotal = i.dimanche ? PRIME_DIMANCHE_HT * effectifChantier : 0;
+  const margeDimanche = i.dimanche ? (PRIME_DIMANCHE_HT - PRIME_DIMANCHE_COUT) * effectifChantier : 0;
+  const paniersAuto = dureeChantierMin > PANIER_SEUIL_MIN;
+  const paniersOn = i.paniersRepas === "force" || (i.paniersRepas !== "off" && paniersAuto);
+  const nbPaniers = paniersOn ? effectifChantier : 0;
+  const paniersRepasTotal = nbPaniers * PANIER_REPAS_HT;
+
+  // relivraison : seconde opération, ajoutée telle quelle ; son transport entre dans la marge
+  const reliv = i.relivActif ? relivOperation(i, ov) : null;
+  const relivHT = reliv ? reliv.total : 0;
+
+  // totaux
+  const retourChefEquipe = 0;   // ligne « Retour chef d'équipe » retirée (Karim, 21/10/2026) : le trajet A/R est facturé à toute l'équipe ; était 30 € HT par camion
+  const fraisDossier = i.volume < 10 ? 34 : (i.nextStories ? 34 : 45);
+  const reservation = i.reservStat > 0 ? i.reservStat : 0;
+  const totalHTAvantCommission = transportFinal + sousTotalManutention + forfaitTrajetCD + coutRouteEquipeLD
+    + sousTotalOptions + retourChefEquipe + coutManutentionGardeMeuble + i.coutMateriel + materielTotalHT + forfaitDeplacementFixe
+    + coutDeplacementTotal + fraisDossier + reservation + coutManutentionPoint2 + coutManutentionPoint3
+    + primeDimancheTotal + paniersRepasTotal + relivHT;
+  // Base commissionnable (Karim, 09/09/2026) : transport + TOUTE la manutention
+  // + TOUTE la masse salariale de route + options. Rien d'autre — ni frais de
+  // déplacement, ni location de véhicule, ni matériel, ni paniers repas, ni prime
+  // de dimanche, ni monte-meubles, ni frais de dossier, ni réservation.
+  const baseCommission = transportFinal
+    + sousTotalManutention + coutManutentionGardeMeuble + coutManutentionPoint2 + coutManutentionPoint3
+    + forfaitTrajetCD + coutRouteEquipeLD + forfaitDeplacementFixe + retourChefEquipe
+    + sousTotalOptions + (reliv ? reliv.r.baseCommission : 0);
+  // Commission retirée de TOUS les devis Sam'Déménage le 09/09/2026 (Karim), y compris
+  // les dossiers Next Stories : les 5 % dus à la plateforme ne sont plus refacturés au client.
+  // La case « Devis Next Stories » ne joue plus que sur les frais de dossier (34 € au lieu de 45 €).
+  const commissionRate = 0;
+  const commission = baseCommission * commissionRate;
+  const totalHTAvecCommission = totalHTAvantCommission + commission;
+  const totalTTC = totalHTAvecCommission * 1.2;
+  // « hors transport » = hors transport du devis principal, le seul que le solveur repositionne
+  const margeFixeHorsTransport = sousTotalOptions * tauxOptions + margeDimanche + (reliv ? reliv.transport : 0);
+  const margeEuro = transportFinal + margeFixeHorsTransport;
+  const margePct = totalHTAvecCommission > 0 ? margeEuro / totalHTAvecCommission : 0;
+
+  return {
+    i, premium, tauxOptions, commissionRate, nbDepartCalcul, overrideEffectif,
+    mmDepOn, mmArrOn, mmDepAmount, mmArrAmount,
+    etapeActif, point2Actif, point3Actif, volCharge, volDepose,
+    coefJaille, duoDep, duoArr, boxDep, boxArr,
+    tempsBaseChargement, tempsBaseDechargement, ajEtagesDep, ajEtagesArr, ajPortageDep,
+    ajPortageArr: portageAdj(i.portageArrivee, volArrEff, i.nbArrivee),
+    chargeStd, dechargeStd, chargeMin, dechargeMin,
+    majEtDep, majEtArr, minFactDep, minFactArr, plancherArr,
+    sousTotalManutentionDepart, sousTotalManutentionArrivee, sousTotalManutention,
+    tempsEtapeTotalStd, tempsPoint2TotalStd, tempsPoint3TotalStd,
+    tempsEtapeTotal, tempsPoint2Total, tempsPoint3Total,
+    hFactEtape, hFactPoint2, hFactPoint3,
+    coutManutentionGardeMeuble, coutManutentionPoint2, coutManutentionPoint3,
+    transportBaseVolume, transportFinal,
+    forfaitTrajetCD, coutRouteEquipeLD, coutDeplKm, forfaitDeplacementFixe, hotelHT, coutDeplacementTotal, carburantLocHT, forfaitJour,
+    montantDemontage, prixCarton, protFragile, fDechetterie, sousTotalOptions,
+    materielHT, livraisonHT, materielTotalHT,
+    effectifChantier, dureeChantierMin, primeDimancheTotal, margeDimanche,
+    paniersAuto, paniersOn, nbPaniers, paniersRepasTotal, margeFixeHorsTransport,
+    retourChefEquipe, fraisDossier, reservation, totalHTAvantCommission, baseCommission, commission,
+    totalHTAvecCommission, totalTTC, margeEuro, margePct, reliv, relivHT,
+  };
+}
+
+/* solveur marge — SPEC §6.2 */
+function solveMargin(r, x) {
+  const A = r.totalHTAvantCommission - r.transportFinal;
+  const B = r.baseCommission - r.transportFinal;
+  const Mopt = r.margeFixeHorsTransport;
+  const c = r.commissionRate;
+  const denom = 1 - x * (1 + c);
+  const T = Math.max(0, (x * (A + c * B) - Mopt) / denom);
+  const htAvantComm = A + T;
+  const commission = (B + T) * c;
+  const htExact = htAvantComm + commission;
+  const ht = Math.round(htExact);
+  const ttc = Math.round(ht * 1.2);
+  const margeE = T + Mopt;
+  const margeP = htExact > 0 ? margeE / htExact : 0;
+  return { T, htAvantComm, commission, ht, ttc, margeP, floored: T === 0 };
+}
+
+/* ---------- format ---------- */
+const nf2 = new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const nf0 = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
+const eur = n => nf2.format(n) + " €";
+const eur0 = n => nf0.format(Math.round(n)) + " €";
+const pct1 = n => (Math.round(n * 1000) / 10).toLocaleString("fr-FR") + " %";
+const hmm = m => { const t = Math.max(0, Math.round(m)); if (t < 60) return t + " min"; const h = Math.floor(t / 60); const mm = t % 60; return mm ? h + "h" + String(mm).padStart(2, "0") : h + "h"; };
+const hm = hmm;
+const min0 = hmm;
+const moversLabel = (a, b) => a === b
+  ? a + " déménageur" + (a > 1 ? "s" : "")
+  : a + " au chargement / " + b + " au déchargement";
+const hhmm = m => { const t = Math.max(0, Math.round(m)); return Math.floor(t / 60) + "h" + String(t % 60).padStart(2, "0"); };
+function recapTimesLines(d) {
+  const L = [];
+  L.push("Temps de mission estimé : " + hhmm(d.missionMin));
+  L.push("Temps de trajet total : " + hhmm(d.routeMin));
+  L.push("Temps de chargement : " + hhmm(d.chargeMin) + (d.ovDep ? " (ajusté)" : ""));
+  L.push("Nombre d'intervenants : " + d.i.nbDepart);
+  L.push("Temps de déchargement : " + hhmm(d.dechargeMin) + (d.ovArr ? " (ajusté)" : ""));
+  L.push("Nombre d'intervenants : " + d.i.nbArrivee);
+  if (d.optMin) L.push("Temps d'options (carton / démontage / protection) : " + hhmm(d.optMin));
+  if (d.reliv) {
+    const R = d.reliv;
+    L.push("Relivraison (" + R.volume + " m³) : " + hhmm(R.missionMin) + " — trajet " + hhmm(R.routeMin)
+      + " · chargement " + hhmm(R.chargeMin) + (R.ovDep ? " (ajusté)" : "") + " · " + R.nbDepart + " pers."
+      + " · déchargement " + hhmm(R.dechargeMin) + (R.ovArr ? " (ajusté)" : "") + " · " + R.nbArrivee + " pers.");
+  }
+  return L;
+}
+function materielListe(i) {
+  return (i.materiel || [])
+    .filter(x => x.on && x.qte > 0)
+    .map(x => (MATERIEL_BY_KEY[x.key] ? MATERIEL_BY_KEY[x.key].nom : x.key) + " ×" + x.qte)
+    .concat(i.matLivraison ? ["Livraison"] : []);
+}
+
+/* 0.07 * 100 vaut 7.000000000000001 en JS — le taux s'affiche arrondi au dixième. */
+function pctTaux(t) { return Math.round(t * 1000) / 10; }
+
+/* Lignes de la relivraison, communes à la ventilation et au récap / export. Son transport
+   est fondu dans la ligne « Transport » du devis (Karim, 14/10/2026) ; en récap, ses paniers
+   repas vont dans sa manutention, comme ceux du devis (Karim, 22/10/2026). */
+const RELIV = "Relivraison · ";
+function relivMissionMin(R) { return R.r.chargeMin + R.r.dechargeMin + R.i.heuresRouteAR * 60; }
+const relivLib = k => { const s = k.slice(RELIV.length); return s.charAt(0).toUpperCase() + s.slice(1); };
+function relivBloc(R) {
+  if (!R) return "";
+  const lignes = relivLignes(R, false).filter(([, v, always]) => always || Math.round(v * 100) !== 0);
+  const sous = lignes.reduce((s, [, v]) => s + v, 0);
+  let h = `<tr class="bloc"><td colspan="2">Relivraison — ${R.volume} m³ · autre jour</td></tr>`;
+  lignes.forEach(([k, v]) => { h += `<tr><td>${relivLib(k)}</td><td class="amt">${eur(v)}</td></tr>`; });
+  h += `<tr class="sous"><td>Sous-total relivraison<span class="hint">hors transport, compté dans « Transport »</span></td><td class="amt">${eur(sous)}</td></tr>`;
+  return h;
+}
+function relivLignes(R, recap) {
+  if (!R) return [];
+  return [
+    [RELIV + "manutention chargement", R.manutDepart + (recap ? R.paniers : 0), true],
+    [RELIV + "manutention déchargement", R.manutArrivee, true],
+    [RELIV + "forfait trajet", R.forfaitTrajet, false],
+    [RELIV + "route longue distance", R.routeLD, false],
+    [RELIV + "trajet dépôt", R.trajetDepot, true],
+    [RELIV + "monte-meubles", R.monteMeubles, false],
+    [RELIV + "frais de déplacement", R.deplacement, true],
+    [RELIV + "réservation stationnement", R.reservation, false],
+  ].concat(recap ? [] : [[RELIV + "paniers repas", R.paniers, false]]);
+}
+
+/* ---------- rendu ---------- */
+function badgeFor(m, ns) {
+  const cible = cibleMarge(ns);
+  const cls = margeAtteint(m, cible) ? "good" : "warn";
+  const txt = margeAtteint(m, cible) ? (ns ? "≥ cible Next Stories" : "> à la cible")
+    : "sous la cible " + pct1(cible);
+  return `<span class="badge ${cls}"><span class="dot"></span>${pct1(m)} · ${txt}</span>`;
+}
+
+function render() {
+  syncDerived();
+  const i = readInputs();
+  const r = computeDevis(i, overrides);
+  const natural = r.margePct;
+
+  const showAdj = marginTarget != null;
+  const sol = showAdj ? solveMargin(r, marginTarget) : null;
+  const shownMargin = showAdj ? sol.margeP : natural;
+  const htShown = showAdj ? sol.ht : r.totalHTAvecCommission;
+  const ttcShown = showAdj ? sol.ttc : r.totalTTC;
+  const commShown = showAdj ? sol.commission : r.commission;
+
+  $("#ttcOut").textContent = showAdj ? eur0(ttcShown) : eur(ttcShown);
+  $("#htOut").textContent = showAdj ? eur0(htShown) : eur(htShown);
+  $("#commOut").textContent = eur(commShown);
+  $("#commWrap").hidden = !(r.commissionRate > 0);
+  $("#marginBadgeSlot").innerHTML = badgeFor(shownMargin, i.nextStories);
+  $("#devisTitle").textContent = i.clientNom ? "Devis — " + i.clientNom : "Devis";
+
+  const ecart = htShown - r.totalHTAvecCommission;
+  $("#ecartOut").innerHTML = showAdj
+    ? `Barème : <span class="mono">${eur(r.totalHTAvecCommission)}</span> HT · écart <b>${ecart >= 0 ? "+" : "−"}${nf0.format(Math.abs(Math.round(ecart)))} €</b>${sol.floored ? " · transport ramené à 0, marge plancher atteinte" : ""}`
+    : `Marge calculée par le barème — déplacez le curseur pour viser un autre taux.`;
+
+  const rng = $("#marginRange"), num = $("#marginNum");
+  const cur = showAdj ? marginTarget : natural;
+  rng.value = Math.min(0.45, Math.max(0.15, cur)) * 100;
+  num.value = (Math.round(cur * 1000) / 10);
+
+  const ttcField = $("#ttcTargetNum");
+  if (ttcField && document.activeElement !== ttcField) ttcField.value = Math.round(ttcShown);
+  document.querySelectorAll("#marginChips .chip").forEach(c => {
+    c.classList.toggle("active", (c.dataset.x === "baseme" && !showAdj) || (showAdj && Math.abs(parseFloat(c.dataset.x) - marginTarget) < 1e-9));
+  });
+
+  const T = showAdj ? sol.T : r.transportFinal;
+  const rows = [
+    ["Transport", T + (r.reliv ? r.reliv.transport : 0), true],
+    ["Manutention départ", r.sousTotalManutentionDepart, true],
+    ["Manutention arrivée", r.sousTotalManutentionArrivee, true],
+    ["Forfait trajet (court)", r.forfaitTrajetCD, false],
+    ["Route longue distance", r.coutRouteEquipeLD, false],
+    ["Trajet dépôt", r.forfaitDeplacementFixe, false],
+    ["Manutention garde-meuble", r.coutManutentionGardeMeuble, false],
+    ["Manutention point 2", r.coutManutentionPoint2, false],
+    ["Manutention point 3", r.coutManutentionPoint3, false],
+    ["Démontage / remontage", r.montantDemontage, false],
+    ["Mise en carton", r.prixCarton, false],
+    ["Protection fragile", r.protFragile, false],
+    ["Déchetterie", r.fDechetterie, false],
+    ["Piano", i.piano ? 300 : 0, false],
+    ["Options manuelles", i.optionsManuelles, false],
+    ["Monte-meubles", r.mmDepAmount + r.mmArrAmount, false],
+    ["Frais de déplacement", r.coutDeplacementTotal - r.mmDepAmount - r.mmArrAmount, true],
+    ["Prime dimanche", r.primeDimancheTotal, false],
+    ["Paniers repas", r.paniersRepasTotal, false],
+    ["Matériel de conditionnement", r.materielHT, false],
+    ["Livraison matériel", r.livraisonHT, false],
+    ["Autre matériel", i.coutMateriel, false],
+    ["Frais de dossier", r.fraisDossier, true],
+    ["Réservation stationnement", r.reservation, false],
+  ];
+  const htAvantComm = showAdj ? sol.htAvantComm : r.totalHTAvantCommission;
+  let html = r.reliv ? `<tr class="bloc"><td colspan="2">Devis de base</td></tr>` : "";
+  for (const [name, val, always] of rows) {
+    if (!always && Math.round(val * 100) === 0) continue;
+    html += `<tr><td>${name}</td><td class="amt">${eur(val)}</td></tr>`;
+  }
+  html += relivBloc(r.reliv);
+  if (r.commissionRate > 0) {
+    html += `<tr class="sep tot"><td>Total HT avant commission</td><td class="amt">${eur(htAvantComm)}</td></tr>`;
+    html += `<tr><td>Commission ${pctTaux(r.commissionRate)} %</td><td class="amt">${eur(commShown)}</td></tr>`;
+  }
+  html += `<tr class="sep tot"><td>Total HT</td><td class="amt">${showAdj ? eur0(htShown) : eur(htShown)}</td></tr>`;
+  html += `<tr class="grand"><td>Total TTC</td><td class="amt">${showAdj ? eur0(ttcShown) : eur(ttcShown)}</td></tr>`;
+  $("#ventBody").innerHTML = html;
+  $("#ventCap").textContent = showAdj
+    ? `Transport repositionné pour viser ${pct1(marginTarget)} de marge (méthode §6.2). Planchers arrondis à l'euro.`
+    : `Prix issu du barème. Transport de base ${eur0(r.transportBaseVolume)}${r.premium ? " · ×1,15 Premium" : ""}.`;
+
+  const matSub = $("#matSub");
+  const matTotal = r.materielTotalHT + i.coutMateriel;
+  if (matSub) matSub.innerHTML = matTotal > 0
+    ? `<span>Total matériel</span><span class="v">${eur(matTotal)} HT</span>`
+    : "";
+
+  renderStockage(i);
+  if (form.elements.relivVolume) form.elements.relivVolume.placeholder = relivVolumeDefaut(i);
+  renderTimes(r);
+  renderNotes(r, i, shownMargin);
+  lastRender = { r, i };
+  const vn = $("#varianteNom");
+  if (vn && !varianteEditee && document.activeElement !== vn) vn.value = varianteAuto();
+  majAlerteVariante();
+}
+
+/* ---------- stockage garde-meuble (indicatif, hors devis) ---------- */
+function renderStockage(i) {
+  const cfg = [
+    ["Etape", i.typeEtape, i.volEtapeDecharge, i.dureeStockEtape],
+    ["Point2", i.typePoint2, i.volPoint2Decharge, i.dureeStockPoint2],
+    ["Point3", i.typePoint3, i.volPoint3Decharge, i.dureeStockPoint3],
+  ];
+  cfg.forEach(([suffix, type, vol, jours]) => {
+    const box = $("#stock" + suffix);
+    if (!box) return;
+    const on = type === "Box / Garde-meuble";
+    box.hidden = !on;
+    if (!on) return;
+    const out = $("#stockCout" + suffix);
+    if (!out) return;
+    if (!(vol > 0)) { out.innerHTML = `Renseignez le volume déchargé (déposé en stockage) pour estimer le coût.`; return; }
+    const mensuel = coutStockageMoisHT(vol);
+    const j = Math.max(0, jours || 0);
+    const total = Math.round(mensuel * (j / 30) * 100) / 100;
+    out.innerHTML = `Volume stocké : <b>${vol} m³</b> · ≈ <b>${eur0(mensuel)} HT / mois</b> → <b>${eur0(total)} HT</b> pour ${j} j`;
+  });
+}
+
+function tl(label, val, muted) { return `<div class="tline${muted ? " muted" : ""}"><span>${label}</span><span class="v">${val}</span></div>`; }
+
+function ovInput(labelTxt, key, id, ovVal, std) {
+  const cur = ovVal != null ? Math.round(ovVal) : null;
+  const ph = Math.max(0, Math.round(std));
+  const cH = cur != null ? Math.floor(cur / 60) : "";
+  const cM = cur != null ? cur % 60 : "";
+  return `<div class="tedit"><label>${labelTxt}</label>
+    <input type="number" class="th" data-ov="${key}" data-part="h" min="0" step="1" value="${cH}" placeholder="${Math.floor(ph / 60)}"><span class="tu">h</span>
+    <input type="number" class="tm" data-ov="${key}" data-part="m" min="0" max="59" step="5" value="${cM}" placeholder="${ph % 60}"><span class="tu">min</span>
+    <button type="button" class="rst" data-rst="${key}" title="Rétablir le barème">↺</button></div>`;
+}
+/* saisie en heures + minutes ; mode "h" => le champ stocke des heures décimales, mode "min" => des minutes */
+function boundInputHM(labelTxt, field, mode, minStep) {
+  const el = form.elements[field];
+  const raw = el ? (parseFloat(String(el.value).replace(",", ".")) || 0) : 0;
+  const tot = Math.round(mode === "h" ? raw * 60 : raw);
+  const hh = Math.floor(tot / 60), mm = tot % 60;
+  return `<div class="tedit"><label>${labelTxt}</label>
+    <input type="number" class="th" data-fieldhm="${field}" data-mode="${mode}" data-part="h" min="0" step="1" value="${hh || ""}" placeholder="0"><span class="tu">h</span>
+    <input type="number" class="tm" data-fieldhm="${field}" data-mode="${mode}" data-part="m" min="0" max="59" step="${minStep || 5}" value="${mm || ""}" placeholder="0"><span class="tu">min</span></div>`;
+}
+
+/* nombre de déménageurs, éditable ; changer la valeur efface l'ajustement manuel du temps lié (ovKey) */
+function moverInput(labelTxt, field, ovKey) {
+  const el = form.elements[field];
+  return `<div class="tedit"><label>${labelTxt}</label>
+    <input type="number" class="th" data-mover="${field}" data-ovkey="${ovKey}" min="1" step="1" value="${el ? el.value : ""}"><span class="tu">pers.</span></div>`;
+}
+
+function renderTimes(r) {
+  const i = r.i;
+  const ae = document.activeElement;
+  const inBody = ae && ae.closest && ae.closest("#timesBody");
+  let aKey = null;
+  if (inBody) {
+    if (ae.dataset.ov) aKey = "ov:" + ae.dataset.ov + ":" + ae.dataset.part;
+    else if (ae.dataset.fieldhm) aKey = "fhm:" + ae.dataset.fieldhm + ":" + ae.dataset.part;
+    else if (ae.dataset.mover) aKey = "mv:" + ae.dataset.mover;
+    else if (ae.dataset.field) aKey = "field:" + ae.dataset.field;
+    else if (ae.id) aKey = ae.id;
+  }
+
+  const ovDep = overrides.chargeMin != null;
+  const ovArr = overrides.dechargeMin != null;
+  let h = "";
+
+  h += `<div class="phase"><h4>Chargement — départ ${ovDep ? '<span class="ov-tag">ajusté</span>' : ""}</h4>`;
+  h += moverInput("Déménageurs au chargement", "nbDepart", "chargeMin");
+  h += ovInput("Temps équipe départ", "chargeMin", "ovCharge", overrides.chargeMin, r.chargeStd);
+  if (ovDep) h += tl("Temps barème (avant ajustement)", min0(r.chargeStd), true);
+  h += tl("Temps facturé", min0(r.minFactDep), false);
+  h += tl("Sous-total manutention", eur(r.sousTotalManutentionDepart), false);
+  h += `</div>`;
+
+  h += `<div class="phase"><h4>Déchargement — arrivée ${ovArr ? '<span class="ov-tag">ajusté</span>' : ""}</h4>`;
+  h += moverInput("Déménageurs au déchargement", "nbArrivee", "dechargeMin");
+  h += ovInput("Temps équipe arrivée", "dechargeMin", "ovDecharge", overrides.dechargeMin, r.dechargeStd);
+  if (ovArr) h += tl("Temps barème (avant ajustement)", min0(r.dechargeStd), true);
+  h += tl("Temps facturé", min0(r.minFactArr), false);
+  h += tl("Sous-total manutention", eur(r.sousTotalManutentionArrivee), false);
+  h += `</div>`;
+
+  const lieu = (actif, titre, key, id, ovVal, std, hFact, cout) => {
+    if (!actif) return "";
+    let s = `<div class="phase"><h4>${titre} ${ovVal != null ? '<span class="ov-tag">ajusté</span>' : ""}</h4>`;
+    s += ovInput("Temps sur place", key, id, ovVal, std);
+    s += tl("Temps facturé", hFact.toLocaleString("fr-FR") + " h", false);
+    s += tl("Coût manutention", eur(cout), false);
+    s += `</div>`;
+    return s;
+  };
+  h += lieu(r.etapeActif, "Étape / garde-meuble", "tempsEtapeTotal", "ovEtape", overrides.tempsEtapeTotal, r.tempsEtapeTotalStd, r.hFactEtape, r.coutManutentionGardeMeuble);
+  h += lieu(r.point2Actif, "Point 2", "tempsPoint2Total", "ovPoint2", overrides.tempsPoint2Total, r.tempsPoint2TotalStd, r.hFactPoint2, r.coutManutentionPoint2);
+  h += lieu(r.point3Actif, "Point 3", "tempsPoint3Total", "ovPoint3", overrides.tempsPoint3Total, r.tempsPoint3TotalStd, r.hFactPoint3, r.coutManutentionPoint3);
+
+  const ld = i.heuresRouteAR > 2;
+  h += `<div class="phase"><h4>Trajet (route)</h4>`;
+  h += boundInputHM("Heures de route (A/R)", "heuresRouteAR", "h", 5);
+  h += tl("Bascule", ld ? "longue distance (> 2 h)" : "court trajet (≤ 2 h)", true);
+  h += tl(ld ? "Coût route équipe" : "Forfait trajet", eur(ld ? r.coutRouteEquipeLD : r.forfaitTrajetCD), false);
+  if (r.hotelHT) h += tl("Hôtel (> 10 h A/R)", eur(r.hotelHT), true);
+  h += `</div>`;
+
+  const optMin = (i.cartonH + i.demontageH + i.fragileH) * 60;
+  const optCout = r.montantDemontage + r.prixCarton + r.protFragile;
+  h += `<div class="phase"><h4>Options (temps)</h4>`;
+  h += boundInputHM("Mise en carton", "cartonH", "h", 5);
+  h += boundInputHM("Démontage / remontage", "demontageH", "h", 5);
+  h += boundInputHM("Protection fragile", "fragileH", "h", 5);
+  h += tl("Temps options total", min0(optMin), true);
+  h += tl("Coût options (temps)", eur(optCout), false);
+  h += `</div>`;
+
+  if (r.reliv) {
+    const R = r.reliv, rr = R.r;
+    const ovC = overrides.relivChargeMin != null, ovD = overrides.relivDechargeMin != null;
+    h += `<div class="phase"><h4>Relivraison — ${R.volume} m³ ${ovC || ovD ? '<span class="ov-tag">ajusté</span>' : ""}</h4>`;
+    h += moverInput("Déménageurs au chargement", "relivNbDepart", "relivChargeMin");
+    h += ovInput("Temps équipe chargement", "relivChargeMin", "ovRelivCharge", overrides.relivChargeMin, rr.chargeStd);
+    h += tl("Manutention chargement", eur(R.manutDepart), false);
+    h += moverInput("Déménageurs au déchargement", "relivNbArrivee", "relivDechargeMin");
+    h += ovInput("Temps équipe déchargement", "relivDechargeMin", "ovRelivDecharge", overrides.relivDechargeMin, rr.dechargeStd);
+    h += tl("Manutention déchargement", eur(R.manutArrivee), false);
+    h += boundInputHM("Heures de route (A/R)", "relivHeuresRouteAR", "h", 5);
+    h += tl(rr.i.heuresRouteAR > 2 ? "Coût route équipe" : "Forfait trajet", eur(rr.i.heuresRouteAR > 2 ? R.routeLD : R.forfaitTrajet), false);
+    h += tl("Durée de la journée (cumul)", hm(relivMissionMin(R)), true);
+    h += tl("Paniers repas (seuil 6 h)", rr.nbPaniers ? rr.nbPaniers + " × 16 €" : "aucun", true);
+    h += tl("Total relivraison", eur(R.total), false);
+    h += `</div>`;
+  }
+
+  const manuMin = r.chargeMin + r.dechargeMin;
+  const missionMin = manuMin + i.heuresRouteAR * 60 + optMin + r.tempsEtapeTotal + r.tempsPoint2Total + r.tempsPoint3Total;
+  const moversTxt = moversLabel(i.nbDepart, i.nbArrivee);
+  h += `<div class="times-total"><span>Manutention (chargement + déchargement)</span><b class="mono">${hm(manuMin)}</b></div>`;
+  h += `<div class="times-total" style="border-top:0;padding-top:2px"><span>Équipe sur la manutention</span><b class="mono">${moversTxt}</b></div>`;
+  h += `<div class="times-total"><span>Durée de mission estimée (cumul toutes phases)</span><b class="mono">${hm(missionMin)}</b></div>`;
+  h += `<div class="times-total" style="border-top:0;padding-top:2px"><span>Paniers repas (seuil 6 h)</span><b class="mono">${r.nbPaniers ? r.nbPaniers + " × 16 €" : "aucun"}</b></div>`;
+  if (r.primeDimancheTotal > 0) h += `<div class="times-total" style="border-top:0;padding-top:2px"><span>Prime de dimanche</span><b class="mono">${r.effectifChantier} × 37,50 €</b></div>`;
+  h += `<p style="font-size:11.5px;color:var(--ink-faint);margin:8px 0 0">Estimation indicative. Ajustez le nombre de déménageurs ou un temps pour coller à la réalité terrain — le devis et la marge se recalculent. Changer le nombre de déménageurs relance le calcul du temps de manutention par la formule ; un temps saisi ensuite à la main est conservé jusqu'au prochain changement d'effectif. Le cumul additionne route (A/R), manutention et options ; sur le terrain les options se font pendant le chargement.</p>`;
+
+  $("#timesBody").innerHTML = h;
+  bindTimeInputs();
+
+  if (aKey) {
+    let el = null;
+    if (aKey.indexOf("ov:") === 0) {
+      const p = aKey.split(":");
+      el = document.querySelector('#timesBody input[data-ov="' + p[1] + '"][data-part="' + p[2] + '"]');
+    } else if (aKey.indexOf("fhm:") === 0) {
+      const p = aKey.split(":");
+      el = document.querySelector('#timesBody input[data-fieldhm="' + p[1] + '"][data-part="' + p[2] + '"]');
+    } else if (aKey.indexOf("mv:") === 0) {
+      el = document.querySelector('#timesBody input[data-mover="' + aKey.slice(3) + '"]');
+    } else if (aKey.indexOf("field:") === 0) {
+      el = document.querySelector('#timesBody [data-field="' + aKey.slice(6) + '"]');
+    } else {
+      el = document.getElementById(aKey);
+    }
+    if (el) { const v = el.value; el.focus(); try { el.value = ""; el.value = v; } catch (e) {} }
+  }
+}
+
+function bindTimeInputs() {
+  document.querySelectorAll("#timesBody input[data-ov]").forEach(el => {
+    el.addEventListener("input", () => {
+      const key = el.dataset.ov;
+      const hEl = document.querySelector('#timesBody input[data-ov="' + key + '"][data-part="h"]');
+      const mEl = document.querySelector('#timesBody input[data-ov="' + key + '"][data-part="m"]');
+      const hv = hEl.value.trim(), mv = mEl.value.trim();
+      if (hv === "" && mv === "") overrides[key] = null;
+      else overrides[key] = Math.max(0, (parseFloat(hv.replace(",", ".")) || 0) * 60 + (parseFloat(mv.replace(",", ".")) || 0));
+      render();
+    });
+  });
+  document.querySelectorAll("#timesBody input[data-field]").forEach(el => {
+    el.addEventListener("input", () => {
+      const f = form.elements[el.dataset.field];
+      if (f) f.value = el.value;
+      render();
+    });
+  });
+  document.querySelectorAll("#timesBody input[data-fieldhm]").forEach(el => {
+    el.addEventListener("input", () => {
+      const field = el.dataset.fieldhm, mode = el.dataset.mode;
+      const hEl = document.querySelector('#timesBody input[data-fieldhm="' + field + '"][data-part="h"]');
+      const mEl = document.querySelector('#timesBody input[data-fieldhm="' + field + '"][data-part="m"]');
+      const totMin = (parseFloat(String(hEl.value).replace(",", ".")) || 0) * 60 + (parseFloat(String(mEl.value).replace(",", ".")) || 0);
+      const f = form.elements[field];
+      if (f) f.value = mode === "h" ? (Math.round((totMin / 60) * 1e4) / 1e4) : Math.round(totMin);
+      render();
+    });
+  });
+  document.querySelectorAll("#timesBody input[data-mover]").forEach(el => {
+    el.addEventListener("input", () => {
+      const f = form.elements[el.dataset.mover];
+      if (f) f.value = el.value;
+      const k = el.dataset.ovkey;
+      if (k && k in overrides) overrides[k] = null;   // effectif changé => temps recalculé par la formule
+      render();
+    });
+  });
+  document.querySelectorAll("#timesBody .rst").forEach(b => {
+    b.addEventListener("click", () => { overrides[b.dataset.rst] = null; render(); });
+  });
+}
+
+function renderNotes(r, i, shownMargin) {
+  const n = [];
+  const ld = i.heuresRouteAR > 2 || i.trajetAR2h;
+  const volHorsCritere = i.volume > 30 && ld;
+  const ns = !!i.nextStories;
+  const margeOk = margeAtteint(shownMargin, cibleMarge(ns));
+  if (margeOk && !volHorsCritere) {
+    n.push(["good", "<b>Affaire validée</b> — marge et volume dans les critères, envoi possible sans validation manuelle."]);
+  } else {
+    const rs = [];
+    if (!margeOk) rs.push("marge " + pct1(shownMargin) + " sous la cible de " + pct1(cibleMarge(ns)));
+    if (volHorsCritere) rs.push("volume > 30 m³ hors Bordeaux");
+    n.push(["warn", "<b>Validation requise</b> avant envoi — " + rs.join(" · ") + "."]);
+  }
+  if (ns) n.push(["", `<b>Devis Next Stories</b> — marge ramenée automatiquement à ${pct1(MARGE_NS)} une fois tous les autres calculs faits : le transport est repositionné, le reste du barème ne bouge pas. Sur ces dossiers, 21 % vaut cible. Le curseur reste libre si l'affaire demande autre chose. Frais de dossier à 34 €.`]);
+  const pd = i.portageDepart, pa = i.portageArrivee;
+  if (!i.groupage && ((pd > 10 && pd < 30) || (pa > 10 && pa < 30)))
+    n.push(["", `Portage ${pd > 10 && pd < 30 ? "départ " + pd + " m" : ""}${(pd > 10 && pd < 30 && pa > 10 && pa < 30) ? " / " : ""}${pa > 10 && pa < 30 ? "arrivée " + pa + " m" : ""} : le barème actuel n'ajoute aucune minute en dessous de 30 m (seuil effectif). Ajustez le temps équipe si besoin.`]);
+  if (i.groupage) n.push(["", "Groupage : transport = volume × 50 € HT (minimum 150 / 200 / 250 € jusqu'à 1 / 3 / 5 m³), plancher manutention 120 min aux deux phases, ni route LD ni hôtel. Branche non validée sur devis réel."]);
+  if (r.premium) n.push(["", "Premium : transport ×1,15, options ×1,25, proxy de marge à 0,25. Branche non validée sur devis réel."]);
+  if (r.overrideEffectif) n.push(["warn", "Effectif départ forcé à 4 (volume > 35, étage, ascenseur, durée > 10 h) — à vérifier."]);
+  if (i.nbCamionsLoc > 0 && !i.groupage) {
+    if (i.kmAR > 0) n.push(["", `Location : ${eur(i.camionLocHT)} HT de location + carburant ${eur(r.carburantLocHT)} HT (${i.nbCamionsLoc} camion(s) × ${i.kmAR} km A/R × 0,40 € HT/km), dans les frais de déplacement. Pas de 0,60 € HT/km sur un camion loué : ni usure ni entretien à notre charge.`]);
+    else n.push(["warn", "Camion de location sans kilométrage A/R : le carburant (0,40 € HT/km) n'est pas compté. Renseigner les km."]);
+  }
+  if (r.mmDepOn || r.mmArrOn) n.push(["", "Monte-meubles : 300 € HT (2 h) ou 360 € HT (½ journée) par côté, temps de phase ×0,75, ajustement étages neutralisé. Tarif hors barème Notion — à valider."]);
+  if (r.point3Actif) n.push(["", "Point 3 : extension hors barème Notion, même logique que le point 2. À valider sur cas réel."]);
+  if (r.primeDimancheTotal > 0) n.push(["", `Prime de dimanche : <b>${r.effectifChantier} × 37,50 € HT</b> = ${eur(r.primeDimancheTotal)} (coût 30 € par salarié, margé à 25 %).${i.weekend ? "" : " Le supplément week-end (+10 % transport) n'est pas coché — à vérifier."}`]);
+  if (r.nbPaniers > 0) n.push(["", `Paniers repas : chantier estimé <b>${hm(r.dureeChantierMin)}</b>${r.paniersAuto ? " (> 6 h)" : " — forcés manuellement"} → ${r.nbPaniers} × 16 € HT = ${eur(r.paniersRepasTotal)}.`]);
+  else if (r.paniersAuto) n.push(["warn", `Chantier estimé <b>${hm(r.dureeChantierMin)}</b> (> 6 h) mais paniers repas désactivés.`]);
+  const sousPlancher = [];
+  if (i.tauxDepartSaisi > 0 && i.tauxDepartSaisi < TAUX_MIN) sousPlancher.push("chargement " + i.tauxDepartSaisi + " €/h");
+  if (i.tauxArriveeSaisi > 0 && i.tauxArriveeSaisi < TAUX_MIN) sousPlancher.push("déchargement " + i.tauxArriveeSaisi + " €/h");
+  if (sousPlancher.length) n.push(["warn", `Taux horaire sous le plancher (${sousPlancher.join(" · ")}) — <b>calculé à ${TAUX_MIN} €/h</b>. Le plancher s'applique aussi aux étapes, points 2/3, options et forfaits de trajet.`]);
+  if (r.reliv) {
+    const R = r.reliv;
+    n.push(["", `<b>Relivraison</b> — ${R.volume} m³, ${moversLabel(R.i.nbDepart, R.i.nbArrivee)}, journée estimée ${hm(relivMissionMin(R))} : <b>${eur(R.total)} HT</b> ajoutés au devis (transport, manutention, trajet, déplacement${R.paniers ? ", paniers repas" : ""}). Frais de dossier, options et matériel comptés une seule fois.`]);
+    if (!(i.relivHeuresRouteAR > 0) || !(i.relivKmAR > 0))
+      n.push(["warn", "Relivraison sans " + [!(i.relivHeuresRouteAR > 0) ? "heures de route (0,5 h par défaut)" : "", !(i.relivKmAR > 0) ? "kilométrage (20 € HT par camion par défaut)" : ""].filter(Boolean).join(" ni ") + " — renseigner le trajet du jour de relivraison."]);
+  }
+  n.push(["", i.groupage
+    ? `Forfait déplacement groupage : <b>${FORFAIT_DEPL_GROUPAGE} €</b> + 20 € par camion.`
+    : `Forfait déplacement : <b>${r.forfaitJour} €</b> HT, forfait unique hors groupage.`]);
+
+  $("#notesOut").innerHTML = n.map(([c, t]) => `<div class="note${c ? " " + c : ""}">${t}</div>`).join("");
+}
+
+/* ---------- récap & export ---------- */
+let lastRender = null;
+
+function recapData() {
+  const { r, i } = lastRender;
+  const showAdj = marginTarget != null;
+  const sol = showAdj ? solveMargin(r, marginTarget) : null;
+  const T = showAdj ? sol.T : r.transportFinal;
+  const postes = [];
+  const P = (k, v, force) => { if (force || Math.round(v * 100) !== 0) postes.push([k, v]); };
+  P("Transport", T + (r.reliv ? r.reliv.transport : 0), true);
+  P("Manutention départ", r.sousTotalManutentionDepart + r.primeDimancheTotal + r.paniersRepasTotal, true);   // prime de dimanche et paniers repas fondus dans la manutention (récap texte, Karim 22/10/2026)
+  P("Manutention arrivée", r.sousTotalManutentionArrivee, true);
+  P("Forfait trajet", r.forfaitTrajetCD);
+  P("Route longue distance", r.coutRouteEquipeLD);
+  P("Trajet dépôt", r.forfaitDeplacementFixe, true);
+  P("Manutention garde-meuble", r.coutManutentionGardeMeuble);
+  P("Manutention point 2", r.coutManutentionPoint2);
+  P("Manutention point 3", r.coutManutentionPoint3);
+  P("Démontage / remontage", r.montantDemontage);
+  P("Mise en carton", r.prixCarton);
+  P("Protection fragile", r.protFragile);
+  P("Déchetterie", r.fDechetterie);
+  P("Piano", i.piano ? 300 : 0);
+  P("Options manuelles", i.optionsManuelles);
+  P("Monte-meubles", r.mmDepAmount + r.mmArrAmount);
+  P("Frais de déplacement", r.coutDeplacementTotal - r.mmDepAmount - r.mmArrAmount, true);
+  P("Matériel de conditionnement", r.materielHT);
+  P("Livraison matériel", r.livraisonHT);
+  P("Autre matériel", i.coutMateriel);
+  P("Frais de dossier", r.fraisDossier, true);
+  P("Réservation stationnement", r.reservation);
+  relivLignes(r.reliv, true).forEach(([k, v]) => P(k, v));
+  P("Commission " + pctTaux(r.commissionRate) + " %", showAdj ? sol.commission : r.commission);
+  const ht = showAdj ? sol.ht : r.totalHTAvecCommission;
+  const ttc = showAdj ? sol.ttc : r.totalTTC;
+  const marge = showAdj ? sol.margeP : r.margePct;
+  const chargeMin = r.chargeMin, dechargeMin = r.dechargeMin;
+  const manuMin = chargeMin + dechargeMin;                                 // temps équipe (non multiplié)
+  const routeMin = i.heuresRouteAR * 60;
+  const optMin = (i.cartonH + i.demontageH + i.fragileH) * 60;
+  // « Temps de mission estimé » du récap = durée vécue par un intervenant (temps équipe, non multiplié par l'effectif) : manutention + trajet + options + étape/points
+  const missionMin = manuMin + routeMin + optMin + r.tempsEtapeTotal + r.tempsPoint2Total + r.tempsPoint3Total;
+  const ovAny = Object.values(overrides).some(v => v != null);
+  const ovDep = overrides.chargeMin != null, ovArr = overrides.dechargeMin != null;
+  const ldR = i.heuresRouteAR > 2 || i.trajetAR2h;
+  const statut = (margeAtteint(marge, cibleMarge(i.nextStories)) && !(i.volume > 30 && ldR))
+    ? "Affaire validée — dans les critères"
+    : "Validation requise avant envoi";
+  const reliv = r.reliv ? {
+    volume: r.reliv.volume, nbDepart: r.reliv.i.nbDepart, nbArrivee: r.reliv.i.nbArrivee,
+    chargeMin: r.reliv.r.chargeMin, dechargeMin: r.reliv.r.dechargeMin, routeMin: r.reliv.i.heuresRouteAR * 60,
+    missionMin: relivMissionMin(r.reliv), total: r.reliv.total,
+    ovDep: overrides.relivChargeMin != null, ovArr: overrides.relivDechargeMin != null,
+  } : null;
+  return { i, postes, ht, ttc, marge, chargeMin, dechargeMin, manuMin, routeMin, optMin, missionMin, ovAny, ovDep, ovArr, statut, reliv };
+}
+
+function buildRecap() {
+  const d = recapData();
+  const L = [];
+  L.push("DEVIS SAM'DÉMÉNAGE");
+  L.push("Client  : " + (d.i.clientNom || "—"));
+  L.push("Date    : " + new Date().toLocaleDateString("fr-FR"));
+  L.push("Mission : " + d.i.volume + " m³ · " + d.i.formule + (d.i.groupage ? " · groupage" : "") + (d.i.nextStories ? " · Next Stories" : ""));
+  L.push("Équipe  : " + moversLabel(d.i.nbDepart, d.i.nbArrivee));
+  if (d.reliv) L.push("Relivr. : " + d.reliv.volume + " m³ · " + moversLabel(d.reliv.nbDepart, d.reliv.nbArrivee) + " · autre jour");
+  const w = Math.max(30, ...d.postes.map(([k]) => (k.indexOf(RELIV) === 0 ? relivLib(k).length + 2 : k.length) + 1));
+  L.push("".padEnd(w + 12, "-"));
+  d.postes.filter(([k]) => k.indexOf(RELIV) !== 0).forEach(([k, v]) => L.push(k.padEnd(w) + eur(v).padStart(12)));
+  const pr = d.postes.filter(([k]) => k.indexOf(RELIV) === 0);
+  if (pr.length) {
+    L.push("-- Relivraison, autre jour (transport inclus ci-dessus) ".padEnd(w + 12, "-"));
+    pr.forEach(([k, v]) => L.push(("  " + relivLib(k)).padEnd(w) + eur(v).padStart(12)));
+  }
+  L.push("".padEnd(w + 12, "-"));
+  L.push("Total HT".padEnd(w) + eur(d.ht).padStart(12));
+  L.push("Total TTC".padEnd(w) + eur(d.ttc).padStart(12));
+  L.push("Marge proxy".padEnd(w) + pct1(d.marge).padStart(12));
+  L.push("");
+  recapTimesLines(d).forEach(l => L.push(l));
+  const mat = materielListe(d.i);
+  if (mat.length) { L.push(""); L.push("Matériel fourni : " + mat.join(", ")); }
+  L.push("");
+  L.push("Statut : " + d.statut.toUpperCase());
+  L.push("");
+  L.push("Calcul indicatif — barème 31/08/2026 + ajustements locaux. Notion = source de vérité.");
+  return L.join("\n");
+}
+
+/* ---------- export JSON (contrat samdem.devis.export/1) ----------
+   Chaque poste du récap est rangé dans UN champ de la fiche Notion, et un seul :
+   la somme des champs est donc exactement le total HT (contrôle repris par le script).
+   Règle 2 : la commission est fondue dans Transport. Règles 7 et 9 : monte-meubles et
+   piano sortent du déplacement / des options pour alimenter « Autres frais HT ». */
+const CHAMP_FICHE = {
+  "Transport": "transport",
+  "Manutention départ": "manut",
+  "Manutention arrivée": "manut",
+  "Manutention garde-meuble": "manut",
+  "Manutention point 2": "manut",
+  "Manutention point 3": "manut",
+  "Forfait trajet": "manut",            // heures d'équipe -> Manut (Karim, 06/10/2026)
+  "Route longue distance": "deplacement",
+  "Trajet dépôt": "manut",
+  "Retour chef d'équipe": "manut",
+  "Frais de déplacement": "deplacement",
+  "Réservation stationnement": "deplacement",
+  "Démontage / remontage": "formule",
+  "Mise en carton": "formule",
+  "Protection fragile": "formule",
+  "Déchetterie": "formule",
+  "Options manuelles": "formule",
+  "Piano": "piano",
+  "Monte-meubles": "monte_charge",
+  "Matériel de conditionnement": "materiel",
+  "Livraison matériel": "materiel",
+  "Autre matériel": "materiel",
+  "Frais de dossier": "dossier",
+  [RELIV + "manutention chargement"]: "manut",
+  [RELIV + "manutention déchargement"]: "manut",
+  [RELIV + "forfait trajet"]: "manut",
+  [RELIV + "route longue distance"]: "deplacement",
+  [RELIV + "trajet dépôt"]: "manut",
+  [RELIV + "retour chef d'équipe"]: "manut",
+  [RELIV + "monte-meubles"]: "monte_charge",
+  [RELIV + "frais de déplacement"]: "deplacement",
+  [RELIV + "réservation stationnement"]: "deplacement",
+};
+function champDe(libelle) {
+  if (libelle.indexOf("Commission") === 0) return "transport";   // règle 2
+  return CHAMP_FICHE[libelle] || null;
+}
+
+/* Nom de la variante : ce qui distingue CE devis des autres du même client. La formule
+   d'abord, puis les options qui changent le prix de façon visible. Karim peut le réécrire —
+   c'est ce libellé qui titre le bloc sur la fiche Notion. */
+function varianteAuto() {
+  const { i } = lastRender;
+  const bouts = [i.formule || "Standard"];
+  if (i.piano) bouts.push("piano");
+  if (i.mmDepart || i.mmArrivee) bouts.push("monte-meubles");
+  if (i.typeEtape || i.typePoint2 || i.typePoint3) bouts.push("étape");
+  if (i.groupage) bouts.push("groupage");
+  if (i.relivActif) bouts.push("relivraison");
+  return bouts.length > 1 ? bouts[0] + " + " + bouts.slice(1).join(" + ") : bouts[0];
+}
+let varianteEditee = false;
+$("#varianteNom").addEventListener("input", () => { varianteEditee = true; majAlerteVariante(); });
+
+/* Garde-fou des doublons (Karim, 11/09/2026). Deux exports sous le même nom de variante se
+   remplacent : même bloc sur la fiche Notion, même ligne du Google Sheet. Les noms déjà pris
+   viennent de trois sources : le journal de finalisation injecté par pipeline.py
+   (PREFILL.variantes_existantes), les exports faits depuis ce navigateur pour cette fiche
+   (localStorage) et ceux de cette page. Un doublon bloque l'export tant que le nom n'a pas
+   changé, sauf remplacement demandé explicitement. `var` : render() peut passer ici avant
+   que le script n'ait atteint ces lignes. */
+var variantesPrefill = [];
+var remplacementAccepte = null;
+function normeVariante(s) {
+  return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase().replace(/\s+/g, " ").trim();
+}
+function cleVariantes() {
+  const idFiche = dossierFiche && dossierFiche.page_id;
+  const client = form.elements.clientNom ? form.elements.clientNom.value : "";
+  return "sd-variantes:" + (idFiche || "client:" + normeVariante(client));
+}
+function variantesLocales() {
+  try { return JSON.parse(localStorage.getItem(cleVariantes()) || "[]"); } catch (e) { return []; }
+}
+// Noms exportés depuis CETTE page, par fiche : tient même quand le stockage du navigateur est
+// bloqué (navigation privée, aperçu), où variantesLocales() rend toujours une liste vide.
+var variantesSession = {};
+function variantesPrises() {
+  return variantesPrefill.concat(variantesSession[cleVariantes()] || [], variantesLocales());
+}
+function retenirVariante(nom) {
+  const k = cleVariantes();
+  (variantesSession[k] = variantesSession[k] || []).push(nom);
+  try {
+    const l = variantesLocales();
+    if (!l.some(v => normeVariante(v) === normeVariante(nom))) {
+      l.push(nom);
+      localStorage.setItem(cleVariantes(), JSON.stringify(l));
+    }
+  } catch (e) {}
+}
+function nomVarianteCourant() {
+  return ($("#varianteNom").value || "").trim() || varianteAuto();
+}
+/* Affiche l'alerte si le nom courant est déjà pris ; rend true quand l'export doit être bloqué. */
+function majAlerteVariante() {
+  const box = $("#varianteAlerte");
+  try {
+    const nom = nomVarianteCourant();
+    const n = normeVariante(nom);
+    const pris = !!n && variantesPrises().some(v => normeVariante(v) === n);
+    const bloque = pris && normeVariante(remplacementAccepte) !== n;
+    if (!box) return bloque;
+    box.hidden = !bloque;
+    box.textContent = "";
+    if (bloque) {
+      const titre = document.createElement("strong");
+      titre.textContent = "⚠ Attention, variante avec le même nom. ";
+      const texte = document.createTextNode("« " + nom + " » a déjà été exportée pour ce client : "
+        + "l'exporter à nouveau remplacerait la précédente (même bloc sur la fiche, même ligne du "
+        + "Sheet). Renommez la variante ci-dessus pour en créer une nouvelle.");
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "btn ghost";
+      b.style.marginTop = "7px";
+      b.textContent = "Remplacer quand même « " + nom + " »";
+      b.addEventListener("click", () => {
+        remplacementAccepte = nom;
+        majAlerteVariante();
+        toast("Remplacement accepté — exportez à nouveau");
+      });
+      box.appendChild(titre);
+      box.appendChild(texte);
+      box.appendChild(document.createElement("br"));
+      box.appendChild(b);
+    }
+    return bloque;
+  } catch (e) {
+    if (box) box.hidden = true;
+    return false;
+  }
+}
+
+function buildExport(prevenir) {
+  const d = recapData();
+  const { r, i } = lastRender;
+  const b = { transport: 0, manut: 0, formule: 0, deplacement: 0, materiel: 0, dossier: 0, monte_charge: 0, piano: 0 };
+  const inconnus = [];
+  d.postes.forEach(([k, v]) => { const c = champDe(k); if (c) b[c] += v; else inconnus.push(k); });
+  // Location de camion : comptée dans Manut sur la fiche, pas dans Déplacement (Karim, 26/10/2026).
+  const locationCamion = d.i.camionLocHT || 0;
+  b.deplacement -= locationCamion;
+  b.manut += locationCamion;
+  const r2 = x => Math.round(x * 100) / 100;
+  const autres = r2(b.monte_charge + b.piano);
+  const somme = r2(b.transport + b.manut + b.formule + b.deplacement + b.materiel + b.dossier + autres);
+  return {
+    schema: "samdem.devis.export/1",
+    genere_le: new Date().toISOString(),
+    source: "calculateur-devis (artefact en ligne)",
+    client: d.i.clientNom || null,
+    mission: {
+      volume: d.i.volume, formule: d.i.formule, date_creation: d.i.dateCreation,
+      groupage: !!d.i.groupage, next_stories: !!d.i.nextStories,
+      weekend: !!d.i.weekend, dimanche: !!d.i.dimanche,
+    },
+    equipe: { intervenants_chargement: d.i.nbDepart, intervenants_dechargement: d.i.nbArrivee },
+    relivraison: d.reliv ? {
+      volume: d.reliv.volume, montant_ht: r2(d.reliv.total),
+      intervenants_chargement: d.reliv.nbDepart, intervenants_dechargement: d.reliv.nbArrivee,
+      lieu_depart: r.reliv.i.tlDepart, etage_depart: r.reliv.i.etageDepart,
+      lieu_arrivee: r.reliv.i.tlArrivee, etage_arrivee: r.reliv.i.etageArrivee,
+      ascenseur_arrivee: !!(r.reliv.i.ascArrivee || r.reliv.i.ascArriveePetit), portage_arrivee: r.reliv.i.portageArrivee,
+      km_ar: r.reliv.i.kmAR, heures_route_ar: r.reliv.i.heuresRouteAR,
+      paniers_repas_ht: r2(r.reliv.paniers),
+    } : null,
+    postes: d.postes.map(([k, v]) => ({ libelle: k, montant: r2(v), champ: champDe(k) })),
+    champs_fiche: {
+      transport_ht: r2(b.transport), manut_ht: r2(b.manut), formule_ht: r2(b.formule),
+      deplacement_ht: r2(b.deplacement), materiel_ht: r2(b.materiel), dossier_ht: r2(b.dossier),
+      autres_frais_ht: autres, monte_charge_ht: r2(b.monte_charge), piano_ht: r2(b.piano),
+      divers_ht: 0, divers: [],
+      paniers_repas_ht: r2(r.paniersRepasTotal + (r.reliv ? r.reliv.paniers : 0)),
+      paniers_dans: "manut",   // depuis le 22/10/2026 ; avant : fondus dans transport_ht
+      location_camion_ht: r2(locationCamion), location_dans: "manut",   // depuis le 26/10/2026 ; avant : dans deplacement_ht
+      // le TTC de la fiche est toujours le HT arrondi x 1,2 : le controle arithmetique
+      // du script (HT x 1,2 = TTC) doit tomber juste a l'euro pres.
+      total_ht: Math.round(d.ht), total_ttc: Math.round(Math.round(d.ht) * 1.2),
+    },
+    marge: {
+      pct: d.marge, euro: r2(d.marge * d.ht), fixe_hors_transport: r2(r.margeFixeHorsTransport),
+      cible: cibleMarge(d.i.nextStories),
+      ajuste_sur_ttc: marginTarget != null ? Math.round(d.ttc) : null,
+    },
+    commission: {
+      taux: r.commissionRate,
+      montant: r2((d.postes.find(p => p[0].indexOf("Commission") === 0) || [null, 0])[1]),
+      base_hors_transport: r2(r.baseCommission - r.transportFinal),
+      ht_avant_commission_hors_transport: r2(r.totalHTAvantCommission - r.transportFinal),
+    },
+    temps_min: {
+      chargement: Math.round(d.chargeMin), dechargement: Math.round(d.dechargeMin),
+      route: Math.round(d.routeMin), options: Math.round(d.optMin),
+      etapes: Math.round(r.tempsEtapeTotal + r.tempsPoint2Total + r.tempsPoint3Total),
+      mission: Math.round(d.missionMin),
+      relivraison: d.reliv ? {
+        chargement: Math.round(d.reliv.chargeMin), dechargement: Math.round(d.reliv.dechargeMin),
+        route: Math.round(d.reliv.routeMin), mission: Math.round(d.reliv.missionMin),
+      } : null,
+    },
+    temps_ajustes_a_la_main: { chargement: d.ovDep, dechargement: d.ovArr,
+      relivraison_chargement: !!(d.reliv && d.reliv.ovDep), relivraison_dechargement: !!(d.reliv && d.reliv.ovArr) },
+    controle: { somme_champs: somme, ecart_total_ht: r2(somme - Math.round(d.ht)), postes_non_classes: inconnus },
+    statut: d.statut,
+    variante: ($("#varianteNom").value || "").trim() || varianteAuto(),
+    // false = « autre variante à suivre » : la fiche s'écrit, l'équipe n'est pas prévenue.
+    prevenir: prevenir !== false,
+    fiche: dossierFiche,          // page Notion a remplir — posee par « Charger un dossier »
+    ex: readEx(),
+  };
+}
+
+/* Fiche Notion d'origine, transportee par le pre-remplissage et rendue par l'export.
+   Conservee en sessionStorage : propre a CET onglet, ce qui permet d'ouvrir plusieurs
+   dossiers en parallele sans qu'ils se marchent dessus, et de survivre a un rechargement. */
+let dossierFiche = null;
+try { dossierFiche = JSON.parse(sessionStorage.getItem("sd-fiche") || "null"); } catch (e) {}
+function setDossierFiche(f) {
+  dossierFiche = f && f.page_id ? f : null;
+  try {
+    if (dossierFiche) sessionStorage.setItem("sd-fiche", JSON.stringify(dossierFiche));
+    else sessionStorage.removeItem("sd-fiche");
+  } catch (e) {}
+}
+
+/* Renvoie l'état du formulaire au format EX — de quoi recharger ce devis plus tard. */
+function readEx() {
+  const o = {};
+  Object.keys(EX).forEach(k => { const el = form.elements[k]; if (el) o[k] = el.type === "checkbox" ? el.checked : el.value; });
+  MATERIEL.forEach(m => {
+    const c = form.elements["mat_" + m.key], q = form.elements["qte_" + m.key];
+    if (c && c.checked) { o["mat_" + m.key] = true; o["qte_" + m.key] = q ? q.value : 1; }
+  });
+  return o;
+}
+
+/* Pré-remplissage : accepte {ex:{…}} (pipeline.py --prefill) ou l'objet EX seul. */
+function chargerDossier(txt) {
+  let o;
+  try { o = JSON.parse(String(txt || "").trim()); } catch (e) { toast("JSON illisible"); return; }
+  const ex = (o && o.ex) || o;
+  if (!ex || typeof ex !== "object" || ex.volume === undefined) { toast("JSON non reconnu — attendu un pré-remplissage"); return; }
+  MATERIEL.forEach(m => {
+    if (form.elements["mat_" + m.key]) form.elements["mat_" + m.key].checked = false;
+    if (form.elements["qte_" + m.key]) form.elements["qte_" + m.key].value = 1;
+  });
+  if (form.elements.matLivraison) form.elements.matLivraison.checked = false;
+  fill(BLANK);
+  fill(ex);
+  setDossierFiche(o.fiche);
+  variantesPrefill = Array.isArray(o.variantes_existantes) ? o.variantes_existantes : [];
+  remplacementAccepte = null;
+  if (o.variante) { $("#varianteNom").value = o.variante; varianteEditee = true; }
+  overrides = emptyOverrides();
+  syncMargeNS();
+  syncDerived();
+  syncMatDisabled();
+  const ban = o.banniere || (ex.clientNom ? "Dossier chargé — " + ex.clientNom + ", " + ex.volume + " m³." : null);
+  if (ban) { $("#exBanner").style.display = ""; $("#exBanner").querySelector("span").textContent = ban; }
+  $("#loadBox").hidden = true;
+  render();
+  toast("Dossier chargé ✓");
+}
+
+function copierTexte(txt, ok) {
+  const ta = $("#recapText");
+  ta.value = txt;
+  ta.hidden = false;
+  let legacyOk = false;
+  try {
+    ta.focus(); ta.setSelectionRange(0, txt.length);
+    legacyOk = document.execCommand && document.execCommand("copy");
+  } catch (e) {}
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(
+      () => toast(ok),
+      () => toast(legacyOk ? ok : "Texte affiché — sélectionnez puis copiez")
+    );
+  } else {
+    toast(legacyOk ? ok : "Texte affiché — sélectionnez puis copiez");
+  }
+}
+
+function toast(msg) {
+  const t = $("#toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.classList.remove("show"), 1800);
+}
+
+/* ---------- matériel de conditionnement ---------- */
+function buildMaterielUI() {
+  const box = document.getElementById("matList");
+  if (!box) return;
+  box.innerHTML = MATERIEL.map(m =>
+    `<label class="mat">
+      <input type="checkbox" name="mat_${m.key}">
+      <span>${m.nom}${m.livrable ? "" : ' <span class="hint">· pas de livraison</span>'}</span>
+      <input type="number" name="qte_${m.key}" min="0" step="1" value="1" aria-label="Quantité — ${m.nom}" disabled>
+    </label>`).join("") +
+    `<label class="mat livr">
+      <input type="checkbox" name="matLivraison">
+      <span style="grid-column:2 / -1">Livraison (+ 30 € HT)</span>
+    </label>`;
+}
+function syncMatDisabled() {
+  MATERIEL.forEach(m => {
+    const c = form.elements["mat_" + m.key], q = form.elements["qte_" + m.key];
+    if (c && q) q.disabled = !c.checked;
+  });
+}
+
+/* Case « Devis Next Stories » : la marge se cale sur 21 % a la coche, revient au bareme a la
+   decoche. Appele aux seuls moments ou l'intention est claire — coche, chargement d'un dossier,
+   devis vierge, ouverture — jamais depuis render(), qui ecraserait un reglage manuel. */
+function syncMargeNS() {
+  const el = form.elements.nextStories;
+  marginTarget = el && el.checked ? MARGE_NS : null;
+}
+
+/* ---------- events ---------- */
+form.addEventListener("input", e => {
+  // changer l'effectif dans les sections Départ / Arrivée relance aussi le calcul du temps
+  // cocher « intervention le dimanche » coche automatiquement « mission week-end » (décochable ensuite)
+  if (e.target && e.target.name === "dimanche" && e.target.checked && form.elements.weekend) form.elements.weekend.checked = true;
+  // formule Standard = par définition aucun démontage/remontage : on remet l'heure à zéro pour éviter un reliquat oublié
+  if (e.target && e.target.name === "formule" && e.target.value === "Standard" && form.elements.demontageH) form.elements.demontageH.value = 0;
+  if (e.target && e.target.name === "nextStories") syncMargeNS();
+  if (e.target && e.target.name === "nbDepart") overrides.chargeMin = null;
+  if (e.target && e.target.name === "nbArrivee") overrides.dechargeMin = null;
+  if (e.target && e.target.name === "relivNbDepart") overrides.relivChargeMin = null;
+  if (e.target && e.target.name === "relivNbArrivee") overrides.relivDechargeMin = null;
+  if (e.target && /^mat_/.test(e.target.name || "")) syncMatDisabled();
+  render();
+});
+form.addEventListener("change", () => { syncMatDisabled(); render(); });
+
+$("#marginRange").addEventListener("input", e => { marginTarget = parseFloat(e.target.value) / 100; render(); });
+$("#marginNum").addEventListener("input", e => {
+  const v = parseFloat(String(e.target.value).replace(",", "."));
+  if (!isNaN(v)) { marginTarget = Math.min(0.6, Math.max(0.05, v / 100)); render(); }
+});
+$("#marginChips").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  marginTarget = b.dataset.x === "baseme" ? null : parseFloat(b.dataset.x);
+  render();
+});
+
+/* Fixer le total TTC : on inverse le solveur de marge — quel transport donne ce TTC ? */
+function applyTtcTarget(v) {
+  if (isNaN(v) || v <= 0) { marginTarget = null; render(); return; }
+  const r = computeDevis(readInputs(), overrides);
+  const c = r.commissionRate;
+  const A = r.totalHTAvantCommission - r.transportFinal;   // HT avant commission, hors transport
+  const B = r.baseCommission - r.transportFinal;           // base commissionnable, hors transport
+  const Mopt = r.margeFixeHorsTransport;
+  const htCible = Math.round(v / 1.2);
+  let T = (htCible - (A + c * B)) / (1 + c);
+  if (!(T > 0)) T = 0;                                     // TTC visé sous le plancher : transport ramené à 0
+  const htExact = (A + c * B) + T * (1 + c);
+  const x = htExact > 0 ? (T + Mopt) / htExact : 0;
+  marginTarget = Math.min(0.6, Math.max(0, x));
+  render();
+}
+$("#ttcTargetNum").addEventListener("input", e => {
+  applyTtcTarget(parseFloat(String(e.target.value).replace(",", ".")));
+});
+$("#ttcTargetNum").addEventListener("change", e => { e.target.blur(); render(); });
+
+$("#validateBtn").addEventListener("click", () => {
+  timesShown = !timesShown;
+  $("#timesPanel").hidden = !timesShown;
+  $("#exportPanel").hidden = !timesShown;
+  $("#validateBtn").textContent = timesShown ? "Masquer les temps" : "Valider & voir les temps";
+  if (timesShown) $("#timesPanel").scrollIntoView({ behavior: "smooth", block: "nearest" });
+});
+
+$("#copyBtn").addEventListener("click", () => copierTexte(buildRecap(), "Récap copié ✓"));
+function exporter(prevenir) {
+  if (majAlerteVariante()) {
+    $("#varianteNom").focus();
+    toast("Export bloqué — variante avec le même nom");
+    return null;
+  }
+  const e = buildExport(prevenir);
+  e.remplace_variante = normeVariante(remplacementAccepte) === normeVariante(e.variante);
+  copierTexte(JSON.stringify(e, null, 2),
+    prevenir ? "JSON copié ✓ — fiche remplie, équipe prévenue"
+             : "Variante « " + e.variante + " » ✓ — au suivant, l'équipe attendra");
+  // Une variante que la fiche va recevoir devient un nom pris.
+  retenirVariante(e.variante);
+  remplacementAccepte = null;
+  majAlerteVariante();
+  if (prevenir) marquerTraite();
+  return e;
+}
+$("#jsonBtn").addEventListener("click", () => exporter(true));
+$("#jsonSuiteBtn").addEventListener("click", () => {
+  // export bloque (doublon) : le nom saisi reste en place
+  if (exporter(false)) varianteEditee = false;   // la variante suivante reprend le libellé automatique
+});
+$("#loadBtn").addEventListener("click", () => {
+  const b = $("#loadBox");
+  b.hidden = !b.hidden;
+  if (!b.hidden) $("#loadText").focus();
+});
+$("#loadApply").addEventListener("click", () => chargerDossier($("#loadText").value));
+
+$("#blankBtn").addEventListener("click", () => {
+  fill(BLANK);
+  MATERIEL.forEach(m => {
+    if (form.elements["mat_" + m.key]) form.elements["mat_" + m.key].checked = false;
+    if (form.elements["qte_" + m.key]) form.elements["qte_" + m.key].value = 1;
+  });
+  if (form.elements.matLivraison) form.elements.matLivraison.checked = false;
+  overrides = emptyOverrides();
+  syncMargeNS();
+  setDossierFiche(null);          // devis vierge : plus aucune fiche cible
+  syncMatDisabled();
+  $("#exBanner").style.display = "none";
+  render();
+});
+
+/* ---------- init ---------- */
+buildMaterielUI();
+fill(EX);
+syncMatDisabled();
+syncMargeNS();
+render();
+
+/* Copie pre-remplie : le formulaire est deja rempli a l'ouverture, aucun collage a faire. */
+if (PREFILL) chargerDossier(JSON.stringify(PREFILL));
+/* ---------- file des dossiers préparés (capacité `db` de l'artefact atelier) ----------
+   Claude dépose ici les dossiers d'un lot ; la page les liste et un clic remplit le
+   formulaire. Le collage manuel reste disponible : si la capacité n'est pas là (copie
+   locale, artefact sans `db`), la page se comporte exactement comme le calculateur maître. */
+let dossierEnCours = null;
+let baseAtelier = null;
+
+(async function fileDossiers() {
+  if (!window.claude || typeof window.claude.use !== "function") return;
+  try { baseAtelier = await window.claude.use("db"); } catch (e) { return; }
+  if (!baseAtelier) return;
+
+  const box = document.getElementById("dossiersBox");
+  if (!box) return;
+
+  const nomDe = (v) => (v.fiche && v.fiche.titre) || (v.ex && v.ex.clientNom) || "dossier";
+
+  function rendre(docs) {
+    const attente = docs.filter(d => { const v = d.data() || {}; return !v.traite; });
+    box.textContent = "";
+    if (!attente.length) { box.hidden = true; return; }
+    const titre = document.createElement("span");
+    titre.className = "att";
+    titre.textContent = attente.length > 1
+      ? attente.length + " dossiers en attente"
+      : "1 dossier en attente";
+    box.appendChild(titre);
+    attente.forEach(d => {
+      const v = d.data() || {};
+      const b = document.createElement("button");
+      b.type = "button";
+      b.dataset.doc = d.id;
+      b.textContent = nomDe(v) + ((v.ex && v.ex.volume) ? " · " + v.ex.volume + " m³" : "");
+      if (d.id === dossierEnCours) b.textContent = "✓ " + b.textContent;
+      box.appendChild(b);
+    });
+    box.hidden = false;
+  }
+
+  // Pas de where() ni d'orderBy() : la file est courte, on filtre et on trie ici — une
+  // requête simple ne peut pas échouer sur une contrainte d'index côté store.
+  baseAtelier.collection("dossiers").limit(50).onSnapshot(
+    s => rendre(s.docs.slice().reverse()),      // ids horodatés : le plus récent d'abord
+    () => { box.hidden = true; });
+
+  box.addEventListener("click", async (e) => {
+    const b = e.target.closest("button[data-doc]");
+    if (!b) return;
+    try {
+      const snap = await baseAtelier.doc("dossiers/" + b.dataset.doc).get();
+      if (!snap.exists) { toast("Dossier introuvable"); return; }
+      chargerDossier(JSON.stringify(snap.data()));
+      dossierEnCours = b.dataset.doc;
+    } catch (err) {
+      toast("Lecture impossible — " + (err && err.code ? err.code : "erreur"));
+    }
+  });
+})();
+
+/* Un dossier exporté sort de la file : la page ne propose jamais deux fois le même travail.
+   L'échec est sans conséquence — le JSON est déjà dans le presse-papier, la fiche se remplit. */
+async function marquerTraite() {
+  if (!baseAtelier || !dossierEnCours) return;
+  try {
+    await baseAtelier.doc("dossiers/" + dossierEnCours).update(
+      { traite: true, traite_le: new Date().toISOString() });
+  } catch (e) {}
+  dossierEnCours = null;
+}
+
+</script>
+</body>
+</html>

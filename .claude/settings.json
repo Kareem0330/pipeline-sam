@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python outils/pipeline/*)",
+      "Bash(python \"outils/pipeline/*)",
+      "Bash(python verifier_installation.py*)"
+    ],
+    "deny": [
+      "Read(./.env)"
+    ]
+  }
+}

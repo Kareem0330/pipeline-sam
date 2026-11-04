@@ -1,0 +1,91 @@
+depart,arrivee,etapes,km_ar,h_ar,variante,longue_distance,date_calcul
+12 Rue de Bazeilles 33400 Talence,20 Avenue de la Somme 33700 Mérignac,,59,1.5,sans_peage,False,2026-09-08
+1 Rue des sans Culotte 86000 Poitiers,7 Rue Pascal 33370 Tresses,,459,5.75,sans_peage,False,2026-09-11
+Cognac,Rue des Esteys 33100 Bordeaux,,239,3.75,sans_peage,False,2026-09-11
+Rue Charles Domercq 33800 Bordeaux,Rue de Tanger 66000 Perpignan,,943,10.25,avec_peage,True,2026-09-11
+5 Rue de l'alose 33310 Lormont,6 Rue Alessandro Botticelli 93600 Aulnay-sous-Bois,,1298,18.0,sans_peage,True,2026-09-11
+11 Rue Hermel 75018 Paris,Bordeaux,,1290,17.75,sans_peage,True,2026-09-11
+11 Rue Hermel 75018 Paris,Bordeaux,28 Avenue Pasteur 17640 Vaux-sur-Mer,1249,14.0,avec_peage,True,2026-09-11
+11 Cours de Verdun 33000 Bordeaux,15 Place des Quinconces 33000 Bordeaux,,39,0.75,sans_peage,False,2026-09-14
+1 Rue de Laseppe 33000 Bordeaux,14 Rue du Docteur Schweitzer 33300 Bordeaux,,39,0.75,sans_peage,False,2026-09-15
+11 Rue Grand Rabbin Joseph Cohen 33000 Bordeaux,Cours de la Libération 33400 Talence,,60,1.25,sans_peage,False,2026-09-15
+Paris,Bordeaux,,1268,17.5,sans_peage,True,2026-09-16
+Saint-Égrève,Saint-Égrève,,1360,13.75,avec_peage,True,2026-09-16
+48 Mail des Bordelais 33300 Bordeaux,48 Rue du Mirail 33000 Bordeaux,,45,1.25,sans_peage,False,2026-09-16
+207 Cours du Médoc 33300 Bordeaux,406 Boulevard Jean-Jacques Bosc 33130 Bègles,,62,1.25,sans_peage,False,2026-09-17
+2 Route de Créon 33670 Sadirac,22 Rue d'Antiochas 17650 Saint-Denis-d'Oléron,147 Route des Valentons 33450 Saint-Loubès,428,7.5,sans_peage,True,2026-09-17
+5 Rue Marcel Pagnol 33270 Floirac,Chemin de Maillet 33330 Saint-Émilion,,95,1.5,sans_peage,False,2026-09-17
+Avenue Marcel Paul 33270 Floirac,Chemin de Maillet 33330 Saint-Émilion,,103,1.5,sans_peage,False,2026-09-17
+1 Rue Louise 33150 Cenon,66 Chemin des Vignes 24610 Villefranche-de-Lonchat,,139,2.75,sans_peage,False,2026-09-17
+21 Rue des Remparts 33000 Bordeaux,53 Rue Mandron 33000 Bordeaux,,41,1.0,sans_peage,False,2026-09-17
+21 Rue des Remparts 33000 Bordeaux,53 Rue Marsan 33300 Bordeaux,,42,1.0,sans_peage,False,2026-09-17
+4 Rue du Réduit 33520 Bruges,8 Boulevard des Briffaults 95160 Montmorency,,1369,18.5,sans_peage,True,2026-09-17
+25 Rue du Fairway 33680 Lacanau,8 Rue André-Marie Ampère 44210 Pornic,,855,13.75,sans_peage,True,2026-09-18
+29 Cours du Maréchal Foch 33000 Bordeaux,36 Rue Poujeau 33200 Bordeaux,,53,1.25,sans_peage,False,2026-09-18
+19 Rue Paul Doumer 10300 Sainte-Savine,Bordeaux,,1291,17.75,sans_peage,True,2026-09-18
+19 Rue Paul Doumer 10300 Sainte-Savine,147 Route des Valentons 33450 Saint-Loubès,,1256,17.25,sans_peage,True,2026-09-18
+114 Cours d'Alsace et Lorraine 33000 Bordeaux,Bordeaux,,48,1.25,sans_peage,False,2026-09-21
+2 Cite la Chenaie 33820 Braud-et-Saint-Louis,42 Rue du Docteur Meignié 33340 Lesparre-Médoc,,250,4.75,sans_peage,False,2026-09-21
+123 Avenue de saint julien 13012 Marseille,147 Route des Valentons 33450 Saint-Loubès,,1329,13.75,avec_peage,True,2026-09-21
+223 Avenue Émile Counord 33300 Bordeaux,12 Rue Saint-Vincent de-Paul 33800 Bordeaux,,48,1.25,sans_peage,False,2026-09-21
+10 Rue Tourat 33000 Bordeaux,71 Avenue de la Lanterne 06200 Nice,,1652,17.5,avec_peage,True,2026-09-22
+15 Rue Francis Garnier 33300 Bordeaux,72 Rue du Martouret 33190 La Réole,,171,2.75,sans_peage,False,2026-09-22
+9 Rue Porte de la Monnaie 33800 Bordeaux,Lyon,,1265,17.75,sans_peage,True,2026-09-22
+90 Rue Denfert-Rochereau 33130 Bègles,28 Rue Henri Chapu 77300 Fontainebleau,,1151,15.25,sans_peage,True,2026-09-22
+84 Rue Bannier 45000 Orléans,Rue du 30ème Régiment d'Artillerie 45000 Orléans,25 Rue des Charretiers 45000 Orléans,938,12.0,sans_peage,True,2026-09-22
+192 Rue d'Ornano 33000 Bordeaux,4 Rue des Roses 17100 Saintes,,266,4.75,sans_peage,False,2026-09-22
+44 Rue Montméjean 33100 Bordeaux,13 Rue Jean Paul Alaux 33100 Bordeaux,,41,1.0,sans_peage,False,2026-09-22
+19 Rue Pierre Noailles 33400 Talence,3 Rue Montesquieu 33400 Talence,,61,1.25,sans_peage,False,2026-09-24
+87 Quai des Queyries 33100 Bordeaux,12 Rue Saint-Michel 28000 Chartres,,1103,15.25,sans_peage,True,2026-09-24
+108 Quai des Chartrons 33300 Bordeaux,10 Rue Planchat 75020 Paris,,1269,17.25,sans_peage,True,2026-09-24
+Rue Thiers 92100 Boulogne-Billancourt,Bordeaux,,1268,17.25,sans_peage,True,2026-09-24
+42 Chemin du Nid de Verdier 76400 Fécamp,Rue Frédéric Sevene 33400 Talence,,1415,14.75,avec_peage,True,2026-09-25
+10 Rue René Roy de Clotte 33000 Bordeaux,28 Rue du Sablonat 33800 Bordeaux,,54,1.25,sans_peage,False,2026-09-25
+15 Avenue de la Duragne 33850 Léognan,27 Rue Magenta 10100 Romilly-sur-Seine,,1295,18.0,sans_peage,True,2026-10-06
+66 Avenue Georges Clémenceau 33110 Le Bouscat,19 Rue Rossini 33600 Pessac,,66,1.5,sans_peage,False,2026-10-06
+6 Rue Paul Gros 33270 Floirac,4 Rue René Martrenchar 33150 Cenon,,35,0.75,sans_peage,False,2026-10-06
+46 Chemin de Bourseau 33620 Laruscade,Darmand 33430 Marimbault,,216,3.75,sans_peage,True,2026-10-06
+12 Rue Banlin 33310 Lormont,19 Rue Saint-Émilion 33100 Bordeaux,,41,1.0,sans_peage,False,2026-10-07
+Carqueiranne,Bordeaux,,1544,16.5,avec_peage,True,2026-10-08
+Lasserre 33550 Paillet,Rue David Johnston 33000 Bordeaux,,116,2.0,sans_peage,True,2026-10-08
+6 Rue Kléber 33800 Bordeaux,Avenue du Maréchal Leclerc 33130 Bègles,,48,1.0,sans_peage,False,2026-10-09
+231 Rue Sainte-Catherine 33000 Bordeaux,30 Rue du Pressoir 75020 Paris,,1284,18.0,sans_peage,True,2026-10-09
+4 Rue Louis Mie 33000 Bordeaux,Paris,,1278,18.0,sans_peage,True,2026-10-09
+Prignac-et-Marcamps,Nice,,1678,17.75,avec_peage,True,2026-10-09
+24 Rue Cadroin 33000 Bordeaux,147 Route des Valentons 33450 Saint-Loubès,,48,1.0,sans_peage,False,2026-10-13
+15 Quai Louis XVIII 33000 Bordeaux,52 Rue du Petit Parc 33200 Bordeaux,,47,1.0,sans_peage,False,2026-10-13
+19 Rue Prunier 33300 Bordeaux,35 Allées Brouchet 40000 Mont-de-Marsan,,313,5.0,sans_peage,True,2026-10-13
+147 Route des Valentons 33450 Saint-Loubès,Bordeaux,,38,0.75,sans_peage,False,2026-10-14
+42 Cours de l'Argonne 33000 Bordeaux,22 Rue Albert Camus 92160 Antony,,1265,17.5,sans_peage,True,2026-10-14
+9 Rue Bossuet 33800 Bordeaux,14 Rue Monsarrat 33800 Bordeaux,,53,1.25,sans_peage,False,2026-10-15
+3 Rue Blanc Dutrouilh 33000 Bordeaux,76 Rue Poujeau 33200 Bordeaux,,52,1.25,sans_peage,False,2026-10-15
+12 Rue Louis Blanc 33400 Talence,Lisieux,,1197,18.5,sans_peage,True,2026-10-16
+6 Rue du Galus 33700 Mérignac,5 Rue Saint Jacques 56120 Josselin,,1153,14.25,sans_peage,True,2026-10-20
+43 Route de l’Entre Deux Mers 33750 Saint-Quentin-de-Baron,25 Avenue Suzanne Salvet 33670 Créon,,83,1.5,sans_peage,False,2026-10-21
+245 Boulevard Maréchal Leclerc 33000 Bordeaux,45 Route de Latresne 33270 Bouliac,,51,1.25,sans_peage,False,2026-10-21
+245 Boulevard Maréchal Leclerc 33000 Bordeaux,45 Route de Latresne 33270 Bouliac,147 Route des Valentons 33450 Saint-Loubès,81,1.75,sans_peage,True,2026-10-21
+226 Avenue Thiers 33100 Bordeaux,8 Rue Jean Clauzel 91480 Varennes-Jarcy,,1243,17.25,sans_peage,True,2026-10-22
+49 Rue de Pessac 33000 Bordeaux,575 Chemin de Boutoura 40410 Pissos,,201,3.5,sans_peage,True,2026-10-22
+7 Rue Étienne Lhoste 33200 Bordeaux,16 Avenue des Martyrs de la Libération 33700 Mérignac,,53,1.25,sans_peage,False,2026-10-22
+2 Rue Coudol 33110 Le Bouscat,31 Rue Louise Et Jean Sabail 33130 Bègles,,57,1.5,sans_peage,False,2026-10-23
+20 Rue d'Aviau 33000 Bordeaux,22 Rue Durieu de Maisonneuve 33000 Bordeaux,,39,0.75,sans_peage,False,2026-10-23
+Avenue du Président Vincent Auriol 33150 Cenon,57 Rue Permentade 33000 Bordeaux,,50,1.25,sans_peage,False,2026-10-26
+18 Place Pey Berland 33000 Bordeaux,7 Rue du Château Trompette 33000 Bordeaux,,41,1.0,sans_peage,False,2026-10-26
+35 Rue Georges Mandel 33000 Bordeaux,8 Le Dagnaud de Boisse 16620 Montboyer,,194,3.25,sans_peage,True,2026-10-26
+8 Rue de Ségur 33000 Bordeaux,192 Rue Pasteur 33200 Bordeaux,,52,1.25,sans_peage,False,2026-10-26
+Rue Zone Artisanale du Lombardon 33460 Macau,41 Rue du Pont de Rose 33550 Le Tourne,,124,2.25,sans_peage,True,2026-10-26
+Rue du Docteur Nard 33500 Libourne,9 Rue des Treilles 33500 Libourne,,85,1.25,sans_peage,False,2026-10-27
+35 Rue Boyer 33000 Bordeaux,3 Rue Cruchinet 33800 Bordeaux,,49,1.25,sans_peage,False,2026-10-27
+52 Avenue Marcel Dassault 33300 Bordeaux,52 Avenue Marcel Dassault 33300 Bordeaux,,33,0.5,sans_peage,False,2026-10-28
+Villers-Saint-Paul,Bordeaux,,1294,13.75,avec_peage,True,2026-10-28
+130 Chemin du Val de Perrier 83310 Cogolin,147 Route des Valentons 33450 Saint-Loubès,Chemin des Bories 33270 Floirac,1515,16.25,avec_peage,True,2026-10-28
+32bis Avenue Raymond Poincaré 33380 Biganos,42 Avenue de la Côte d’Argent 33380 Biganos,,145,2.0,sans_peage,False,2026-10-28
+Marseille,17 Boulevard des Nations 06160 Antibes,,1661,17.75,avec_peage,True,2026-10-28
+Pessac,8 Rue Metivier 33000 Bordeaux,,75,1.5,sans_peage,False,2026-10-29
+45 Rue Huguerie 33000 Bordeaux,148 Boulevard de la blancarde 13004 Marseille,,1337,14.5,avec_peage,True,2026-10-29
+8 Chemin Pierre Bourdan 17360 Saint-Aigulin,Pomerol,,141,2.25,sans_peage,True,2026-10-30
+10bis Rue Jules Guesde 33150 Cenon,10 rue Fossié 64000 Pau,,456,8.5,sans_peage,True,2026-10-30
+2 Cours de Luze 33300 Bordeaux,82 Rue de Soissons 33000 Bordeaux,,42,1.0,sans_peage,False,2026-11-02
+28 Rue Maurice Utrillo 33140 Villenave-d'Ornon,14 Rue de Passerive 31170 Tournefeuille,,582,9.75,sans_peage,True,2026-11-03
+9 Rue Chabrely 33100 Bordeaux,63 Rue Damrémont 75018 Paris,,1291,17.75,sans_peage,True,2026-11-03
+34 Rue Renière 33000 Bordeaux,62 Chemin des Cottes 76130 Mont-Saint-Aignan,147 Route des Valentons 33450 Saint-Loubès,1325,13.75,avec_peage,True,2026-11-04

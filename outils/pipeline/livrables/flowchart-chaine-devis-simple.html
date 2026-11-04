@@ -1,0 +1,184 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chaîne de devis en bref</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Charte du calculateur de devis. Plan : quatre étapes générales à gauche, une colonne
+   vertébrale au centre, les exceptions à droite. Couleur = qui agit. */
+:root {
+  --ground:#f6f4ef; --surface:#ffffff; --sunk:#efece4; --ink:#211d1a; --ink-soft:#5d564e; --ink-faint:#8c8479;
+  --line-strong:#cec5b5; --edge:#7d7568; --accent:#2b3f57; --accent-soft:#e9edf2;
+  --burgundy:#7a2e3a; --burgundy-soft:#f3e6e8; --on-burgundy:#ffffff;
+  --good:#2f7d55; --good-soft:#e6f0ea; --warn:#a9761d; --warn-soft:#f6edd9; --crit:#b23b2e; --crit-soft:#f5e6e3;
+  --display:"Bricolage Grotesque",Georgia,serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:#181613; --surface:#221f1b; --sunk:#2b2722; --ink:#f1ede6; --ink-soft:#bcb4a8; --ink-faint:#90887c;
+    --line-strong:#4f483f; --edge:#9b9286; --accent:#9dbcdc; --accent-soft:#22303f;
+    --burgundy:#e7a1ad; --burgundy-soft:#3b2228; --on-burgundy:#2a1216;
+    --good:#7bcba3; --good-soft:#1b3026; --warn:#e0b768; --warn-soft:#352a14; --crit:#ef9488; --crit-soft:#3b201c;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground:#181613; --surface:#221f1b; --sunk:#2b2722; --ink:#f1ede6; --ink-soft:#bcb4a8; --ink-faint:#90887c;
+  --line-strong:#4f483f; --edge:#9b9286; --accent:#9dbcdc; --accent-soft:#22303f;
+  --burgundy:#e7a1ad; --burgundy-soft:#3b2228; --on-burgundy:#2a1216;
+  --good:#7bcba3; --good-soft:#1b3026; --warn:#e0b768; --warn-soft:#352a14; --crit:#ef9488; --crit-soft:#3b201c;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font:15px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding-block:36px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font:700 clamp(28px,4.4vw,40px)/1.08 var(--display);letter-spacing:-.015em;margin:0;text-wrap:balance}
+.intro{max-width:64ch;margin:12px 0 0;color:var(--ink-soft);font-size:16.5px}
+.leg{display:flex;flex-wrap:wrap;gap:8px 18px;margin:18px 0 0;padding:0;list-style:none;font-size:13.5px;color:var(--ink-soft)}
+.leg li{display:inline-flex;align-items:center;gap:7px}
+.pas{width:13px;height:13px;border-radius:3px;border:1.5px solid;flex:none}
+.p-karim{background:var(--burgundy);border-color:var(--burgundy)}
+.p-sandrine{background:var(--accent-soft);border-color:var(--accent)}
+.p-claude{background:var(--warn-soft);border-color:var(--warn)}
+.p-code{background:var(--surface);border-color:var(--line-strong)}
+.p-ext{background:var(--good-soft);border-color:var(--good)}
+figure{margin:24px 0 0}
+.dia{overflow-x:auto;scrollbar-width:thin}
+.dia svg{display:block;width:100%;min-width:680px;max-width:860px;height:auto}
+figcaption{margin-top:14px;font-size:14px;color:var(--ink-soft);max-width:64ch}
+a{color:var(--accent)}
+.etape{font:700 15.5px var(--display);fill:var(--ink)}
+.qui{font:400 12.5px var(--body);fill:var(--ink-soft)}
+.acc{stroke:var(--line-strong);stroke-width:2;fill:none}
+.t{font:500 14px var(--body);fill:var(--ink);text-anchor:middle}
+.s{font:400 12px var(--body);fill:var(--ink-soft);text-anchor:middle}
+.b{stroke-width:1.3}
+.code{fill:var(--surface);stroke:var(--line-strong)}
+.dec{fill:var(--accent-soft);stroke:var(--accent)}
+.claude{fill:var(--warn-soft);stroke:var(--warn)}
+.karim{fill:var(--burgundy-soft);stroke:var(--burgundy)}
+.ext{fill:var(--good-soft);stroke:var(--good)}
+.crit{fill:var(--crit-soft);stroke:var(--crit)}
+.fin{fill:var(--sunk);stroke:var(--line-strong)}
+.sandrine{fill:var(--accent-soft);stroke:var(--accent)}
+.option{stroke-dasharray:5 4}
+.gate{fill:var(--burgundy);stroke:var(--burgundy);stroke-width:2}
+.tg{font:600 14px var(--body);fill:var(--on-burgundy);text-anchor:middle}
+.sg{font:400 12px var(--body);fill:var(--on-burgundy);text-anchor:middle;opacity:.88}
+.l{fill:none;stroke:var(--edge);stroke-width:1.4}
+.l.tir{stroke-dasharray:5 4}
+.l.rouge{stroke:var(--crit)}
+.pf{fill:var(--edge)} .pr{fill:var(--crit)}
+.e{font:500 12px var(--body);fill:var(--ink-soft)}
+.e.rouge{fill:var(--crit)}
+</style>
+
+<main class="wrap">
+  <h1>La chaîne de devis en bref</h1>
+  <p class="intro">Quatre grandes étapes, de la demande au mail envoyé. Samuel intervient à trois moments : il demande le devis, valide le chiffrage, relit et valide le PDF. Sandrine envoie ensuite le mail au client. Le reste s’enchaîne seul.</p>
+  <ul class="leg" aria-label="Légende">
+    <li><span class="pas p-karim"></span>Samuel</li>
+    <li><span class="pas p-sandrine"></span>Sandrine</li>
+    <li><span class="pas p-claude"></span>Claude</li>
+    <li><span class="pas p-code"></span>Code, automatique</li>
+    <li><span class="pas p-ext"></span>Écrit dans un outil externe</li>
+  </ul>
+  <figure>
+    <div class="dia">
+<svg viewBox="0 0 860 1298" role="img" aria-label="Les quatre étapes de la chaîne de devis : préparer le dossier, valider le chiffrage, enregistrer et préparer, relire et envoyer. Samuel valide le chiffrage, puis relit le PDF et peut en faire corriger le texte. L'import sur HubSpot et le message à l'équipe suivent, puis Sandrine envoie le mail. Le brouillon préparé par Claude est optionnel.">
+  <defs>
+    <marker id="f" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L8 4L0 8Z" class="pf"/></marker>
+    <marker id="r" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L8 4L0 8Z" class="pr"/></marker>
+  </defs>
+
+  <!-- les quatre étapes -->
+  <path class="acc" d="M136 6V306"/>
+  <text class="etape" x="0" y="24">1. Préparer</text><text class="qui" x="0" y="43">Claude et le code</text>
+  <path class="acc" d="M136 342V492"/>
+  <text class="etape" x="0" y="360">2. Valider</text><text class="qui" x="0" y="379">Samuel</text>
+  <path class="acc" d="M136 530V734"/>
+  <text class="etape" x="0" y="548">3. Enregistrer</text><text class="etape" x="0" y="567">et préparer</text><text class="qui" x="0" y="586">automatique</text>
+  <path class="acc" d="M136 770V1288"/>
+  <text class="etape" x="0" y="788">4. Relire</text><text class="etape" x="0" y="807">et envoyer</text><text class="qui" x="0" y="826">Samuel, puis Sandrine</text>
+
+  <!-- liaisons de la colonne centrale -->
+  <path class="l" d="M325 52V81" marker-end="url(#f)"/>
+  <path class="l" d="M325 138V167" marker-end="url(#f)"/>
+  <path class="l" d="M325 228V257" marker-end="url(#f)"/>
+  <path class="l" d="M325 306V341" marker-end="url(#f)"/>
+  <path class="l" d="M325 402V431" marker-end="url(#f)"/>
+  <path class="l" d="M325 492V529" marker-end="url(#f)"/>
+  <path class="l" d="M325 582V605" marker-end="url(#f)"/>
+  <path class="l" d="M325 658V681" marker-end="url(#f)"/>
+  <path class="l" d="M325 734V769" marker-end="url(#f)"/>
+  <path class="l" d="M325 826V851" marker-end="url(#f)"/>
+  <path class="l" d="M325 908V937" marker-end="url(#f)"/>
+  <path class="l" d="M325 990V1013" marker-end="url(#f)"/>
+  <path class="l" d="M325 1066V1089" marker-end="url(#f)"/>
+  <path class="l" d="M325 1142V1165" marker-end="url(#f)"/>
+  <path class="l" d="M325 1222V1245" marker-end="url(#f)"/>
+  <text class="e" x="317" y="157" text-anchor="end">Oui</text>
+  <text class="e" x="317" y="247" text-anchor="end">Oui</text>
+  <text class="e" x="317" y="927" text-anchor="end">Oui</text>
+
+  <!-- exceptions -->
+  <path class="l" d="M500 110H574" marker-end="url(#f)"/><text class="e" x="537" y="103" text-anchor="middle">Non</text>
+  <path class="l" d="M710 138V153H325" /><!-- retour vers la lecture de la fiche -->
+  <path class="l" d="M500 198H574" marker-end="url(#f)"/><text class="e" x="537" y="191" text-anchor="middle">Non</text>
+  <path class="l tir" d="M500 1040H574" marker-end="url(#f)"/><text class="e" x="537" y="1033" text-anchor="middle">Juste après</text>
+  <path class="l" d="M500 880H574" marker-end="url(#f)"/><text class="e" x="537" y="873" text-anchor="middle">À corriger</text>
+
+  <!-- 1. préparer -->
+  <rect class="b karim" x="150" y="6" width="350" height="46" rx="6"/>
+  <text class="t" x="325" y="26">Samuel demande le devis à Claude</text><text class="s" x="325" y="43">une demande client vient d’arriver</text>
+  <path class="b dec" d="M164 82H486L500 110L486 138H164L150 110Z"/>
+  <text class="t" x="325" y="115">La fiche existe-t-elle sur HubSpot ?</text>
+  <rect class="b claude" x="575" y="82" width="270" height="56" rx="6"/>
+  <text class="t" x="710" y="106">Claude crée la fiche</text><text class="s" x="710" y="124">et estime le volume si besoin</text>
+  <path class="b dec" d="M164 168H486L500 198L486 228H164L150 198Z"/>
+  <text class="t" x="325" y="193">Le dossier est-il complet ?</text><text class="s" x="325" y="211">le code lit la fiche et calcule l’itinéraire</text>
+  <rect class="b karim" x="575" y="168" width="270" height="60" rx="6"/>
+  <text class="t" x="710" y="193">Relance au client, déjà rédigée</text><text class="s" x="710" y="211">Samuel l’envoie, puis on reprend</text>
+  <rect class="b code" x="150" y="258" width="350" height="48" rx="6"/>
+  <text class="t" x="325" y="278">Le calculateur s’ouvre, déjà rempli</text><text class="s" x="325" y="296">après contrôle des valeurs par Claude</text>
+
+  <!-- 2. valider -->
+  <rect class="gate" x="150" y="342" width="350" height="60" rx="6"/>
+  <text class="tg" x="325" y="367">Samuel vérifie, ajuste, puis exporte</text><text class="sg" x="325" y="385">marge, temps, options</text>
+  <rect class="b code" x="150" y="432" width="350" height="60" rx="6"/>
+  <text class="t" x="325" y="457">L’export continue, quelle que soit la marge</text><text class="s" x="325" y="475">la marge reste une indication</text>
+
+  <!-- 3. enregistrer et prévenir -->
+  <rect class="b ext" x="150" y="530" width="350" height="52" rx="6"/>
+  <text class="t" x="325" y="552">Fiche client à jour sur la transaction</text><text class="s" x="325" y="570">note HubSpot : chiffrage, variantes, itinéraire</text>
+  <rect class="b ext" x="150" y="606" width="350" height="52" rx="6"/>
+  <text class="t" x="325" y="628">Transaction HubSpot à jour</text><text class="s" x="325" y="646">étape « Devis en révision »</text>
+  <rect class="b code" x="150" y="682" width="350" height="52" rx="6"/>
+  <text class="t" x="325" y="704">PDF du devis généré depuis l’export</text><text class="s" x="325" y="722">à chaque export, gardé en local</text>
+
+  <!-- 4. relire et envoyer -->
+  <rect class="gate" x="150" y="770" width="350" height="56" rx="6"/>
+  <text class="tg" x="325" y="793">Samuel relit le PDF</text><text class="sg" x="325" y="811">Claude le lui présente, avec l’inventaire</text>
+  <path class="b karim" d="M164 852H486L500 880L486 908H164L150 880Z"/>
+  <text class="t" x="325" y="885">Samuel valide-t-il le devis ?</text>
+  <rect class="b claude" x="575" y="852" width="270" height="56" rx="6"/>
+  <text class="t" x="710" y="875">Claude corrige le texte du PDF</text><text class="s" x="710" y="893">puis nouvelle relecture ; prix changé : étape 2</text>
+  <rect class="b ext" x="150" y="938" width="350" height="52" rx="6"/>
+  <text class="t" x="325" y="960">PDF et inventaire importés sur HubSpot</text><text class="s" x="325" y="978">sur la transaction, si le dossier a un inventaire</text>
+  <rect class="b ext" x="150" y="1014" width="350" height="52" rx="6"/>
+  <text class="t" x="325" y="1036">Message WhatsApp à l’équipe</text><text class="s" x="325" y="1054">« Devis prêt à vérifier », lien HubSpot</text>
+  <rect class="b ext" x="575" y="1014" width="270" height="52" rx="6"/>
+  <text class="t" x="710" y="1036">Inventaire en PDF</text><text class="s" x="710" y="1054">s’il existe, même conversation</text>
+  <rect class="b claude option" x="150" y="1090" width="350" height="52" rx="6"/>
+  <text class="t" x="325" y="1112">Optionnel : brouillon Gmail préparé par Claude</text><text class="s" x="325" y="1130">seulement si Samuel le demande</text>
+  <rect class="b sandrine" x="150" y="1166" width="350" height="56" rx="6"/>
+  <text class="t" x="325" y="1189">Sandrine envoie le mail au client</text><text class="s" x="325" y="1207">puis la routine passe le dossier en « Devis envoyé »</text>
+  <rect class="b fin" x="150" y="1246" width="350" height="42" rx="21"/>
+  <text class="t" x="325" y="1272">Suite commerciale : relance, signé ou perdu</text>
+</svg>
+    </div>
+    <figcaption>Les blocs pleins sont les arrêts où rien n’avance sans Samuel. Le détail de chaque étape, avec ses scripts et ses règles, est dans la <a href="outils/pipeline/calculateurs/calculateur-devis.html">version complète</a>.</figcaption>
+  </figure>
+</main>

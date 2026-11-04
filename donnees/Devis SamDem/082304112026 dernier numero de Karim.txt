@@ -1,0 +1,1 @@
+Dernier numéro utilisé avant le transfert. Ne pas supprimer tant qu'aucun devis n'a été produit ici.

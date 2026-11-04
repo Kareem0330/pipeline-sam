@@ -1,0 +1,1027 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flowchart chaîne de devis</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Charte reprise du calculateur de devis (ground, ink, marine, bordeaux).
+   Plan : une colonne vertébrale verticale, toujours au même x d'une phase à l'autre ;
+   les exceptions partent à droite. Couleur = qui agit, forme = type d'étape. */
+:root {
+  --ground:#f6f4ef; --surface:#ffffff; --sunk:#efece4; --ink:#211d1a; --ink-soft:#5d564e; --ink-faint:#8c8479;
+  --line:#e3ddd1; --line-strong:#cec5b5; --edge:#7d7568;
+  --accent:#2b3f57; --accent-soft:#e9edf2;
+  --burgundy:#7a2e3a; --burgundy-soft:#f3e6e8; --on-burgundy:#ffffff;
+  --good:#2f7d55; --good-soft:#e6f0ea; --warn:#a9761d; --warn-soft:#f6edd9; --crit:#b23b2e; --crit-soft:#f5e6e3;
+  --shadow:0 12px 40px rgba(33,29,26,.18);
+  --display:"Bricolage Grotesque",Georgia,serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:#181613; --surface:#221f1b; --sunk:#2b2722; --ink:#f1ede6; --ink-soft:#bcb4a8; --ink-faint:#90887c;
+    --line:#39342d; --line-strong:#4f483f; --edge:#9b9286;
+    --accent:#9dbcdc; --accent-soft:#22303f;
+    --burgundy:#e7a1ad; --burgundy-soft:#3b2228; --on-burgundy:#2a1216;
+    --good:#7bcba3; --good-soft:#1b3026; --warn:#e0b768; --warn-soft:#352a14; --crit:#ef9488; --crit-soft:#3b201c;
+    --shadow:0 12px 40px rgba(0,0,0,.55); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground:#181613; --surface:#221f1b; --sunk:#2b2722; --ink:#f1ede6; --ink-soft:#bcb4a8; --ink-faint:#90887c;
+  --line:#39342d; --line-strong:#4f483f; --edge:#9b9286;
+  --accent:#9dbcdc; --accent-soft:#22303f;
+  --burgundy:#e7a1ad; --burgundy-soft:#3b2228; --on-burgundy:#2a1216;
+  --good:#7bcba3; --good-soft:#1b3026; --warn:#e0b768; --warn-soft:#352a14; --crit:#ef9488; --crit-soft:#3b201c;
+  --shadow:0 12px 40px rgba(0,0,0,.55); color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font:15px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2{font-family:var(--display);text-wrap:balance;font-weight:700;margin:0}
+h1{font-size:clamp(30px,4.6vw,46px);line-height:1.06;letter-spacing:-.015em}
+h2{font-size:23px;line-height:1.2}
+header.top{padding-block:40px 26px}
+.intro{max-width:66ch;margin:14px 0 0;color:var(--ink-soft);font-size:16.5px}
+.verif{margin:10px 0 0;font-size:13px;color:var(--ink-faint)}
+a{color:var(--accent)}
+
+/* barre collante : phases et filtres */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-block:1px solid var(--line)}
+.bar .wrap{display:flex;gap:18px;align-items:center;padding-block:8px;overflow-x:auto;scrollbar-width:thin}
+.groupe{display:flex;gap:4px;align-items:center;flex:none}
+.groupe .titre{font-size:12.5px;color:var(--ink-faint);margin-right:5px}
+.num,.filtre{font:500 13px/1 var(--body);border:1px solid transparent;background:none;color:var(--ink-soft);border-radius:6px;cursor:pointer;height:30px}
+.num{min-width:28px;padding:0 4px;font-variant-numeric:tabular-nums}
+.num:hover,.filtre:hover{background:var(--sunk);color:var(--ink)}
+.num.ici{background:var(--accent);color:var(--surface)}
+.filtre{padding:0 9px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.filtre[aria-pressed="true"]{background:var(--sunk);border-color:var(--line-strong);color:var(--ink);font-weight:600}
+.pastille{width:11px;height:11px;border-radius:3px;border:1.5px solid;flex:none}
+.p-karim{background:var(--burgundy-soft);border-color:var(--burgundy)}
+.p-claude{background:var(--warn-soft);border-color:var(--warn)}
+.p-code{background:var(--surface);border-color:var(--line-strong)}
+.p-ext{background:var(--good-soft);border-color:var(--good)}
+.p-crit{background:var(--crit-soft);border-color:var(--crit)}
+.cpt{color:var(--ink-faint);font-variant-numeric:tabular-nums;font-weight:400}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* vue d'ensemble + légende */
+.ensemble{display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:40px;padding-block:32px 16px;align-items:start}
+.legende{position:sticky;top:76px;display:grid;gap:22px}
+.legende h3{font:600 14.5px/1.3 var(--body);margin:0 0 8px}
+.lignes{display:grid;gap:9px;margin:0;padding:0;list-style:none;font-size:14px;color:var(--ink-soft)}
+.lignes li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:start}
+.lignes b{color:var(--ink);font-weight:600}
+.lignes svg{display:block;width:34px;height:20px;margin-top:2px}
+
+/* sections de phase */
+section.phase{padding-block:30px 12px;border-top:1px solid var(--line);scroll-margin-top:52px}
+.phase-tete{display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 12px;align-items:baseline;max-width:760px}
+.phase-tete .rang{font:700 23px/1.2 var(--display);color:var(--ink-faint);font-variant-numeric:tabular-nums}
+.phase-tete p{grid-column:2;margin:6px 0 0;color:var(--ink-soft);max-width:68ch}
+figure{margin:18px 0 0}
+.dia{overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.dia svg{display:block;max-width:none}
+
+/* noeuds */
+.shape{stroke-width:1.3}
+.node{cursor:pointer;outline:none}
+.node text{pointer-events:none}
+.lab{font:500 13px var(--body);fill:var(--ink);text-anchor:middle}
+.met{font:400 10.8px var(--mono);fill:var(--ink-soft);text-anchor:middle}
+.n-code .shape{fill:var(--surface);stroke:var(--line-strong)}
+.n-code.dec .shape{fill:var(--accent-soft);stroke:var(--accent)}
+.n-claude .shape{fill:var(--warn-soft);stroke:var(--warn)}
+.n-karim .shape{fill:var(--burgundy-soft);stroke:var(--burgundy)}
+.n-ext .shape{fill:var(--good-soft);stroke:var(--good)}
+.n-crit .shape{fill:var(--crit-soft);stroke:var(--crit)}
+.n-fin .shape{fill:var(--sunk);stroke:var(--line-strong)}
+.n-off .shape{fill:none;stroke:var(--line-strong);stroke-dasharray:4 3}
+.n-off .lab,.n-off .met{fill:var(--ink-faint)}
+.gate .shape{fill:var(--burgundy);stroke:var(--burgundy);stroke-width:2}
+.gate .lab{fill:var(--on-burgundy);font-weight:600}
+.gate .met{fill:var(--on-burgundy);opacity:.85}
+.chip .shape{fill:var(--surface);stroke:var(--accent);stroke-dasharray:3 3}
+.chip .lab{fill:var(--accent);font-size:12.5px;font-weight:500}
+.barre{stroke-width:1.3;fill:none}
+.n-code .barre{stroke:var(--line-strong)} .n-claude .barre{stroke:var(--warn)} .n-ext .barre{stroke:var(--good)} .n-karim .barre{stroke:var(--burgundy)}
+.node:hover .shape,.node:focus-visible .shape{stroke-width:2.2}
+.node.sel .shape{stroke:var(--accent);stroke-width:2.6}
+.node.flash .shape{stroke:var(--accent);stroke-width:3.2}
+.dim{opacity:.17}
+.node,.edge,.elab{transition:opacity .15s}
+.edge{fill:none;stroke:var(--edge);stroke-width:1.3}
+.edge.crit{stroke:var(--crit)}
+.edge.async{stroke-dasharray:5 4}
+.elab{font:500 11.5px var(--body);fill:var(--ink-soft)}
+.elab.crit{fill:var(--crit)}
+.fleche{fill:var(--edge)}
+.fleche-crit{fill:var(--crit)}
+
+/* points relevés */
+section.points{padding-block:34px 56px;border-top:1px solid var(--line);scroll-margin-top:52px}
+section.points>p{max-width:68ch;color:var(--ink-soft);margin:8px 0 0}
+.points table{border-collapse:collapse;width:100%;margin-top:18px;font-size:14px;min-width:720px}
+.points th{text-align:left;font-weight:600;padding:8px 14px 8px 0;border-bottom:1.5px solid var(--line-strong);color:var(--ink-soft)}
+.points td{padding:11px 14px 11px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.points td:first-child{font-weight:600;width:27%}
+.points code,.tiroir code{font:400 12.5px var(--mono);overflow-wrap:anywhere}
+.tab{overflow-x:auto}
+.grav{white-space:nowrap;font-size:13px;font-weight:600}
+.grav.h{color:var(--crit)} .grav.m{color:var(--warn)} .grav.b{color:var(--ink-faint)}
+
+/* tiroir de détail */
+.tiroir{position:fixed;z-index:20;right:0;top:0;bottom:0;width:min(400px,100%);background:var(--surface);box-shadow:var(--shadow);border-left:1px solid var(--line);padding:calc(18px + env(safe-area-inset-top,0px)) max(22px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) 22px;overflow-y:auto;transform:translateX(102%);transition:transform .2s ease;visibility:hidden}
+.tiroir.ouvert{transform:none;visibility:visible}
+.tiroir h3{font:700 20px/1.22 var(--display);margin:10px 0 0;text-wrap:balance}
+.tiroir .qui{display:inline-flex;gap:7px;align-items:center;font-size:13px;color:var(--ink-soft)}
+.tiroir .txt{margin:12px 0 0;font-size:15px}
+.tiroir .ou{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-soft)}
+.tiroir .aller{margin-top:14px;font:500 14px var(--body);background:var(--accent);color:var(--surface);border:0;border-radius:6px;padding:9px 13px;cursor:pointer}
+.fermer{position:absolute;right:max(12px,env(safe-area-inset-right,0px));top:calc(10px + env(safe-area-inset-top,0px));width:34px;height:34px;border:0;background:none;border-radius:6px;font-size:20px;line-height:1;color:var(--ink-soft);cursor:pointer}
+.fermer:hover{background:var(--sunk)}
+@media (max-width:960px){
+  .ensemble{grid-template-columns:minmax(0,1fr);gap:24px}
+  .legende{position:static}
+}
+@media (max-width:640px){
+  header.top{padding-block:26px 18px}
+  .tiroir{top:auto;left:0;right:0;width:100%;height:58%;border-left:0;border-top:1px solid var(--line);border-radius:14px 14px 0 0;transform:translateY(102%)}
+}
+@media (prefers-reduced-motion:reduce){.tiroir,.node,.edge,.elab{transition:none}}
+</style>
+
+<header class="wrap top">
+  <h1>Chaîne de devis, de la demande à l’envoi au client</h1>
+  <p class="intro">Toutes les étapes du skill pipeline, telles que le code les exécute aujourd’hui. La colonne de gauche suit le cas normal, les exceptions partent à droite. Cliquez sur une étape pour voir son script et sa règle. Pour une lecture rapide, voir la <a href="outils/pipeline/calculateurs/calculateur-devis.html">version en bref</a>.</p>
+  <p class="verif" id="stats"></p>
+</header>
+
+<nav class="bar" aria-label="Phases et filtres">
+  <div class="wrap">
+    <div class="groupe" id="nav-phases"><span class="titre">Phases</span></div>
+    <div class="groupe" id="nav-filtres"><span class="titre">Montrer</span></div>
+    <div class="groupe"><button class="filtre" id="vers-points" type="button">Points relevés</button></div>
+  </div>
+</nav>
+
+<main class="wrap">
+  <div class="ensemble">
+    <figure style="margin:0">
+      <div class="dia" id="vue"></div>
+    </figure>
+    <aside class="legende">
+      <div>
+        <h3>La chaîne en une vue</h3>
+        <p style="margin:0;color:var(--ink-soft);font-size:14px">Cliquez sur un bloc pour aller à sa phase. Les trois blocs pleins sont les arrêts où rien n’avance sans Samuel. La phase 16, les filets de sécurité, s’applique à toute la finalisation.</p>
+      </div>
+      <div>
+        <h3>Qui agit (couleur)</h3>
+        <ul class="lignes" id="leg-qui"></ul>
+      </div>
+      <div>
+        <h3>Type d’étape (forme)</h3>
+        <ul class="lignes" id="leg-forme"></ul>
+      </div>
+    </aside>
+  </div>
+  <div id="phases"></div>
+  <section class="points" id="points">
+    <h2>Points relevés en lisant le code</h2>
+    <p>Ces écarts sont apparus en confrontant le code à la documentation ; chacun est localisé dans le code. Trois autres ont été corrigés le 03/11/2026 : PDF non refait à prix égal, inventaire perdu quand Beeper est fermé, numéro consommé à chaque correction.</p>
+    <div class="tab">
+    <table>
+      <thead><tr><th>Constat</th><th>Effet concret</th><th>Où</th><th>Enjeu</th></tr></thead>
+      <tbody>
+        <tr><td>Refus sans alerte Slack</td><td>Contrôle arithmétique en échec ou fiche non désignée : <code>return 1</code> sans alerte. Seule une bulle Windows et le journal le disent, alors que la documentation promet une alerte à chaque étape.</td><td><code>finalisation.py</code>, après <code>if not a.appliquer</code></td><td class="grav m">Moyen</td></tr>
+        <tr><td>Commande manuelle sans PDF ni message</td><td>La commande du README, <code>--presse-papier --appliquer</code>, n’a pas <code>--whatsapp</code>. Veilleur arrêté, elle écrit la fiche et le CRM, mais ne produit ni PDF, ni inventaire, ni relecture : tout cela vit dans cette branche.</td><td><code>README.md</code> ; <code>finalisation.py</code>, <code>elif a.whatsapp</code></td><td class="grav m">Moyen</td></tr>
+        <tr><td>Le pipeline n’alimente pas le cache d’axes</td><td><code>pipeline.py</code> lit le cache mais n’y écrit jamais : seule la ligne de commande du skill fiche le remplit. Un axe absent est donc rerouté à chaque passage du pipeline.</td><td><code>calcul_itineraire.py</code>, <code>cache_ecrire</code> appelé dans <code>main()</code> seulement</td><td class="grav b">Faible</td></tr>
+        <tr><td>Mode lot : fichiers non ouverts</td><td><code>--fiches</code> génère les copies sans les ouvrir, et n’accepte ni <code>--groupage</code>, ni <code>--indicatif</code>, ni <code>--variante</code> par dossier. Le README présente le lot sans le préciser.</td><td><code>pipeline.py</code>, <code>traiter_lot()</code></td><td class="grav b">Faible</td></tr>
+        <tr><td>Documentation en retard sur le code</td><td>La spec et l’arbre de décision décrivent encore noCRM (« Devis envoyé », « Trajets Axe Paris ») et une fiche écrite dans Notion avec archive dans le Sheet ; le code pose « Devis en révision » sur HubSpot et écrit la fiche sur HubSpot. La spec dit 6 m³ pour l’inventaire, le code 10 m³. Le skill et la spec écrivent longue distance « ≥ 2 h », le code « &gt; 2 h » (Karim, 21/10/2026). La spec dit cache de 12 mois, le code compare les années civiles, soit jusqu’à presque 2 ans.</td><td><code>pipeline-fiche-client-devis.md</code>, <code>workflow-agent-devis.md</code>, <code>SKILL.md</code></td><td class="grav b">Faible</td></tr>
+        <tr><td>Workflows voisins encore sur Notion</td><td>Groupage et le workflow Nextories gardent leurs copies autonomes de la chaîne, encore sur Notion : ils ne sont pas adaptés à la fiche HubSpot (décision du 03/11/2026). Le retour arrière noCRM ne peut plus écrire de fiche.</td><td><code>outils/Groupage/</code> ; <code>outils/Workflow NextStories/</code> ; <code>nocrm.py</code></td><td class="grav b">Faible</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+</main>
+
+<aside class="tiroir" id="tiroir" aria-label="Détail de l’étape" aria-hidden="true">
+  <button class="fermer" id="fermer" type="button" aria-label="Fermer le détail">×</button>
+  <div class="qui" id="t-qui"></div>
+  <h3 id="t-titre"></h3>
+  <p class="txt" id="t-txt"></p>
+  <p class="ou" id="t-ou"></p>
+  <button class="aller" id="t-aller" type="button" hidden>Aller à cette étape</button>
+</aside>
+
+<script>
+/* ---------- Petites fabriques : A action, D décision, E fin, G renvoi, S départ, C sous-programme ---------- */
+const A=(who,l,m,i,src,x)=>({t:'a',who,l,m,i,src,...x});
+const K=(l,m,i,src,x)=>({t:'a',who:'karim',gate:true,l,m,i,src,...x});
+const C=(who,l,m,to,i,src,x)=>({t:'c',who,l,m,to,i,src,...x});
+const D=(who,l,m,i,src,suite,br,x)=>({t:'d',who,l,m,i,src,suite,br,...x});
+const E=(kind,l,i,src)=>({t:'e',who:kind,l,i,src});
+const G=(to,l)=>({t:'g',to,l});
+const S=(l,i,src)=>({t:'s',who:'fin',l,i,src});
+const B=(lab,s,k)=>({lab,s,k});
+
+const PHASES=[
+/* ===================== 1 ===================== */
+{n:1,titre:"Entrée du dossier",but:"Samuel demande un devis, Claude choisit la bonne porte, puis le code retrouve la fiche du dossier, sur HubSpot.",steps:[
+ S("Une demande de devis arrive","Message WhatsApp, e-mail, transcript d’appel, note d’un commercial, visite de Christophe, formulaire du site (transaction HubSpot), ou simplement le nom d’une fiche existante.","Hors chaîne : outils/systeme-commercial/entree-demandes/ pour l’entrée automatique"),
+ A('karim',"Demander le devis à Claude","« fais le devis de X »","Samuel nomme un client, ou plusieurs pour un lot. S’il dit que le devis est indicatif, Claude doit ajouter --indicatif (Karim, 09/10/2026).","Skill calcul-devis-samdem"),
+ D('claude',"Quel genre de dossier ?",null,"Claude choisit la porte d’entrée. Seul le devis Sam’Déménage classique suit toute la chaîne (Karim, 09/09/2026).","Skill calcul-devis-samdem ; CLAUDE.md du coffre","Devis Sam’Déménage",[
+  B("Accès Déménagement",[
+   A('karim',"Ouvrir le calculateur AD","calculateur AD, à la main","Outil autonome : commission 7 %, cible 30 %, sans Next Stories. On l’ouvre, on chiffre, on exporte à la main.","outils/calculateur-devis-acces-demenagement.html"),
+   E('fin',"Hors chaîne : aucun devis AD dans le pipeline","Ne jamais y brancher le pipeline ni aligner ses règles sur regles.py (Karim, 09/09/2026).","CLAUDE.md du coffre")]),
+  B("Nextories Gironde",[
+   A('claude',"Traiter le lot de 5","skill nextories-gironde","Collecte sur moverapp dans Chrome, fiche Notion au format maison, contrôle de l’agenda, complétude, dépôt dans l’atelier Nextories (21 %), relais de l’export.","Skill nextories-gironde ; outils/Workflow NextStories/"),
+   E('fin',"Workflow à part, avec ses copies","Un workflow autonome garde ses dépendances clonées dans son propre dossier. Il n’est pas adapté à la fiche HubSpot à ce stade : ses fiches restent sur Notion (03/11/2026).","outils/Workflow NextStories/PLAN.md")]),
+  B("Urgence, commercial en ligne",[
+   A('claude',"Remplir le calculateur sans fiche","skill, § 10","Christophe en ligne, devis rapide : on ne cherche pas de fiche, on génère avec les seules informations transmises et les défauts habituels (trajet 0,5 h A/R).","Skill calcul-devis-samdem, § 10"),
+   E('fin',"Chiffrage rapide : sans fiche, rien ne s’écrit","finalisation.py refuse d’écrire sans fiche désignée : « Aucune fiche indiquée », code 1.","finalisation.py, main()")]),
+  B("Reprise d’un devis",[
+   A('code',"Rouvrir le dernier export","reprendre_devis.py","« ressors le devis de X ». Retrouve l’export par le page_id de la fiche, régénère depuis le maître du jour, réapplique les temps retouchés et le TTC fixé à la main. Même nom de variante : l’export remplace la version envoyée (Karim, 12/10/2026).","outils/pipeline/reprendre_devis.py"),
+   G('phase-7',"Aller à 7. Validation de Samuel")]),
+ ]),
+ A('claude',"Lancer le pipeline",'pipeline.py --fiche "NOM", puis --devis',"Deux temps, mêmes options : d’abord le contrôle sans --devis, qui n’ouvre rien, puis la génération, une seule fois. Options : --page-id, --variante, --sans-etapes, --groupage, --sans-groupage, --chargement-seul, --dechargement-seul, --deux-phases, --indicatif, --malgre-manques, --remplacer, --prefill, --pas-ouvrir, --sans-itineraire.","outils/pipeline/pipeline.py, main()",{id:'lancer'}),
+ D('code',"Un dossier ou un lot ?","--fiches","Le mode lot sert quand Samuel donne plusieurs noms d’un coup.","pipeline.py, main()","Un dossier",[
+  B("Plusieurs noms",[
+   A('code',"Traiter chaque dossier à la suite","traiter_lot()","Chaque dossier est indépendant : un STOP ou une fiche introuvable n’arrête pas le lot. Les copies sont générées mais pas ouvertes, avec leur JSON de pré-remplissage. --groupage, --indicatif et --variante ne passent pas en lot.","pipeline.py, traiter_lot()"),
+   A('code',"Compte rendu par client","✓ prêt, ⏸ manque, ✗ erreur","Une ligne par client : chemin du devis, ce qui manque ou l’erreur. Claude relaie à Samuel.","pipeline.py, main()"),
+   G('phase-7',"Aller à 7. Validation de Samuel")]),
+ ]),
+ A('code',"Chercher la fiche du dossier","fiche_notion.chercher_fiche()","La note « Fiche client » d’une transaction HubSpot d’abord (fiche_hubspot.chercher : les mots du nom dans le titre de la transaction), puis, à défaut, la base Notion « 🗂️ Fiches Client » des anciens dossiers (20 résultats au plus, les plus récents d’abord). HubSpot injoignable : on passe à Notion. Zéro token.","fiche_notion.py, chercher_fiche() ; fiche_hubspot.py, chercher()",{id:'chercher'}),
+ D('code',"Combien de fiches à ce nom ?",null,"Une fiche : on continue. Aucune : statut FICHE_A_CREER. Plusieurs : sur HubSpot, on garde la seule transaction ouverte ; sur Notion, on regarde si un seul titre commence par ce nom.","fiche_notion.py, chercher_fiche() ; fiche_hubspot.py, chercher()","Une seule",[
+  B("Aucune",[
+   A('code',"Rendre FICHE_A_CREER","code de sortie 3","Aucun devis ne se chiffre depuis le CRM : la fiche est créée sur HubSpot d’abord, sinon finalisation.py n’a rien où reporter le devis (Karim, 11/09/2026 ; sur HubSpot depuis le 03/11/2026).","pipeline.py, fiche_a_creer()"),
+   G('phase-2',"Aller à 2. Création de la fiche")]),
+  B("Plusieurs",[
+   D('code',"Une seule transaction ouverte, ou un seul titre ?",null,"Si oui, cette fiche est retenue (sur Notion, le titre qui commence par ce nom). Sinon le script s’arrête et liste les fiches trouvées avec leur identifiant.","fiche_notion.py, chercher_fiche()","Oui",[
+    B("Non",[
+     A('claude',"Relancer avec --page-id","fiche désignée par son id","Claude choisit la bonne fiche dans la liste, ou demande à Samuel en cas de doute.","pipeline.py, option --page-id"),
+     G('lire',"Aller à la lecture de la fiche")]),
+   ])]),
+ ]),
+ D('code',"Fiche sur une page Notion ?",null,"Un ancien dossier garde sa page Notion en lecture seule (Karim, 03/11/2026). Avec --devis, --copie-html ou --prefill, et en mode lot, sa fiche est recopiée une seule fois sur sa transaction (si SAMDEM_CRM vaut hubspot ou les-deux). Sans ces options, la page est seulement lue.","pipeline.py, sur_hubspot()","Non, une note HubSpot",[
+  B("Oui",[A('ext',"Recopier la fiche sur sa transaction","fiche_hubspot.reprendre_notion()","Le corps de la page, lu sans y écrire, est posé dans une note de la transaction, retrouvée ou créée. Une transaction qui a déjà sa note la garde. Ensuite le dossier est identifié par sa transaction. Transaction introuvable ou ambiguë : le dossier reste sur sa page, et la finalisation alertera.","fiche_hubspot.py, reprendre_notion() ; pipeline.py, sur_hubspot()")]),
+ ]),
+ G('phase-4',"Suite : 4. Lecture du dossier"),
+]},
+/* ===================== 2 ===================== */
+{n:2,titre:"Création de la fiche",but:"Sans fiche, le devis n’aurait nulle part où s’écrire. Aucune question à Samuel : ce qui manque est marqué 🟡. Toute cette phase consomme des tokens.",steps:[
+ S("Fiche absente, ou nouveau client","Deux entrées : le statut FICHE_A_CREER du pipeline, ou Samuel qui dit « nouveau client » ou « crée la fiche ».","Skill creer-fiche-client-samdem"),
+ A('code',"Chercher la transaction dans le CRM","pipeline.opportunite_nocrm()","Lecture seule, sur HubSpot depuis le passage de l’interrupteur outils/crm.env. Rend la transaction, ou la liste des candidates.","pipeline.py, opportunite_nocrm()"),
+ D('code',"Transaction trouvée ?",null,"Le résultat décide de la source de la fiche.","pipeline.py, fiche_a_creer()",null,[
+  B("Une seule",[A('claude',"Lire le dossier dans le CRM",'hubspot_crm.py --description',"Adresses, accès, prestations et inventaire. Ne jamais demander à Samuel une information présente dans l’opportunité (Karim, 16/09/2026).","Skill creer-fiche-client-samdem, étape 0")]),
+  B("Plusieurs",[A('karim',"Désigner la bonne transaction",null,"Le script liste les candidates et ne choisit jamais à la place de Samuel.","pipeline.py, fiche_a_creer()")]),
+  B("Aucune",[A('claude',"Partir de la prise de contact","message, transcript, formulaire","La source est ce que Samuel a collé dans la conversation.","Skill creer-fiche-client-samdem, étape 0")]),
+ ],{noMain:true}),
+ D('claude',"Que faire de l’inventaire ?",null,"Deux règles opposées selon l’origine du dossier.","Skill creer-fiche-client-samdem, étape 0","Pas d’inventaire",[
+  B("Visite de Christophe",[A('claude',"Ne recopier aucun inventaire",null,"Christophe fait lui-même l’inventaire pendant la visite ; celui du client peut en différer (Karim, 13/10/2026).","Skill creer-fiche-client-samdem, étape 0")]),
+  B("Inventaire sur la transaction",[A('claude',"Le recopier en entier","section « Inventaire (repris du CRM) »","Une ligne par pièce, chaque objet avec son libellé et sa quantité d’origine, aucun objet omis ni renommé (Karim, 16/09/2026).","Skill creer-fiche-client-samdem, étape 0")]),
+ ]),
+ D('claude',"Inventaire sans volume ?",null,"Un inventaire, même court, est la liste à estimer : on ne demande ni volume ni inventaire « complet » (Karim, 16/09/2026).","Skill calcul-devis-samdem, § 1","Non",[
+  B("Oui",[C('claude',"Estimer le volume","3. Estimation du volume",'phase-3',"Le volume conservateur est retenu et reporté dans la fiche, avec sa source.","Skill estimer-volume-samdem")]),
+ ]),
+ A('claude',"Lire les règles de remplissage","references/regles-remplissage.md","Avant toute autre action. Ce fichier fait foi depuis le 03/11/2026 : la page de règles Notion n’est plus consultée. Deux arbitrages plus récents priment : itinéraire et barème monte-charge.","Skill creer-fiche-client-samdem, étape 1"),
+ A('claude',"Repartir du modèle de fiche","references/modele-fiche.md","Copié dans un fichier du scratchpad : on y écrit la fiche, sans format libre ni section inventée.","Skill creer-fiche-client-samdem, étape 2"),
+ A('claude',"Remplir la fiche","lignes de la note","Formule, étages, ascenseur, véhicule, portage (10 m au minimum), matériel. Chaque manque reçoit 🟡. Les lignes de chiffrage restent vides. Format relu par le parseur : « ### Titre », « - [x] Case », « - Puce », lignes libres.","Skill creer-fiche-client-samdem, étape 4 ; references/regles-remplissage.md"),
+ A('claude',"Nettoyer la fiche","sections et cases inutiles","Ne garder que le type de logement coché, les meubles et mises en carton cochés. Matériel à livrer et accès compliqués restent toujours.","Skill creer-fiche-client-samdem, étape 5"),
+ C('code',"Calculer l’itinéraire","calcul_itineraire.py, phase 5",'phase-5',"Claude lance le script pour toutes les missions, locales comprises, puis reporte km, temps A/R, péage et un lien Mappy par segment. Échec : 🟡 Itinéraire à renseigner, jamais de kilométrage estimé.","Skill creer-fiche-client-samdem, étape 6"),
+ A('ext',"Poser la fiche sur la transaction","fiche_hubspot.py --creer","Retrouve le contact et la transaction, souvent créés par le site, ou les crée, puis pose la note « Fiche client ». Le commercial s’écrit dans une section « Suivi ». Contact ou transaction ambigus : code 1, rien n’est écrit, Samuel tranche.","Skill creer-fiche-client-samdem, étape 7 ; fiche_hubspot.py, creer()"),
+ A('claude',"Vérifier la fiche","fiche_hubspot.py --lire","La note revient bien, nom, téléphone et e-mail lus. Comptage des objets de l’inventaire contre la source.","Skill creer-fiche-client-samdem, étape 8"),
+ D('claude',"Inventaire conforme à la source ?",null,"Un écart se corrige avant de continuer.","Skill creer-fiche-client-samdem, étape 8","Oui",[
+  B("Non",[A('claude',"Corriger l’écart","update_content","Correction ciblée de la section Inventaire.","Skill creer-fiche-client-samdem")]),
+ ]),
+ A('claude',"Contrôler la cohérence","9 axes","Rapporté dans la conversation, jamais dans la fiche : « ⚠️ Incohérence détectée » ou « ✅ Aucune incohérence ».","references/regles-remplissage.md"),
+ A('claude',"Récapitulatif à Samuel","lien et points 🟡","Adresses, volume, camion, formule, puis les éléments 🟡 à compléter.","Skill creer-fiche-client-samdem, étape 9"),
+ D('claude',"Fiche créée pour un devis ?",null,"Si oui, on relance le pipeline sans demander.","Skill creer-fiche-client-samdem, étape 8","Oui",[
+  B("Non",[E('fin',"Fiche prête, pas de devis demandé","La fiche attend sur la transaction.")]),
+ ]),
+ G('lancer',"Retour : relancer le pipeline (phase 1)"),
+]},
+/* ===================== 3 ===================== */
+{n:3,titre:"Estimation du volume",but:"Le modèle reconnaît les objets, le script fait les calculs. C’est le volume conservateur qui va au devis, jamais le standard (Karim, 08/09/2026).",steps:[
+ S("Inventaire sans volume","Deux entrées : la création de fiche (phase 2) ou le statut ESTIMATION_REQUISE (phase 4).","Skill estimer-volume-samdem"),
+ A('claude',"Lire le prompt de référence","references/prompt-projet.md","Instructions du projet Claude de Samuel, recopiées mot pour mot. Elles priment sur le skill et sur volume.py.","Skill estimer-volume-samdem, § 0"),
+ A('claude',"Lire l’inventaire","texte, PDF, photos, manuscrit","HEIC converti en JPEG. Liste et photos croisées. Manuscrit : seules les lignes écrites à la main. Un « etc. » rend l’inventaire incomplet, on ne l’extrapole pas.","Skill estimer-volume-samdem, § 1"),
+ A('claude',"Décrire chaque objet en JSON","dims_cm, ref, colonne_cm, tags","Un objet par ligne, écrit dans le dossier temporaire. Arbres et pots de 40 cm et plus : règle de la colonne neutralisée. « incertain » seulement sur une formulation conditionnelle du client ou une quantité vague (erreur BODARD, 15/09/2026).","Skill estimer-volume-samdem, § 2 à 4",{id:'vol_json'}),
+ A('code',"Calculer les volumes","volume.py","Coefficients et sommes : marges selon dimensions, démonté, irrégulier, pro, incertain +20 % en conservateur, marge globale +10 %, arrondi entier. L’arithmétique n’est jamais refaite de tête.","outils/pipeline/volume.py"),
+ D('code',"Objet sans dimension ni référence ?",null,"Le script s’arrête avec une erreur claire plutôt que d’inventer un volume.","volume.py","Non",[
+  B("Oui",[
+   A('claude',"Trouver la référence","--references, ou dimensions à la hausse","Choisir la référence la plus plausible à la hausse, ou demander la dimension au client.","Skill estimer-volume-samdem, § 2"),
+   G('vol_json',"Retour : compléter le JSON")]),
+ ]),
+ A('code',"Produire le rapport","standard, conservateur, longue distance","Avec l’analyse de palier : un conservateur qui atteint 15, 20 ou 30 m³ fait recommander le palier supérieur.","volume.py"),
+ A('claude',"Restituer le rapport tel quel",null,"Sans recalcul ni reformulation. Changement de palier et saturation sont signalés.","Skill estimer-volume-samdem, § 5 et 6"),
+ A('claude',"Reporter le conservateur sur la fiche","ligne « Volume de meuble »","Nouvelle version de la note : la ligne « Volume de meuble : … m3 | source : … » avec la source « estimation Sam’Déménage sur inventaire client (conservateur) », et la case « Inventaire : Oui ». Le corps de la note fait foi.","Skill estimer-volume-samdem, § 7"),
+ G('lancer',"Retour : relancer le pipeline (phase 1)"),
+]},
+/* ===================== 4 ===================== */
+{n:4,titre:"Lecture du dossier et verdict",but:"Tout est du code, sans token, jusqu’au verdict. Une correction faite à la main dans le texte de la fiche est captée d’office, car le corps fait foi.",steps:[
+ S("Fiche identifiée (phase 1)","La suite ne charge jamais la fiche dans le contexte du modèle.","pipeline.py, main()"),
+ A('code',"Lire la fiche","fiche_notion.lire_fiche()","En HTTP direct. Identifiant de transaction (que des chiffres) : la dernière version de la note « Fiche client », plus le contact et quelques propriétés de la transaction. Sinon, ancienne page Notion : propriétés et corps. Toute la fiche est lue à chaque passage.","fiche_notion.py, lire_fiche() ; fiche_hubspot.py, lire_fiche()",{id:'lire'}),
+ A('code',"Découper le corps par sections","parser_corps()","Découpage sur les titres ###, jamais un grep global : une ligne des Notes ne peut pas passer pour l’adresse. Rend le dossier.json, où un champ inconnu vaut null.","fiche_notion.py, parser_corps()"),
+ A('code',"Croiser corps et propriétés","croiser()","Ancien dossier Notion : le corps est retenu, l’écart est signalé. Note HubSpot : rien à croiser, divergences et replis restent vides. Sortent aussi : replis, signaux (groupage, garde-meuble, monte-meuble, déchetterie, piano, week-end, Nextories), lignes 🟡, notes, lignes non reconnues, chiffrage déjà présent.","fiche_notion.py, croiser() ; champ _meta"),
+ D('code',"--sans-etapes ?",null,"Variante directe d’une fiche qui porte des arrêts (Karim, 11/09/2026).","pipeline.py, traiter()","Non",[
+  B("Oui",[A('code',"Écarter arrêts, itinéraire et péage",null,"Les chiffres de la fiche sont ceux du trajet avec arrêts : ils sont écartés et la boucle est recalculée.","pipeline.py, traiter()")]),
+ ]),
+ D('code',"Itinéraire déjà sur la fiche ?",null,"Si les km sont écrits, ils sont repris tels quels. Les drapeaux longue distance et péage sont recalculés depuis les seuils.","pipeline.py, traiter() ; fiche_notion.py","Oui, chiffres relus",[
+  B("Non",[
+   A('code',"Nettoyer les adresses","_adresse_routable()","« Bordeaux — 🟡 adresse à compléter » devient « Bordeaux » : envoyée telle quelle, la mention ferait échouer tout l’itinéraire.","pipeline.py, _adresse_routable()"),
+   C('code',"Calculer la boucle","5. Itinéraire",'phase-5',"Dépôt, départ, arrêts, arrivée, dépôt. Sautée avec --sans-itineraire.","calcul_itineraire.py, calculer()")]),
+ ]),
+ D('code',"Section Relivraison ?",null,"Sortie de garde-meuble un autre jour, dans le même devis (Karim, 14/10/2026).","pipeline.py, traiter()","Non",[
+  B("Oui",[A('code',"Calculer le trajet du jour","itin.calculer(origine, adresse)","Départ hors Saint-Loubès, ou trajet non calculé : réserve, à vérifier ou à saisir dans le calculateur.","pipeline.py, traiter()")]),
+ ]),
+ A('code',"Déduire effectifs, taux, camions","regles.py, deduire()","Table volume × étage (étage divisé par 2 avec ascenseur), plafond 4. Manutention 28 €/h, route 20 €/h au-delà de 2 h. Jusqu’à 30 m³ : 1 camion ; au-delà : 2, à confirmer.","pipeline.py, deduire() ; regles.py"),
+ A('code',"Chiffrer le démontage au barème","demontage.estimer()","Temps pour 2 personnes par élément reconnu, multiplié par la quantité. Une durée écrite sur la ligne fait foi. Hors barème ou sans temps : 0 h et réserve, jamais estimé (Karim, 11/09/2026).","outils/pipeline/demontage.py"),
+ A('code',"Évaluer la complétude","evaluer_completude()","Bloquants : volume, adresses, étages, formule, itinéraire en échec sur longue distance. Un RDC coché vaut un étage connu.","pipeline.py, evaluer_completude()"),
+ D('code',"Verdict",null,"Quatre issues. Un volume absent avec inventaire n’est pas une question au client, c’est une estimation à faire nous-mêmes.","pipeline.py, evaluer_completude()","GO",[
+  B("STOP : un bloquant manque",[
+   A('code',"Rédiger la relance client","_relance()","Un STOP produit un message prêt à copier, jamais une erreur. Aucun devis n’est généré.","pipeline.py, _relance()"),
+   D('karim',"Samuel pose une hypothèse ?",null,"Exemple : étage d’arrivée inconnu, Samuel saisit son hypothèse. Jamais sans volume ni itinéraire.","pipeline.py, option --malgre-manques","Non",[
+    B("Oui",[
+     A('claude',"Relancer avec --malgre-manques","bandeau : ce qui reste à saisir","Sur instruction de Samuel uniquement.","Skill calcul-devis-samdem, § 1"),
+     G('phase-6',"Aller à 6. Génération")]),
+   ]),
+   A('karim',"Envoyer la relance au client","WhatsApp","Samuel, ou le commercial, envoie le message rédigé.","Sortie de pipeline.py"),
+   A('karim',"Compléter la fiche à la réponse","corps de la fiche","La correction se fait dans le texte de la note, par une nouvelle version (fiche_hubspot.py --creer) : le parseur la lira au prochain passage.","fiche_hubspot.py"),
+   G('lancer',"Retour : relancer le pipeline (phase 1)")],'crit'),
+  B("ESTIMATION_REQUISE",[G('phase-3',"Aller à 3. Estimation du volume")]),
+  B("GO_AVEC_RESERVES",[A('code',"Lister les fragilités","affichées dans la sortie","Itinéraire dégradé, adresse à la commune, péage à relever, volume sans inventaire, incohérence formule et options, plus de 30 m³, démontage hors barème, relivraison à vérifier, plus de 3 arrêts.","pipeline.py, evaluer_completude() et traiter()")]),
+ ]),
+ G('phase-6',"Suite : 6. Génération du calculateur"),
+]},
+/* ===================== 5 ===================== */
+{n:5,titre:"Itinéraire",but:"Sous-programme appelé par la lecture du dossier et par la création de fiche. Aucun chiffre inventé : en cas d’échec, les km restent vides.",steps:[
+ S("Appelé par la phase 4 ou la phase 2","Départ, arrivée et arrêts dans l’ordre réel.","calcul_itineraire.py, calculer()"),
+ A('code',"Géocoder dépôt, départ, arrêts, arrivée","API Adresse (BAN)","Dépôt : 147 route des Valentons, 33450 Saint-Loubès. Gratuit, sans clé.","calcul_itineraire.py, geocode()"),
+ D('code',"Géocodage réussi ?",null,"Une adresse introuvable fait tout tomber en échec.","calcul_itineraire.py, calculer()","Oui",[
+  B("Non",[E('crit',"Confiance = échec, km vides","Sur longue distance, c’est un bloquant : verdict STOP. Jamais d’estimation de secours.","calcul_itineraire.py ; pipeline.py, evaluer_completude()")],'crit'),
+ ]),
+ A('code',"Contrôler chaque adresse","_commune_coherente()","Commune différente de la saisie, ou adresse résolue à la rue ou à la ville : alerte ⚠ et confiance dégradée. La BAN renvoie parfois une autre commune sans le dire.","calcul_itineraire.py ; LECONS.md"),
+ A('code',"Découper la boucle en tronçons","un lien Mappy par tronçon","Dépôt, départ, arrêts, arrivée, dépôt. Mappy ne sait pas encoder plus de deux points dans une URL (testé le 08/09/2026).","calcul_itineraire.py, calculer()"),
+ D('code',"Axe déjà dans le cache ?","axes-itineraires.csv","Le cache évite les appels de routage. Une entrée sert tant que l’écart d’années civiles ne dépasse pas 1.","calcul_itineraire.py, cache_lire()",null,[
+  B("Oui",[A('code',"Reprendre km et temps du cache",null,"Valeurs reprises avec la date du calcul, mentionnée dans les alertes.","calcul_itineraire.py, calculer()")]),
+  B("Non",[
+   A('code',"Router la boucle sans péage","Valhalla, profil camion","Un appel par tronçon sur le service communautaire.","calcul_itineraire.py, route()"),
+   D('code',"Tronçon sans trajet dans ce sens ?",null,"Une rue interdite aux poids lourds dans OSM se route parfois dans un seul sens.","calcul_itineraire.py, segment()","Non",[
+    B("Oui",[A('code',"Mesurer en sens inverse","alerte ⚠","Le trajet est presque identique, à quelques dizaines de mètres.","calcul_itineraire.py, segment()")]),
+   ]),
+   D('code',"A/R au-delà de 19h06 ?",null,"Sans péage tant que l’A/R tient sous 19h06. Bordeaux-Paris reste sans péage : 1 283 km, 18,25 h (Karim, 08/09/2026).","calcul_itineraire.py, SEUIL_SANS_PEAGE_H","Non",[
+    B("Oui",[A('code',"Router avec péage","peage_requis = vrai","Le montant n’est jamais calculé : Samuel le relève en classe 3 et divise par 1,2. Verdict GO_AVEC_RESERVES.","calcul_itineraire.py, calculer()")]),
+   ]),
+   D('code',"Routeur en panne ?",null,"Toute exception du routage mène à l’échec.","calcul_itineraire.py, calculer()","Non",[
+    B("Oui",[E('crit',"Confiance = échec, liens Mappy rendus","La fiche porte 🟡 Itinéraire à renseigner et les liens par tronçon, pour un relevé en quelques clics.","calcul_itineraire.py, calculer()")],'crit'),
+   ]),
+   A('code',"Arrondir et répartir","km à l’unité, temps au quart d’heure","Les segments sont répartis au prorata pour que leur somme retombe sur les totaux.","calcul_itineraire.py, _repartir()")]),
+ ],{noMain:true}),
+ A('code',"Ajuster le temps de conduite","_temps_ar_ajuste()","Jusqu’à 1h30 brut : +0,25 h de marge trafic. Au-delà : arrondi à la demi-heure supérieure, sans marge (Karim, 14/09/2026).","calcul_itineraire.py, _temps_ar_ajuste()"),
+ A('code',"Marquer la longue distance","A/R > 2 h","2 h pile reste court (Karim, 21/10/2026). Déclenche le taux route à 20 €/h par personne du camion.","calcul_itineraire.py, SEUIL_LONGUE_DISTANCE_H"),
+ A('code',"Rendre le résultat","km, temps, variante, confiance","Confiance ok, ou dégradée dès qu’une alerte ⚠ existe.","calcul_itineraire.py, calculer()"),
+ D('code',"Lancé en ligne de commande ?",null,"Seul le main() du script écrit dans le cache : pipeline.py appelle calculer() et n’y écrit pas.","calcul_itineraire.py, main()","Non, par pipeline.py",[
+  B("Oui, par le skill fiche",[A('code',"Écrire dans le cache d’axes","axes-itineraires.csv","Sauf échec, valeur déjà issue du cache, ou --no-save.","calcul_itineraire.py, cache_ecrire()")]),
+ ]),
+ G('phase-4',"Retour à l’appelant (phase 4 ou 2)"),
+]},
+/* ===================== 6 ===================== */
+{n:6,titre:"Génération du calculateur",but:"Le pipeline ne produit que des entrées, jamais un prix. Le maître n’est jamais modifié : le dossier est injecté dans une copie.",steps:[
+ S("Verdict GO, GO_AVEC_RESERVES, ou --malgre-manques","Avec STOP ou ESTIMATION_REQUISE, rien n’est généré.","pipeline.py, main()"),
+ D('code',"--devis ou --prefill demandé ?",null,"Sans ces options, le pipeline fait le contrôle : rien n’est généré ni ouvert.","pipeline.py, main()","Oui",[
+  B("Non : contrôle",[
+   A('code',"Afficher ce qui partira dans le calculateur","rapport_controle(), noter_controle()","Le statut, les manques, les réserves, les points à trancher et les valeurs. Le contrôle est noté pour ces valeurs et ces options.","pipeline.py, main()"),
+   A('claude',"Confronter les valeurs à la fiche","et poser les questions ouvertes","Groupage mentionné, chargement ou déchargement seul : à trancher avec --groupage ou --sans-groupage, --chargement-seul, --dechargement-seul ou --deux-phases.","Skill calcul-devis-samdem, contrôle avant génération"),
+   G('lancer',"Retour : relancer avec --devis, mêmes options")]),
+ ]),
+ D('code',"Génération autorisée ?","code de sortie 4 sinon","Un contrôle vaut pour une seule génération. Fiche ou options changées : il faut contrôler à nouveau.","pipeline.py, consommer_controle()","Oui",[
+  B("Non",[E('crit',"Génération refusée","Point à trancher, valeurs non contrôlées, ou devis déjà généré sans --remplacer. Avec --remplacer, faire fermer l’ancien onglet : il reste exportable.","pipeline.py, main()")],'crit'),
+ ]),
+ A('code',"Construire l’objet EX","construire_ex(), relivraison_ex()","Toutes les entrées du calculateur : volume, accès, effectifs, taux, trajet, options, matériel, arrêts dans Étape, Point 2 et Point 3, relivraison.","pipeline.py, construire_ex()"),
+ A('code',"Copier le calculateur maître","Devis_NOM_Prénom_variante.html","Copie dans « donnees/Devis générés/ ». Le nom de variante entre dans le nom du fichier : deux variantes ne s’écrasent pas.","pipeline.py, generer_devis()"),
+ D('code',"Ancre const PREFILL présente ?",null,"Garantie contre un devis vide si le maître change.","pipeline.py, generer_devis()","Oui",[
+  B("Non",[E('crit',"Arrêt net : maître trop ancien","Le script lève une erreur plutôt que de produire un devis vide.","pipeline.py, generer_devis()")],'crit'),
+ ]),
+ A('code',"Injecter le dossier dans la copie","construire_paquet()","EX, fiche cible (page_id = identifiant de transaction, titre, URL, indicatif), bandeau, variante, noms de variantes déjà finalisés. L’identité de la fiche fait ainsi l’aller-retour jusqu’à l’export.","pipeline.py, construire_paquet()"),
+ D('claude',"Une seule phase ?","--chargement-seul, --dechargement-seul","Signalé par la fiche, tranché par le modèle (Karim, 28/10/2026). Samuel n’a pas à le corriger à la main.","pipeline.py, generer_devis()","Non",[
+  B("Oui",[A('code',"Mettre l’autre phase à 0 min","copie locale seulement","Transport et déplacement restent comptés.","pipeline.py, PHASE_A_ZERO")]),
+ ]),
+ A('code',"Ouvrir dans le navigateur","ouvrir()","Le devis s’ouvre seul, formulaire rempli. Si l’ouverture échoue, le script donne le chemin. --pas-ouvrir la saute.","pipeline.py, ouvrir()"),
+ D('code',"--prefill ?",null,"Voie tablette ou partage, par l’artefact en ligne.","pipeline.py, generer_prefill()","Non",[
+  B("Oui",[
+   A('code',"Mettre le JSON au presse-papier","Prefill_NOM_Prénom.json","Schéma samdem.devis.prefill/1. Le veilleur l’ignore : il ne réagit qu’au schéma d’export.","pipeline.py, generer_prefill()"),
+   A('karim',"Coller dans l’artefact en ligne","« Charger un dossier »","Attention : les personnes qui ouvrent un partage voient une version épinglée.","README.md du pipeline")]),
+ ]),
+ D('code',"--indicatif, avec HubSpot actif ?",null,"Obligatoire dès que Samuel dit que le devis est indicatif.","pipeline.py, main()","Non",[
+  B("Oui",[A('ext',"Poser Type de devis = Indicatif","hubspot_crm.marquer_type_devis()","Posé tout de suite sur la transaction, puis réécrit à la finalisation. Ambiguïté : aucune écriture, ⚠ à signaler à Samuel.","hubspot_crm.py, marquer_type_devis()")]),
+ ]),
+ A('code',"Afficher le rapport","statut, effectifs, réserves, signaux","Fiche, itinéraire, effectifs, démontage, réserves, divergences, signaux, 🟡, chemin du devis.","pipeline.py, main()"),
+ A('claude',"Lire ce que le code ne tranche pas","divergences, signaux, 🟡, notes","Dire à Samuel ce qui diverge. Le code repère les mentions, il ne décide pas. C’est le seul moment où le modèle intervient sur un dossier déjà complet.","Skill calcul-devis-samdem, § 1"),
+ D('claude',"Une option à ajouter ?",null,"Groupage mentionné, phase unique, deux devis avec et sans arrêt : Claude relance avec la bonne option. Il ne demande pas « je génère ? ».","Skill calcul-devis-samdem, § 14","Non",[
+  B("Oui",[
+   A('claude',"Relancer avec l’option","--groupage, --variante…","Pour deux devis avec et sans arrêt : --variante pour le premier, --sans-etapes --variante pour le second.","Skill calcul-devis-samdem, § 2"),
+   G('lancer',"Retour : relancer le pipeline (phase 1)")]),
+ ]),
+ A('claude',"Récapitulatif à Samuel","déductions et entrées, pas de montant","Effectifs avec le raisonnement, entrées saisies, points 🟡 utiles à l’appel client, chemin du fichier. Les prix se lisent dans le calculateur.","Skill calcul-devis-samdem, § 13"),
+ G('phase-7',"Suite : 7. Validation de Samuel"),
+]},
+/* ===================== 7 ===================== */
+{n:7,titre:"Validation de Samuel",but:"Le point d’arrêt humain du chiffrage, jamais court-circuité. La chaîne attend ici, et tout le reste part d’un seul clic.",steps:[
+ S("Le calculateur est ouvert","Copie locale déjà remplie, reprise d’un devis, ou artefact en ligne.","outils/pipeline/calculateurs/calculateur-devis.html"),
+ A('code',"Remplir le formulaire à l’ouverture","chargerDossier()","Le moteur JavaScript calcule en direct. La fiche cible reste dans sessionStorage, par onglet : plusieurs dossiers ouverts ne se mélangent pas.","calculateur-devis.html, chargerDossier()"),
+ K("Vérifier le devis","marge, temps, options, bandeau","Marge affichée et écart à la cible de 35 %, réalisme des temps, options, cohérence, réserves du bandeau. Non automatisable.","Spec, § 8"),
+ D('karim',"Péage à relever ?",null,"Seulement si l’A/R dépasse 19h06 : le bandeau le rappelle.","pipeline.py, construire_paquet()","Non",[
+  B("Oui",[A('karim',"Relever le péage sur Mappy","classe 3, divisé par 1,2","Avec les liens par tronçon de la fiche. À saisir dans le champ Péage, jamais dans Autre coût.","Spec, § 4.2")]),
+ ]),
+ D('karim',"Devis Next Stories ?",null,"Marge ramenée à 21 % une fois tous les calculs faits. Le solveur ne déplace que le transport (Karim, 10/09/2026).","calculateur-devis.html ; regles.MARGE_NEXT_STORIES","Non",[
+  B("Oui",[A('karim',"Cocher la case","marge calée à 21 %","21 % devient la cible de ce devis. Réglage modifiable ensuite.","calculateur-devis.html, syncMargeNS()")]),
+ ]),
+ D('karim',"Quelque chose à corriger ?",null,"Le calcul se refait à chaque saisie.","calculateur-devis.html","Non",[
+  B("Oui",[A('karim',"Ajuster champs, temps ou TTC cible",null,"Les temps retouchés et le TTC fixé seront réappliqués si le devis est repris plus tard.","calculateur-devis.html ; reprendre_devis.py",{id:'ajuster'})]),
+ ]),
+ A('karim',"Nommer la variante","déduite du calcul, modifiable","« Standard », « Confort + piano »… Ce nom titre le bloc de la fiche (### 🔀 Nom).","calculateur-devis.html, champ Variante",{id:'nommer'}),
+ D('karim',"Une autre variante à chiffrer ?",null,"Un seul message par client : les variantes s’accumulent jusqu’au dernier export.","calculateur-devis.html, exporter()",null,[
+  B("Non, c’est le dernier devis",[A('karim',"Cliquer « Exporter JSON »","prévient l’équipe","prevenir = vrai : fiche, CRM, PDF et inventaire. Le message attend la validation.","calculateur-devis.html, #jsonBtn")]),
+  B("Oui",[A('karim',"Cliquer « Autre variante à suivre »","n’avertit personne","prevenir = faux : seul le bloc de la variante s’écrit dans la note.","calculateur-devis.html, #jsonSuiteBtn")]),
+ ],{noMain:true}),
+ D('code',"Nom de variante déjà pris ?",null,"Noms venant du journal de la fiche, de la page et du navigateur. Évite d’écraser une variante sans le vouloir (Karim, 11/09/2026).","calculateur-devis.html, majAlerteVariante()","Non",[
+  B("Oui",[
+   A('code',"Bloquer l’export","« Attention, variante avec le même nom »","Rien ne part au presse-papier.","calculateur-devis.html, exporter()"),
+   A('karim',"Renommer, ou Remplacer quand même",null,"Le remplacement met le même bloc de la note à jour.","calculateur-devis.html"),
+   G('nommer',"Retour : la variante")],'crit'),
+ ]),
+ A('code',"Copier le JSON au presse-papier","samdem.devis.export/1","Ventilation par champ de fiche, marge, temps bruts, entrées, fiche cible, drapeau prevenir. L’artefact ne peut appeler aucun serveur local : le presse-papier est le seul canal.","calculateur-devis.html, buildExport()"),
+ G('phase-8',"Suite : 8. Veilleur du presse-papier"),
+]},
+/* ===================== 8 ===================== */
+{n:8,titre:"Veilleur du presse-papier",but:"Le seul maillon qui tourne en permanence sur le PC de Samuel. Il transforme le clic en finalisation, sans rien à taper.",steps:[
+ S("Veilleur démarré avec Windows","Lanceur dans le dossier Démarrage. Un mutex garantit une seule instance. Journal : .claude/scripts/devis-export.log.","watch-devis-export.ps1"),
+ D('karim',"Veilleur actif ?",null,"S’il est arrêté, rien ne se passe après le clic, et rien ne le signale : la fiche reste simplement vide.","watch-devis-export.ps1","Oui",[
+  B("Non",[
+   A('karim',"Lancer la finalisation à la main","--presse-papier --appliquer","La commande du README n’a pas --whatsapp : ni PDF, ni inventaire, ni relecture. Il faut l’ajouter pour la chaîne complète.","README.md ; finalisation.py"),
+   G('phase-9',"Aller à 9. Contrôles")]),
+ ]),
+ A('code',"Lire le presse-papier toutes les 2 s","Get-Clipboard","Boucle sans fin. Vide ou identique au dernier texte : on recommence.","watch-devis-export.ps1",{id:'boucle'}),
+ D('code',"Texte nouveau, au schéma d’export ?","samdem.devis.export/1","Tout autre contenu est ignoré, y compris un JSON de pré-remplissage.","watch-devis-export.ps1","Oui",[
+  B("Non",[G('boucle',"Retour à la lecture")]),
+ ]),
+ D('code',"Empreinte déjà traitée ?","SHA1, .devis-exports-vus","Réappuyer sans rien changer ne réécrit pas la fiche.","watch-devis-export.ps1","Non",[
+  B("Oui",[G('boucle',"Retour à la lecture")]),
+ ]),
+ D('code',"JSON lisible ?",null,"Sinon une ligne de journal, et rien d’autre.","watch-devis-export.ps1","Oui",[
+  B("Non",[G('boucle',"Retour à la lecture")]),
+ ]),
+ A('code',"Archiver l’export","donnees/Devis générés/exports/","Fichier AAAAMMJJ-HHMMSS NOM.json : la base de toutes les reprises et de reprendre_devis.py.","watch-devis-export.ps1"),
+ C('code',"Lancer la finalisation","finalisation.py --appliquer --whatsapp",'phase-9',"Phases 9 à 13. Le veilleur attend la fin du script : c’est pourquoi l’inventaire tourne détaché.","watch-devis-export.ps1"),
+ D('code',"Code de retour ?",null,"Seul le code 0 marque l’export comme traité.","watch-devis-export.ps1","0 : réussi",[
+  B("Autre : échec",[
+   A('code',"Bulle « Échec », voir le journal","empreinte non notée","Un nouvel export repart de zéro, sans doublon. L’alerte Slack existe seulement si l’étape en a prévu une.","watch-devis-export.ps1"),
+   G('phase-16',"Aller à 16. Filets de sécurité")],'crit'),
+ ]),
+ A('code',"Noter l’empreinte, bulle « Fiche remplie »",null,"Notification Windows : bloc de chiffrage de la fiche à jour.","watch-devis-export.ps1"),
+ G('boucle',"Retour à la lecture du presse-papier"),
+]},
+/* ===================== 9 ===================== */
+{n:9,titre:"Contrôles avant écriture",but:"Rien n’est écrit tant que le calcul et la fiche ne sont pas confirmés. La marge est affichée, elle n’arrête rien (Karim, 03/11/2026). L’ancien projet Cowork « Finalisation fiche Sandrine » est devenu ce code.",steps:[
+ S("finalisation.py démarre","Lancé par le veilleur, ou à la main. Filet général : _main_protege(). Options manuelles : --fiche, --page-id, --ttc-cible, --bloc, --variante, --diviseur, --sans-division, --sans-crm, --crm, --sans-inventaire, --seulement, --json.","finalisation.py, main()"),
+ A('code',"Charger l’export","charger()","Depuis un fichier ou le presse-papier. Un schéma inattendu donne un avertissement. Du texte au lieu du JSON arrête le script.","finalisation.py, charger()"),
+ D('code',"--ttc-cible ?","manuel","Repositionner à un TTC donné : seul le transport bouge.","finalisation.py, ajuster_ttc()","Non",[
+  B("Oui",[A('code',"Repositionner le transport","ajuster_ttc()","Les autres postes restent figés.","finalisation.py, ajuster_ttc()")]),
+ ]),
+ A('code',"Calculer les temps de fiche","temps_fiche()","Chargement et déchargement divisés par 1,1 puis arrondis à la demi-heure la plus proche (Karim, 08/09/2026). Trajet absent : 30 min.","finalisation.py, temps_fiche()"),
+ A('code',"Composer les lignes du bloc","lignes_fiche()","Transport, Manut, Formule, Déplacement, Matériel, Dossier, Prix Total, temps, et lignes dédiées : piano, monte-charge, relivraison.","finalisation.py, lignes_fiche()"),
+ A('code',"Contrôler l’arithmétique","verifier()","Somme des champs égale au total HT, et HT × 1,2 égal au TTC, à 1 € près.","finalisation.py, verifier()"),
+ A('code',"Identifier la fiche","--page-id, --fiche, ou le JSON","Par ordre de priorité. Le cas courant : l’identité portée par le JSON. Un ancien dossier encore sur sa page Notion est d’abord recopié sur sa transaction (avec --appliquer).","finalisation.py, main()"),
+ A('code',"Relire les blocs de la fiche","_lignes_blocs(), reperer_blocs()","Liste les blocs de chiffrage existants et prépare le diff ligne à ligne.","finalisation.py"),
+ D('code',"--appliquer ?",null,"Le veilleur le passe toujours. À la main, sans lui, on ne fait que regarder.","finalisation.py, main()","Oui",[
+  B("Non",[E('fin',"Contrôle seul : rien n’est écrit","Affiche le bloc à écrire et le diff. Code 0.","finalisation.py, main()")]),
+ ]),
+ D('code',"Arithmétique juste ?",null,"Vérifiée avant toute écriture.","finalisation.py, main()","Oui",[
+  B("Non",[E('crit',"Écriture refusée, code 1","Message dans le journal et bulle Windows. Pas d’alerte Slack à ce stade.","finalisation.py, main()")],'crit'),
+ ]),
+ D('code',"Fiche identifiée ?",null,"Cas d’un export fait sans fiche : urgence, calculateur vierge.","finalisation.py, main()","Oui",[
+  B("Non",[E('crit',"« Aucune fiche indiquée », code 1","Message dans le journal et bulle Windows. Pas d’alerte Slack à ce stade.","finalisation.py, main()")],'crit'),
+ ]),
+ G('phase-10',"Suite : 10. Écritures"),
+]},
+/* ===================== 10 ===================== */
+{n:10,titre:"Écriture de la fiche",but:"Seul le dernier export ajoute ce qui n’existe qu’en un exemplaire sur la fiche. Depuis le 03/11/2026, rien n’est plus écrit dans Notion ni dans le Google Sheet : seule la note « Fiche client » de la transaction HubSpot l’est. Chaque étape passe par une reprise automatique et peut se rejouer sans doublon.",steps:[
+ S("Contrôles passés","Ordre fixe : la note de la fiche, puis la ligne de dossier pour le CRM.","finalisation.py, main()"),
+ D('code',"Quel bloc reçoit la variante ?","choisir_groupe()","Une variante n’écrase jamais sa voisine. Seules les lignes du bloc de chiffrage sont réécrites : Statut, Réf, Commercial, adresses et Dossier ne sont jamais touchés.","finalisation.py, choisir_groupe()",null,[
+  B("Même nom déjà sur la fiche",[A('code',"Mettre à jour ce bloc",null,"Même devis corrigé.","finalisation.py, composer()")]),
+  B("Un gabarit encore vierge",[A('code',"L’adopter et poser son titre","### 🔀 variante","Le titre est posé d’abord, pour qu’une relance le retrouve par son nom.","finalisation.py, note_chiffree()")]),
+  B("Un bloc historique sans titre",[A('code',"L’adopter et le nommer",null,"Migration douce : pas de doublon à côté d’un devis valide.","finalisation.py, choisir_groupe()")]),
+  B("Rien de tout cela",[A('code',"Créer un bloc complet en bas de fiche",null,"Les blocs déjà présents ne sont pas touchés.","finalisation.py, bloc_variante()")]),
+ ],{noMain:true}),
+ A('code',"Ajouter la section Itinéraires","patcher_itineraire()","Dernier export seulement (prevenir = vrai) : km, temps, péage, dans le format relu par le parseur, dans la même version de la note. Ces lignes ne sont jamais créées : une fiche sans section suit un autre modèle.","finalisation.py, patcher_itineraire() ; note_chiffree()"),
+ A('ext',"Poser la nouvelle version de la note","fiche_hubspot.ecrire()","Note « Fiche client » de la transaction, posée en tête ; les versions précédentes restent. Rien n’est posé si le texte n’a pas changé.","finalisation.py, main() ; fiche_hubspot.py, ecrire()"),
+ D('code',"Note posée ?",null,"Avec jusqu’à 2 relances immédiates sur panne passagère. Cause la plus fréquente d’échec : clé HubSpot absente ou refusée.","finalisation.py, main() ; reprise.py","Oui",[
+  B("Non",[E('crit',"Alerte Slack, arrêt : rien ne part","Ni équipe, ni CRM. La commande rendue rejoue toute la finalisation.","finalisation.py, _incident()")],'crit'),
+ ]),
+ A('code',"Noter la variante au journal","exports/<page>.variantes.json","Sert au message unique par client, et au blocage des noms déjà pris.","finalisation.py, journal()"),
+ {t:'a',who:'off',l:"Propriétés Notion : coupées",m:"retirées le 03/11/2026",i:"Les propriétés typées de la page Notion (Transport HT, Prix Total TTC…) ne sont plus écrites, et proprietes() n’existe plus. Les chiffres vivent sur HubSpot, dans les propriétés sd_*.",src:"finalisation.py"},
+ A('code',"Construire la ligne d’archive","ligne_archive()","Chiffres du calculateur, fiche relue pour le reste : adresse, téléphone, e-mail, commercial, date, source du volume. Sert au CRM. En cas d’échec, le CRM sera sauté et signalé.","finalisation.py, ligne_archive()",{id:'archive'}),
+ {t:'a',who:'off',l:"Google Sheet : coupé",m:"retiré le 03/11/2026",i:"Plus de ligne par devis dans le Sheet (Karim, 03/11/2026). Le rapport hebdo lit ses chiffres de devis sur HubSpot, par transaction. Le script Apps Script reste pour les envois du rapport et le repli d’alerte.",src:"finalisation.py ; sans-notion/correspondance-rapport.md"},
+ A('code',"Relire la fiche, contrôler","reperer_blocs(), composer()","« conforme », ou le nombre de blocs encore différents. Ne bloque rien.","finalisation.py, main()"),
+ D('code',"HubSpot actif, indicatif non marqué ?",null,"Le label peut avoir été posé à la main plus tôt : il doit être connu avant le message (Karim, 09/10/2026).","finalisation.py, main()","Non",[
+  B("Oui",[A('code',"Lire « Type de devis »","hubspot_crm.lire_type_devis()","Si Indicatif : reporté dans l’export, pour que la synchro CRM ne le repasse pas en Ferme.","hubspot_crm.py, lire_type_devis()")]),
+ ]),
+ G('phase-11',"Suite : 11. CRM"),
+]},
+/* ===================== 11 ===================== */
+{n:11,titre:"CRM",but:"HubSpot est le CRM actif. La transaction existera donc quand le message, à la validation, portera son lien (Karim, 03/11/2026). Le dossier s’y dépose en « Devis en révision » : la routine « Devis envoyé Hubspot » le fera sortir de cette étape après l’envoi réel (C-041, 30/10/2026 ; routine, 03/11/2026).",steps:[
+ S("Écritures faites","L’interrupteur SAMDEM_CRM de outils/crm.env décide pour toute la boîte à outils.","finalisation.py, main() ; crm.py"),
+ D('code',"Quel bouton a été cliqué ?","prevenir","Une variante intermédiaire ne fait pas bouger le pipeline commercial.","finalisation.py, main()","Exporter JSON",[
+  B("Autre variante à suivre",[E('fin',"CRM inchangé, pas de PDF, code 0","Le pipeline suivra le devis retenu.")]),
+ ]),
+ D('code',"Ligne d’archive construite ?",null,"Sans elle, ni nom ni téléphone : l’appariement créerait un dossier vide.","finalisation.py, main()","Oui",[
+  B("Non",[A('crit',"Alerte Slack, CRM non touché",null,"Rejeu : --seulement crm.","finalisation.py, _incident()"),G('phase-12',"Suite : 12. PDF, malgré la panne")],'crit'),
+ ]),
+ D('code',"Quel CRM ?","SAMDEM_CRM","hubspot aujourd’hui. nocrm reste le retour arrière, les-deux écrit dans les deux. Le retour arrière noCRM ne peut plus écrire de fiche : la note se pose sur HubSpot quel que soit le CRM.","crm.py, actif()","HubSpot",[
+  B("noCRM (retour arrière)",[
+   A('code',"Apparier l’opportunité","téléphone, e-mail, puis nom","Pagination et filtre local : l’API v2 ignore ses filtres de recherche.","nocrm.py, avancer_dossier()"),
+   D('code',"Résultat de l’appariement ?",null,"Une opportunité déplacée au hasard coûte plus cher qu’un dossier oublié.","nocrm.py","Par téléphone ou e-mail",[
+    B("Nom seul, ou plusieurs",[A('crit',"N’écrit rien, commande de rattrapage",null,"--sur-le-nom, une fois le candidat vu par un humain.","nocrm.py"),G('phase-12',"Suite : 12. PDF, malgré la panne")],'crit'),
+    B("Aucun",[A('ext',"Créer l’opportunité","NOM Prénom, commercial de la fiche","Seulement à zéro candidat.","nocrm.py")]),
+   ]),
+   A('ext',"Description, montant, rappel, colonne","TTC le plus élevé, J+2","Corps de la fiche recopié ; rappel reporté au lundi le week-end ; « Devis envoyé », ou « Trajets Axe Paris » et tag de groupage. Le lead est relu : un 200 ne prouve rien.","nocrm.py, enrichir()"),
+   G('phase-12',"Suite : 12. PDF (avec « les-deux », HubSpot d’abord)")]),
+ ]),
+ A('code',"Lire le corps de la fiche","nocrm.corps_notion()","Sert aux montants TTC de la fiche (la note HubSpot, ou la page Notion d’un ancien dossier). Illisible : un écart signalé, le montant est pris sur le seul devis courant.","hubspot_crm.py, avancer_dossier()"),
+ A('code',"Trouver le contact","téléphone, puis e-mail, jamais le nom","E-mail absent ou 🟡 : omis, pas refusé (Karim, 08/10/2026).","hubspot_crm.py, trouver_contact()"),
+ D('code',"Contact ambigu ?",null,"Plusieurs contacts, ou téléphone et e-mail qui désignent deux personnes.","hubspot_crm.py, trouver_contact()","Non",[
+  B("Oui",[A('crit',"Aucune écriture, alerte Slack",null,"Résoudre le doublon, puis --seulement crm.","hubspot_crm.py, avancer_dossier()"),G('phase-12',"Suite : 12. PDF, malgré la panne")],'crit'),
+ ]),
+ A('code',"Trouver la transaction","identifiant, réf. CLI, contact, nom","L’identifiant de transaction du dossier (que des chiffres), lu directement. À défaut : le lien de la fiche Notion d’un ancien dossier, la référence, la seule ouverte du contact, puis la seule ouverte sans contact au nom du client (cas DUPRAT, 09/10/2026).","hubspot_crm.py, trouver_transaction()"),
+ D('code',"Transaction ambiguë ?",null,"Plusieurs transactions ouvertes pour le même dossier.","hubspot_crm.py, trouver_transaction()","Non",[
+  B("Oui",[A('crit',"Aucune écriture, alerte Slack",null,"Départager, puis --seulement crm.","hubspot_crm.py, avancer_dossier()"),G('phase-12',"Suite : 12. PDF, malgré la panne")],'crit'),
+ ]),
+ A('code',"Filtrer par le schéma du portail","Schema.nettoyer()","Type, liste fermée, propriété masquée ou en lecture seule : ce qui ne colle pas n’est pas écrit et figure au compte rendu. 🟡 : laissé vide, sans échec (Karim, 09/10/2026). Montant HT = le devis le plus cher de la fiche.","hubspot_crm.py, avancer_dossier()"),
+ D('code',"Contact existant ?",null,"Créé au besoin, jamais écrasé.","hubspot_crm.py, avancer_dossier()",null,[
+  B("Oui",[A('ext',"Compléter les champs vides",null,"Aucun écrasement.","hubspot_crm.py, completer()")]),
+  B("Non",[A('ext',"Créer le contact",null,"Gardé en mémoire : l’index de recherche a quelques secondes de retard, une relance ne le recrée pas.","hubspot_crm.py, _CREES")]),
+ ],{noMain:true}),
+ D('code',"Transaction existante ?",null,"Chiffrage réécrit, suivi complété.","hubspot_crm.py, avancer_dossier()",null,[
+  B("Oui",[A('ext',"Réécrire le chiffrage, compléter le suivi","propriétés sd_*, contact associé","Le propriétaire n’est posé que s’il est vide.","hubspot_crm.py, avancer_dossier()")]),
+  B("Non",[A('ext',"Créer la transaction","déjà en « Devis en révision »","Au nom du commercial de la fiche, compte principal en repli. Gardée en mémoire : la relecture a son lien sans attendre l’index de recherche.","hubspot_crm.py, avancer_dossier()")]),
+ ],{noMain:true}),
+ {t:'a',who:'off',l:"Note « Fiche client » : plus posée ici",m:"fiche_hubspot.ecrire()",i:"Depuis le 03/11/2026, avancer_dossier n’écrit plus la note : la finalisation l’a posée à la phase 10, avant le CRM. L’ancien titre « Fiche client (Notion) » reste reconnu dans l’historique des notes.",src:"hubspot_crm.py, avancer_dossier() ; finalisation.py"},
+ {t:'a',who:'off',l:"Tâche « Relancer » à J+2 : coupée",m:"POSER_TACHE_RELANCE = False",i:"Personne ne la lisait : 86 ouvertes, 1 faite (Karim, 03/11/2026). Le code reste en place.",src:"hubspot_crm.py, poser_relance()"},
+ D('code',"Quelle étape pour la transaction ?","choisir_etape()","Cible : « Devis en révision », groupage compris. Un nouveau devis sur un dossier déjà envoyé le ramène en révision.","hubspot_crm.py, choisir_etape()",null,[
+  B("Signé ou Perdu",[A('code',"Laisser l’étape",null,"Une transaction close ne bouge pas.","hubspot_crm.py, choisir_etape()")]),
+  B("Déjà en révision",[A('code',"Ne rien changer",null,"Trajet Île-de-France : le compte rendu annonce le passage en « Demandes groupage » par la routine, après l’envoi.","hubspot_crm.py, choisir_etape()")]),
+  B("Autre étape",[A('ext',"Passer en « Devis en révision »","relecture de contrôle","Vient toujours en dernier. Relue juste après : une étape non prise devient un écart.","hubspot_crm.py, avancer_dossier()")]),
+ ],{noMain:true}),
+ D('code',"CRM à jour sans écart ?",null,"Mêmes relances automatiques que les autres étapes.","finalisation.py, main() ; reprise.py","Oui",[
+  B("Non",[A('crit',"Alerte Slack avec commande de rejeu",null,"--seulement crm. La fiche est faite.","finalisation.py, _incident()"),G('phase-12',"Suite : 12. PDF, malgré la panne")],'crit'),
+ ]),
+ G('phase-12',"Suite : 12. PDF du devis"),
+]},
+/* ===================== 12 ===================== */
+{n:12,titre:"PDF du devis",but:"Chaque export produit son PDF : c’est la version officielle, et il attend la relecture de Samuel (Karim, 03/11/2026). Aucun message à ce stade. Tout ce qui suit n’existe que si --whatsapp est passé.",steps:[
+ S("CRM à jour","Le veilleur passe toujours --whatsapp.","finalisation.py, main()"),
+ D('code',"--whatsapp passé ?",null,"Sans lui, ni PDF, ni inventaire, ni relecture : tout vit dans cette branche.","finalisation.py, main()","Oui",[
+  B("Non",[E('fin',"Fin du script, sans PDF ni relecture","Cas de la commande manuelle du README.")]),
+ ]),
+ D('code',"Quel bouton a été cliqué ?","prevenir","Tous les PDF d’un client sortent au dernier export.","finalisation.py, main()","Exporter JSON",[
+  B("Autre variante à suivre",[E('fin',"Variante intermédiaire : pas de PDF, code 0","Tout sortira au dernier export de ce client.")]),
+ ]),
+ A('code',"Chercher le lien de la transaction","hubspot_crm.url_transaction()","Une transaction créée à l’instant est reprise de la mémoire du CRM. Introuvable ou ambiguë : la fiche Notion en repli, sous une mention claire (Karim, 03/11/2026).","hubspot_crm.py, url_transaction()"),
+ A('code',"Élaguer le journal des variantes","elaguer_journal()","Ne garde que les variantes encore sur la fiche. Le message annonce les devis qui tiennent, pas l’historique (Karim, 09/09/2026).","finalisation.py, elaguer_journal()"),
+ A('code',"Relire la fiche et son corps","devis_auto.produire()","Montants pris dans l’export, client et accès dans la fiche. Ce script ne recalcule aucun prix : l’export fait foi.","devis_auto.py, produire()"),
+ D('code',"Plusieurs variantes annoncées ?",null,"Un PDF et un numéro par variante.","devis_auto.py, produire()","Non",[
+  B("Oui",[
+   A('code',"Retrouver chaque export","export_de_variante()","Même fiche, même nom, même prix, dans les 400 derniers exports.","devis_auto.py, export_de_variante()"),
+   D('code',"Tous retrouvés ?",null,"Tout est préparé avant le premier rendu : jamais la moitié des variantes en PDF.","devis_auto.py, produire()","Oui",[
+    B("Non",[G('etat',"Aller à l’état de relecture : « à la main »")]),
+   ])]),
+ ]),
+ A('code',"Attribuer le numéro","numéro gardé tant que non validé","Devis pas encore validé : il garde son numéro et son PDF est remplacé. Sinon le plus haut du dossier plus un, suivi de la date.","devis_auto.py, produire() ; validation_devis.py, numeros_en_cours()"),
+ A('code',"Construire la spec","construire_spec()","Même spec que le skill devis-pdf-samdem. Les notes de la fiche restent internes. Note la liste « à vérifier » : adresse, date, téléphone, e-mail, options.","devis_auto.py, construire_spec()"),
+ D('code',"Mise en page possible sans erreur ?",null,"Sinon le message donne le motif et le PDF reste à faire à la main.","devis_auto.py, HorsAuto","Oui",[
+  B("Non",[
+   A('code',"Rester à la main, avec le motif","relivraison, étape, phase unique, identité, logement, accès 🟡, montants","Relivraison ; étape intermédiaire ; chargement ou déchargement seul ; nom ou adresse absents ; type de logement absent ; accès encore 🟡 ; montants qui ne retombent pas sur l’export à 1 € près.","devis_auto.py, construire_spec()"),
+   G('etat',"Aller à l’état de relecture : « à la main »")]),
+ ]),
+ D('code',"Dossier de Christophe ?",null,"Commercial, source du volume, ou « visite de Christophe » dans les notes (Karim, 02/11/2026).","regles.dossier_christophe()","Non",[
+  B("Oui",[A('code',"Écrire « Volume estimé lors de notre visite »","ni liste, ni inventaire","L’inventaire reste une intervention humaine.","devis_auto.py, construire_spec()")]),
+ ]),
+ A('code',"Lancer le générateur de PDF","generer_devis_pdf.py","Écrit la spec dans specs/, puis rend le PDF par Chrome ou Edge.","devis_auto.py, rendre()"),
+ D('code',"Spec sans trace de préparation ?",null,"Refus de toute flèche, durée d’option, émoji, « à chiffrer », temps ou variante dans les options. Le client ne doit pas deviner qu’une IA a préparé le devis (Karim, 03/11/2026).","generer_devis_pdf.py, traces_de_preparation()","Oui",[
+  B("Non, ou panne",[
+   A('crit',"Alerte Slack, PDF à la main","génération en échec","Le message part quand même, avec la mention.","finalisation.py, _incident()"),
+   G('etat',"Aller à l’état de relecture : « à la main »")],'crit'),
+ ]),
+ D('code',"Inventaire de 10 lignes au plus, devis de 3 pages au plus ?",null,"Tranché par le générateur (Karim, 28/10/2026).","generer_devis_pdf.py, main()",null,[
+  B("Oui",[A('code',"Lister l’inventaire dans le devis",null,"Sous le forfait transport. Pas de PDF d’inventaire séparé.","generer_devis_pdf.py")]),
+  B("Non",[A('code',"Écrire « Voir inventaire <n°> »",null,"L’inventaire reprendra le même numéro.","generer_devis_pdf.py")]),
+ ],{noMain:true}),
+ A('code',"Garder le PDF en local","donnees/Devis SamDem\\","Rien ne part encore. Une correction remplace le fichier.","devis_auto.py, rendre()"),
+ A('code',"Noter le devis « à relire »","validation_devis.enregistrer()","Le dernier export d’une variante remplace le précédent. Si son PDF a échoué, l’ancien est retiré : un devis périmé ne peut pas être validé. Garde aussi de quoi composer le message.","validation_devis.py, enregistrer()",{id:'etat'}),
+ D('code',"Inventaire à produire ?",null,"--sans-inventaire coupe l’étape. Un devis qui renvoie à « Voir inventaire » l’appelle quel que soit le volume.","finalisation.py, main()","Oui",[
+  B("Dossier de Christophe",[A('code',"Ne pas le produire : laissé à la main",null,"--forcer reste possible sur demande.","finalisation.py, main()"),G('fin_script',"Aller à la fin du script")]),
+  B("Liste courte dans le devis",[A('code',"Ne pas le produire : déjà dans le devis",null,"Le générateur a listé l’inventaire sous le forfait transport.","finalisation.py, main()"),G('fin_script',"Aller à la fin du script")]),
+  B("Pas de PDF de devis, moins de 10 m³",[A('code',"Ne pas le produire : noté sur le devis",null,"Seuil regles.SEUIL_INVENTAIRE_PDF_M3 (Karim, 24/09/2026).","regles.py"),G('fin_script',"Aller à la fin du script")]),
+ ]),
+ A('code',"Lancer inventaire_auto.py, détaché","--numero, --indicatif","Détaché : une mise en forme peut prendre une minute, et le veilleur ne doit pas rester aveugle pendant ce temps. À source inchangée, rien n’est renvoyé et rien n’est payé. Échec au lancement : alerte Slack.","finalisation.py, lancer_inventaire()",{br:[B("En parallèle",[G('phase-13',"Voir 13. Inventaire")],'async')],suite:null}),
+ A('code',"Fin du script, code 0",null,"Le veilleur reprend la lecture du presse-papier. La relecture continue dans la session de Claude.","finalisation.py, main()",{id:'fin_script',br:[B("Retour au veilleur",[G('boucle',"8. Lecture du presse-papier")],'async')],suite:null}),
+ G('phase-14',"Suite : 14. Relecture par Samuel"),
+]},
+/* ===================== 13 ===================== */
+{n:13,titre:"Inventaire en arrière-plan",but:"Processus détaché, avec son journal et ses alertes. Le premier endroit qui répond l’emporte, et un même inventaire n’est jamais renvoyé.",steps:[
+ S("Lancé par la phase 12","Journal : .claude/scripts/inventaires-auto.log.","inventaire_auto.py, traiter()"),
+ A('code',"Lire la fiche et ses fichiers","lire_dossier()","Le corps de la fiche (note HubSpot). Pour un ancien dossier, les fichiers de sa page Notion, lus en une seule descente.","inventaire_auto.py, lire_dossier()"),
+ D('code',"Dossier de Christophe ?",null,"Second contrôle, utile quand le PDF de devis n’a pas été préparé.","inventaire_auto.py, traiter()","Non",[
+  B("Oui",[E('fin',"Laissé à la main","Sauf --forcer, sur demande de Samuel.")]),
+ ]),
+ A('code',"Lire le registre","inventaires-envoyes.jsonl","Fiche et empreinte de la source. Le contrôle vient avant tout appel au modèle : réexporter un devis ne coûte rien.","inventaire_auto.py, registre()"),
+ D('code',"Section Inventaire exploitable sur la fiche ?",null,"Le corps fait foi.","inventaire_auto.py, trouver_inventaire()","Non",[
+  B("Oui",[G('inv_src',"Aller à la source retenue")]),
+ ]),
+ D('code',"Fichier d’inventaire sur la page Notion d’un ancien dossier ?",null,"PDF, tableur ou document, rangé sous la section ou nommé « inventaire ». Une note HubSpot ne porte pas de fichier.","inventaire_auto.py, trouver_inventaire()","Non",[
+  B("Oui",[G('inv_src',"Aller à la source retenue")]),
+ ]),
+ D('code',"Transaction appariée ?","téléphone ou e-mail","Jamais sur le seul nom : lire l’inventaire d’un autre client serait pire que ne rien trouver.","inventaire_auto.py, lead_du_client()","Oui",[
+  B("Non",[E('fin',"Fin silencieuse, le reste de la chaîne suit","Si une source était illisible, une alerte part quand même.","inventaire_auto.py, traiter()")]),
+ ]),
+ D('code',"Pièce jointe exploitable ?",null,"Devis, factures, CGV et déclarations écartés d’office.","inventaire_auto.py, pieces_jointes_nocrm()","Non",[
+  B("Oui",[G('inv_src',"Aller à la source retenue")]),
+ ]),
+ D('code',"Notes libres exploitables ?",null,"Notes de la transaction, hors notes « Fiche client ».","inventaire_auto.py, en_tete_nocrm()","Oui",[
+  B("Non",[E('fin',"Fin silencieuse, le reste de la chaîne suit","Si une source était illisible, une alerte part quand même.","inventaire_auto.py, traiter()")]),
+ ]),
+ A('code',"Source retenue","empreinte calculée","Une source illisible n’arrête pas la recherche : on passe à la suivante.","inventaire_auto.py, Recherche",{id:'inv_src'}),
+ D('code',"Même source déjà envoyée ?",null,"Un inventaire modifié repart, avec la mention « met à jour et remplace ».","inventaire_auto.py, Recherche.verifier()","Non",[
+  B("Oui",[E('fin',"Rien à refaire, zéro coût","Arrêt avant tout appel au modèle. Le PDF déjà produit rejoindra HubSpot à la validation.")]),
+ ]),
+ D('code',"Format « Pièce : article x2 · … » ?",null,"Celui qu’écrivent nos skills sur la fiche.","inventaire_auto.py, parser_structure()",null,[
+  B("Oui",[A('code',"Parser sans modèle","parser_structure()","Zéro token.","inventaire_auto.py, parser_structure()")]),
+  B("Non : texte libre, PDF, tableur",[A('claude',"Structurer par le modèle","claude -p, sonnet","Sans MCP, hors du coffre, règles lues dans Prod_inventaires/SKILL.md. Réponse validée avant rendu. Trois appels au plus par dossier.","inventaire_auto.py, structurer_par_modele()")]),
+ ],{noMain:true}),
+ D('code',"Volume connu ?",null,"Celui de l’export, sinon celui de la fiche.","inventaire_auto.py, traiter()","Oui",[
+  B("Non",[E('crit',"Alerte Slack : PDF impossible","Commande de rattrapage : inventaire_auto.py --page-id <id> --volume 16.","inventaire_auto.py, main()")],'crit'),
+ ]),
+ A('code',"Générer le PDF d’inventaire","generer_inventaire.py","Modèle maison : client, adresses, date ou créneau, volume du devis, même numéro que le devis quand il y en a un.","outils/pipeline/Prod_inventaires/"),
+ D('code',"Un devis attend sa validation ?",null,"Cas normal : le PDF est gardé pour la relecture, et part à la validation. Sinon (dossier déjà validé, rattrapage à la main), il part tout de suite.","validation_devis.py, noter_inventaire()","Oui",[
+  B("Non",[
+   D('code',"Devis indicatif ?",null,"Inventaire pour HubSpot seulement, jamais sur la conversation de l’équipe (Karim, 12/10/2026).","inventaire_auto.py, traiter()","Non",[
+    B("Oui",[A('ext',"Joindre à HubSpot seulement","inventaire indicatif NOM Prénom.pdf","Inscrit au registre.","inventaire_auto.py, joindre_au_crm()"),E('fin',"Inventaire indicatif joint")]),
+   ]),
+   A('ext',"Envoyer le PDF sur WhatsApp","notif.envoyer_fichier()","Beeper doit confirmer : sans pendingMessageID, l’envoi passe en file, avec une alerte Slack.","notif.py, envoyer_fichier()"),
+   A('ext',"Joindre le PDF à la transaction","hubspot_crm.joindre_pdf()","Échec : alerte Slack, avec la commande pour le joindre seul.","inventaire_auto.py, joindre_au_crm()"),
+   E('fin',"Inventaire envoyé")]),
+ ]),
+ A('code',"Inscrire au registre","en attente de validation","Un même inventaire n’est pas refait ni renvoyé à l’export suivant.","inventaire_auto.py, inscrire()"),
+ E('fin',"Inventaire prêt pour la relecture"),
+]},
+/* ===================== 14 ===================== */
+{n:14,titre:"Relecture par Samuel",but:"Rien n’arrive sur HubSpot ni à l’équipe avant que Samuel ait relu et validé (Karim, 03/11/2026). Le veilleur tourne sans modèle : Claude attend l’export en arrière-plan, puis reprend la main.",steps:[
+ S("Après le récapitulatif de la phase 6","Claude lance l’attente sans poser de question, dès que le calculateur est ouvert.","Skill calcul-devis-samdem, § 13 bis"),
+ A('code',"Attendre l’export en arrière-plan","validation_devis.py --attendre","Se termine quand l’export est prêt, inventaire compris (3 minutes au plus pour lui), ce qui réveille la session. Sans session ouverte, l’état attend, et « devis à valider » le ressort.","validation_devis.py, attendre()"),
+ D('code',"Un PDF a-t-il été produit ?",null,"La relecture donne alors le motif, et le PDF passe par le skill.","validation_devis.py, presenter()","Oui",[
+  B("Non, il reste à la main",[
+   A('claude',"Écrire la spec à la main","skill devis-pdf-samdem","Dernier export et corps de la fiche. Sections par trajet, fourchette ou chargement seul selon le cas. L’export fait foi s’il retombe sur le total.","Skill devis-pdf-samdem, § 1 à 3"),
+   A('code',"Générer le PDF","generer_devis_pdf.py","Même générateur, mêmes refus.","outils/pipeline/devis-pdf/generer_devis_pdf.py"),
+   A('claude',"Relire chaque page en image","valeurs, totaux, mise en page","Obligatoire, jamais le premier jet : chaque valeur contre la fiche et l’export, HT + TVA = TTC, acompte 30 %, solde.","Skill devis-pdf-samdem, § 6"),
+   A('code',"Remettre le PDF en relecture","validation_devis.py --ajouter-pdf","Il suit ensuite le même chemin qu’un PDF automatique.","validation_devis.py, ajouter_pdf()")]),
+ ]),
+ A('code',"Contrôler le PDF contre l’export","controle_pdf()","Le texte du PDF porte-t-il le TTC de l’export et son numéro ? Sans token.","validation_devis.py, controle_pdf()"),
+ A('claude',"Présenter le PDF et l’inventaire","SendUserFile","Le ou les PDF du devis, et l’inventaire s’il est prêt. En une ou deux lignes : le TTC, le résultat du contrôle, la liste « à vérifier ».","Skill calcul-devis-samdem, § 13 bis",{id:'presenter'}),
+ K("Relire le devis","et ce qui reste à vérifier","Adresse à confirmer, date à relire, téléphone ou e-mail manquant.","Skill calcul-devis-samdem, § 13 bis"),
+ D('karim',"Samuel valide-t-il ?","sélection","Toujours une sélection, jamais une question en texte. Plusieurs variantes : une option par PDF.","Skill calcul-devis-samdem, § 13 bis","Valider et importer",[
+  B("Corriger le texte",[
+   A('claude',"Corriger la spec du PDF","seulement ce que Samuel demande","Le cas courant : les calculs sont déjà approuvés (Karim, 03/11/2026). Les montants ne bougent pas. Une adresse, une date ou un téléphone se corrige aussi sur la fiche, sinon le prochain export repart de l’ancienne valeur.","Skill calcul-devis-samdem, § 13 bis"),
+   A('code',"Refaire le PDF","validation_devis.py --regenerer","Même numéro, mêmes refus du générateur, nouveau contrôle contre l’export. Un TTC changé rend le PDF non conforme : il ne s’importe pas.","validation_devis.py, regenerer()"),
+   G('presenter',"Retour : présenter le PDF")]),
+  B("Changer le chiffrage",[
+   A('code',"Noter le refus","validation_devis.py --refuser","Rien n’est importé. Le numéro est gardé pour la correction.","validation_devis.py, refuser()"),
+   A('claude',"Rouvrir le devis","reprendre_devis.py","Dernier export rouvert dans le calculateur. Le nouvel export remplace le PDF, et les corrections de texte déjà faites sont signalées comme à refaire.","outils/pipeline/reprendre_devis.py"),
+   G('phase-7',"Retour : 7. Validation")]),
+ ]),
+ D('code',"PDF conforme à l’export ?",null,"Un PDF dont le TTC ou le numéro ne correspond pas n’est pas importé, sauf --forcer.","validation_devis.py, valider()","Oui",[
+  B("Non",[E('crit',"Rien n’est importé","Le compte rendu dit ce qui manque dans le PDF.","validation_devis.py, valider()")],'crit'),
+ ]),
+ A('ext',"Joindre le devis à la transaction","note « Devis n° », /Devis clients","Un PDF par variante retenue. Un fichier déjà joint ne l’est pas deux fois.","validation_devis.py, valider() ; hubspot_crm.py, joindre_pdf()"),
+ D('code',"Le dossier a-t-il un inventaire ?",null,"Tout est alors sur HubSpot, au même endroit.","validation_devis.py, valider()",null,[
+  B("Oui, il est prêt",[A('ext',"Joindre l’inventaire à la transaction","note « Inventaire », /Inventaires clients","Dans sa propre note.","validation_devis.py, valider()")]),
+  B("Il est encore en préparation",[A('code',"Le laisser partir seul",null,"L’inventaire voit que le devis est validé : il rejoint la transaction et l’équipe dès qu’il est prêt.","inventaire_auto.py, traiter()")]),
+  B("Non",[A('code',"Rien à joindre","Christophe, liste courte, moins de 10 m³, rien trouvé","Seul le devis part.","finalisation.py, main()")]),
+ ],{noMain:true}),
+ D('code',"HubSpot a tout accepté ?",null,"Rejouable sans doublon.","validation_devis.py, valider()","Oui",[
+  B("Non",[E('crit',"Alerte Slack, dossier à valider, aucun message","Régler la cause, puis relancer --valider.","validation_devis.py, valider()")],'crit'),
+ ]),
+ A('code',"Marquer le devis validé","statut valide","Le prochain export sera un nouveau devis, avec un nouveau numéro.","validation_devis.py, valider()"),
+ A('code',"Composer le message","notif.message_devis()","Titre : « Devis prêt à vérifier » ou « INDICATIF ». Volume, prix des variantes retenues, nom du PDF, à vérifier, lien de la transaction HubSpot, la fiche Notion seulement en repli (Karim, 03/11/2026). Jamais la marge (Karim, 08/09/2026).","validation_devis.py, _prevenir_equipe() ; notif.py, message_devis()"),
+ A('ext',"Poster sur WhatsApp","Beeper Desktop, localhost:23373","Conversation « Devis/inventaire », par l’API locale, sans modèle. Part à la validation, plus à l’export (Karim, 03/11/2026).","notif.py, envoyer()"),
+ D('code',"Un inventaire à envoyer ?",null,"Pas pour un devis indicatif, ni pour un inventaire déjà parti.","validation_devis.py, _prevenir_equipe()","Non",[
+  B("Oui",[A('ext',"Envoyer l’inventaire, juste après le message","notif.envoyer_fichier()","Même conversation. Inscrit au registre : il ne repartira pas.","validation_devis.py, _prevenir_equipe()")]),
+ ]),
+ D('code',"Beeper a accepté ?",null,"La validation reste acquise : rien n’est perdu.","validation_devis.py, _prevenir_equipe()","Oui",[
+  B("Non",[A('crit',"File d’attente et alerte Slack","notif.py --vider-file-attente","Message et inventaire attendent dans la file.","validation_devis.py, _prevenir_equipe()")],'crit'),
+ ]),
+ A('code',"Vider le journal des variantes",null,"Client soldé : le prochain devis repart à zéro.","validation_devis.py, valider()"),
+ G('phase-15',"Suite : 15. Envoi au client"),
+]},
+/* ===================== 15 ===================== */
+{n:15,titre:"Envoi au client",but:"Sandrine envoie le plus souvent, depuis son adresse. Claude ne prépare un brouillon que si Samuel le demande (Karim, 03/11/2026), et il n’envoie jamais.",steps:[
+ S("Devis validé, sur HubSpot","Le PDF validé est celui qui part au client.","validation_devis.py"),
+ D('karim',"Dossier de Christophe ?",null,"Aucun inventaire n’a été généré.","regles.dossier_christophe()","Non",[
+  B("Oui",[A('karim',"Joindre l’inventaire manuscrit",null,"Intervention humaine (Karim, 02/11/2026).","README.md, Devis PDF automatique")]),
+ ]),
+ D('karim',"Samuel demande un brouillon ?","optionnel, rare","Sans demande explicite, Claude n’en prépare pas et n’en propose pas : Sandrine envoie depuis son adresse (Karim, 03/11/2026).","Skill devis-pdf-samdem, § 7","Non",[
+  B("Oui",[
+   A('code',"Préparer le brouillon","brouillon_envoi.py","Modèle ferme ou indicatif, balises remplies depuis la spec, pièces copiées dans pj-envoi/<numéro>/ : PDF, CGV, déclaration de valeur, grille de vétusté, RIB seulement pour un ferme.","outils/pipeline/devis-pdf/brouillon_envoi.py"),
+   A('claude',"Créer le brouillon Gmail","connecteur, sans pièces jointes","Depuis samdemenage.fr, jamais gws. Copie systématique : secretariat@ et contact@. Jamais d’envoi.","Skill devis-pdf-samdem, § 7"),
+   A('claude',"Joindre les pièces dans Chrome","file_upload, puis enregistrer","Vérifier les pastilles, fermer par le bouton « Enregistrer et fermer » trouvé avec find, contrôler par list_drafts.","Skill devis-pdf-samdem, § 7"),
+   A('code',"Nettoyer le dossier temporaire","brouillon_envoi.py --nettoyer","Supprime pj-envoi/<numéro>/.","outils/pipeline/devis-pdf/brouillon_envoi.py")]),
+ ]),
+ A('karim',"Envoyer le mail au client","Sandrine, le plus souvent","Le seul envoi de toute la chaîne, et il reste humain : Sandrine depuis son adresse, ou Samuel, l’autre en copie. Hors de cette chaîne et de Claude.","CLAUDE.md du coffre"),
+ A('claude',"Repérer l’envoi dans la boîte","routine, 8 h et 14 h","Tâche planifiée devis-envoye-hubspot. Mail de Samuel ou de Sandrine, l’autre en copie, adressé hors de l’entreprise, avec un PDF de devis. Le connecteur Gmail est réservé au modèle ; les règles sont dans le script.","README.md, Routine « Devis envoyé Hubspot »"),
+ D('code',"Trajet Île-de-France ou case Groupage ?",null,"Départements 75, 77, 78, 91 à 95, ou case cochée, quel que soit l’axe. Seule une transaction en révision bouge, si le mail est postérieur à son entrée. Sinon rien ne bouge, avec une alerte Slack si le dossier n’est pas retrouvé.","devis_envoye.py, etape_cible()",null,[
+  B("Non",[A('ext',"Passer en « Devis envoyé »","HubSpot, par le script","Le critère de l’étape : le devis a été transmis au client. L’étape est relue après écriture.","devis_envoye.py, deplacer()")]),
+  B("Oui",[A('ext',"Passer en « Demandes groupage »","HubSpot, par le script","Le dossier rejoint les demandes de groupage. L’appariement de l’axe Paris lit les dossiers signés de cet axe, pas cette colonne.","devis_envoye.py, deplacer()")]),
+ ],{noMain:true}),
+ A('ext',"Écrire la date du devis","workflow HubSpot « Date du devis »","Depuis C-041, c’est la date du changement d’étape, donc du passage de la routine qui suit l’envoi, plus celle du calcul. Workflow natif, pas ce code.","crm-manager, journal des changements"),
+ E('fin',"Suite commerciale : relance, signé ou perdu","Hors de cette chaîne. Si le client demande une modification : reprendre_devis.py, retour en phase 7, et le dossier repasse en révision."),
+]},
+/* ===================== 16 ===================== */
+{n:16,titre:"Filets de sécurité",but:"Le veilleur tourne sans console visible : aucun échec de finalisation ne doit s’éteindre en silence. Sauf les refus de la phase 9, voir les points relevés.",steps:[
+ S("Une étape échoue","Texte de la fiche ou CRM. Le WhatsApp et l’inventaire ne passent jamais par la reprise automatique.","reprise.py, executer()"),
+ D('code',"Panne passagère ?","réseau, délai, 5xx, 429","Une erreur de données échouerait pareil : elle n’est pas relancée.","reprise.py, passager()","Non",[
+  B("Oui",[
+   A('code',"Relancer tout de suite","2 fois au plus","Sans délai, Samuel est en train de préparer un devis (Karim, 09/10/2026).","reprise.py, executer()"),
+   D('code',"Réussi ?",null,"Chaque étape est rejouable sans doublon.","reprise.py, executer()","Non",[
+    B("Oui",[E('fin',"Reprise dans le terminal, pas d’alerte","« ↻ … réussi au 2e essai ».","reprise.py")]),
+   ])]),
+ ]),
+ A('code',"Composer l’alerte","quoi, où, pourquoi, quoi faire","Avec le bilan des essais et la commande pour rejouer l’étape seule. Écrite pour être lue sur un téléphone.","finalisation.py, _incident() ; notif.py, _corps_alerte()"),
+ A('ext',"Poster sur Slack","webhook SAMDEM_SLACK_WEBHOOK","Slack répond exactement « ok » (Karim, 18/09/2026).","notif.py, _envoyer_slack()"),
+ D('code',"Slack a pris l’alerte ?",null,"Une alerte qui échoue n’aggrave jamais l’incident qu’elle signale.","notif.py, alerte()","Oui",[
+  B("Non",[
+   A('ext',"Envoyer l’e-mail de repli","Web App Apps Script","À contact@samdemenage.fr. Un accusé alerte: true est exigé : l’ancienne version répond ok sans rien envoyer.","notif.py, alerte()"),
+   D('code',"E-mail parti ?",null,"Dernier repli avant la file.","notif.py, alerte()","Oui",[
+    B("Non",[A('code',"Mettre en file d’attente WhatsApp","relisible : notif.py --file-attente","L’alerte n’est jamais perdue.","notif.py, alerte()")]),
+   ])]),
+ ]),
+ A('code',"Journaliser l’alerte","alertes.jsonl","Trace locale, quel que soit le canal.","notif.py, _journaliser_alerte()"),
+ K("Régler la cause","Samuel","HubSpot : clé dans .env, puis hubspot_crm.py --test. Beeper : l’ouvrir. CRM : lever l’ambiguïté.","README.md, Alertes d’incident"),
+ D('karim',"Qu’est-ce qui reste à rejouer ?",null,"Toutes les étapes se rejouent sans doublon, depuis l’export enregistré.","reprise.py, commande()",null,[
+  B("Une étape",[A('karim',"Rejouer l’étape seule","--seulement texte, crm","Ne renvoie jamais le WhatsApp ni l’inventaire.","finalisation.py, option --seulement")]),
+  B("Tout, rien n’est parti",[A('karim',"Rejouer la finalisation","--appliquer --whatsapp","Pour un arrêt survenu avant le message. Un devis déjà annoncé n’est pas réannoncé.","reprise.py, commande()")]),
+  B("Le message en attente",[A('karim',"Vider la file d’attente","notif.py --vider-file-attente","Messages et fichiers compris.","notif.py, main()")]),
+ ],{noMain:true}),
+ E('fin',"Chaîne remise d’aplomb","Filet général : _main_protege() alerte sur toute exception imprévue, code 3 ; ce qui a été écrit le reste."),
+]},
+];
+
+/* ===================== Vue d'ensemble ===================== */
+const P=(n,who,x)=>{const p=PHASES[n-1];return{t:'c',who,l:n+". "+p.titre,to:'phase-'+n,i:p.but,...x};};
+const VUE=[
+ S("Une demande de devis arrive"),
+ P(1,'karim'),
+ D('code',"Fiche trouvée ?",null,"Sinon la fiche est créée sur HubSpot avant tout chiffrage.","pipeline.py","Oui",[B("Non",[P(2,'claude')])]),
+ P(4,'code',{br:[B("Appelle",[P(5,'code')],'async')]}),
+ D('code',"Verdict",null,"GO, GO_AVEC_RESERVES, ESTIMATION_REQUISE ou STOP.","pipeline.py, evaluer_completude()","GO",[
+  B("Inventaire sans volume",[P(3,'claude'),G('phase-4',"Retour à 4")]),
+  B("Il manque un bloquant",[E('crit',"STOP : relance rédigée pour le client")],'crit')]),
+ P(6,'code'),
+ {...P(7,'karim'),gate:true},
+ P(8,'code'),
+ P(9,'code',{br:[B("Calcul refusé",[E('crit',"Rien n’est écrit")],'crit')]}),
+ P(10,'ext'),
+ P(11,'ext'),
+ P(12,'ext',{br:[B("Détaché",[P(13,'ext'),E('fin',"Inventaire prêt pour la relecture")],'async')]}),
+ {...P(14,'karim'),gate:true},
+ {...P(15,'karim'),gate:true},
+ E('fin',"Devis envoyé, suite commerciale"),
+];
+
+/* ===================== Moteur de dessin ===================== */
+const NS="http://www.w3.org/2000/svg";
+const W=226,GAP=70,VG=32,LAB=18,MARGE=10,TIP=13,LH=16.5,MH=14;
+const X=c=>MARGE+c*(W+GAP);
+const QUI={karim:"Samuel",claude:"Claude, avec tokens",code:"Code local, sans token",ext:"Code vers un service externe",crit:"Panne ou refus",fin:"Départ ou fin",off:"Coupé"};
+const cv=document.createElement('canvas').getContext('2d');
+const BODY='"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif',MONO='"IBM Plex Mono",Consolas,monospace';
+function wrap(txt,max,font){
+  if(!txt) return [];
+  cv.font=font; const out=[]; let cur="";
+  for(const m of String(txt).split(' ')){
+    const t=cur?cur+' '+m:m;
+    if(cv.measureText(t).width>max&&cur){out.push(cur);cur=m;} else cur=t;
+  }
+  if(cur) out.push(cur); return out;
+}
+function mesurer(s){
+  if(s.t==='g'){cv.font='500 12.5px '+BODY;s.w=Math.min(W,cv.measureText(s.l).width+36);s.ll=wrap(s.l,W-30,'500 12.5px '+BODY);s.w=s.ll.length>1?W:s.w;s.ml=[];s.h=14+s.ll.length*LH;return;}
+  const inner=s.t==='d'?W-2*TIP-14:(s.t==='e'||s.t==='s')?W-32:s.t==='c'?W-34:W-22;
+  s.w=W;
+  s.ll=wrap(s.l,inner,'500 13px '+BODY);
+  s.ml=wrap(s.m,inner,'400 10.8px '+MONO);
+  s.h=Math.max(s.t==='d'?54:38,18+s.ll.length*LH+s.ml.length*MH+(s.t==='d'?8:0));
+}
+let RANG=0;
+const TOUS=new Map(),CIBLES=new Map();
+function dessiner(steps,hote,phase,label){
+  const nodes=[],edges=[],free=[0,0,0,0,0,0];
+  const fr=c=>free[c]||0;
+  const maxDroite=c=>{let m=fr(c);for(let j=c;j<free.length;j++)m=Math.max(m,fr(j));return m;};
+  function pose(s,c,y){mesurer(s);s.c=c;s.x=X(c)+(s.t==='g'?(W-s.w)/2:0);s.y=y;free[c]=y+s.h+VG;nodes.push(s);s.uid='n'+(++RANG);s.phase=phase;if(s.id)CIBLES.set(s.id,s);}
+  function seq(list,c,y0,ouverts){
+    let pend=ouverts;
+    list.forEach((s,idx)=>{
+      mesurer(s);
+      const aRejoin=pend.some(p=>p.kind==='rejoin');
+      const base=aRejoin?maxDroite(c):fr(c);
+      let y=Math.max(idx===0?y0:0,base+(aRejoin&&s.br?LAB:0));
+      if(s.br&&s.br.length){ mesurer(s.br[0].s[0]); const h0=s.br[0].s[0]; const d=(s.h-h0.h)/2; y=Math.max(y,fr(c+1)+LAB-d); }
+      const yb=aRejoin?base-15:null;
+      pose(s,c,y);
+      pend.forEach(p=>edges.push({...p,to:s,yb}));
+      if(s.t==='e'||s.t==='g'){pend=[];return;}
+      if(s.br&&s.br.length){
+        const rej=[];
+        s.br.forEach((b,ib)=>{
+          const tete=b.s[0]; mesurer(tete);
+          const d0=s.y+(s.h-tete.h)/2;
+          const yT=Math.max(d0,fr(c+1)+(fr(c+1)?LAB:0),ib===0?0:fr(c+1)+LAB);
+          const rest=seq(b.s,c+1,yT,[{from:s,kind:'branch',lab:b.lab,k:b.k}]);
+          rest.forEach(r=>rej.push({...r,dernier:ib===s.br.length-1}));
+        });
+        pend=[]; if(!s.noMain) pend.push({from:s,kind:'down',lab:s.suite});
+        rej.forEach(r=>pend.push({...r,kind:'rejoin'}));
+      } else pend=[{from:s,kind:'down'}];
+    });
+    return pend;
+  }
+  seq(steps,0,6,[]);
+  const svgH=Math.max(...nodes.map(n=>n.y+n.h))+14;
+  const cols=Math.max(...nodes.map(n=>n.c))+1;
+  const svgW=X(cols-1)+W+MARGE+18;
+  const svg=document.createElementNS(NS,'svg');
+  svg.setAttribute('viewBox',`0 0 ${svgW} ${svgH}`);svg.setAttribute('width',svgW);svg.setAttribute('height',svgH);
+  svg.setAttribute('role','img');svg.setAttribute('aria-label',label);
+  const mid='m'+(++RANG);
+  svg.innerHTML=`<defs><marker id="${mid}" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L8 4L0 8Z" class="fleche"/></marker><marker id="${mid}c" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L8 4L0 8Z" class="fleche-crit"/></marker></defs>`;
+  const gE=document.createElementNS(NS,'g'),gN=document.createElementNS(NS,'g');svg.append(gE,gN);
+  const cx=n=>n.x+n.w/2, my=n=>n.y+n.h/2;
+  const addP=(d,k)=>{const p=document.createElementNS(NS,'path');p.setAttribute('d',d);p.setAttribute('class','edge'+(k?' '+k:''));p.setAttribute('marker-end',`url(#${mid}${k==='crit'?'c':''})`);gE.appendChild(p);return p;};
+  const addT=(x,y,t,k,anch)=>{const e=document.createElementNS(NS,'text');e.setAttribute('x',x);e.setAttribute('y',y);e.setAttribute('class','elab'+(k?' '+k:''));if(anch)e.setAttribute('text-anchor',anch);e.textContent=t;gE.appendChild(e);};
+  edges.forEach(e=>{
+    const a=e.from,b=e.to;
+    if(e.kind==='down'){
+      addP(`M${cx(a)} ${a.y+a.h}V${b.y-1}`);
+      if(e.lab) addT(cx(a)+7,a.y+a.h+13,e.lab);
+    } else if(e.kind==='branch'){
+      const sx=a.x+a.w, sy=my(a), bus=X(a.c+1)-30, tx=b.x, ty=my(b);
+      addP(sy===ty?`M${sx} ${sy}H${tx-1}`:`M${sx} ${sy}H${bus}V${ty}H${tx-1}`,e.k);
+      if(e.lab){
+        const ly=b.y-6;
+        wrap(e.lab,W+14,'500 11.5px '+BODY).slice(0,1).forEach(l=>addT(X(a.c+1),ly,l,e.k==='crit'?'crit':null));
+      }
+    } else if(e.kind==='rejoin'){
+      const yb=e.yb!=null?e.yb:b.y-14, tcx=cx(b);
+      if(a.t==='d'&&e.lab) addT(cx(a)+7,a.y+a.h+13,e.lab);
+      if(e.dernier===false){
+        const g=X(a.c)+W+12;
+        addP(`M${a.x+a.w} ${my(a)}H${g}V${yb}H${tcx}V${b.y-1}`);
+      } else {
+        addP(`M${cx(a)} ${a.y+a.h}V${yb}H${tcx}V${b.y-1}`);
+      }
+    }
+  });
+  nodes.forEach(n=>{
+    const g=document.createElementNS(NS,'g');
+    const cl=['node','n-'+(n.t==='g'?'code':n.who)];
+    if(n.t==='d')cl.push('dec'); if(n.gate)cl.push('gate'); if(n.t==='g')cl.push('chip');
+    g.setAttribute('class',cl.join(' '));
+    g.setAttribute('transform',`translate(${n.x} ${n.y})`);
+    g.setAttribute('tabindex','0');g.setAttribute('role','button');
+    g.setAttribute('aria-label',n.l+(n.m?', '+n.m:''));
+    g.dataset.uid=n.uid;g.dataset.who=n.t==='g'?'':n.who;
+    let sh='';
+    const w=n.w,h=n.h;
+    if(n.t==='d') sh=`<path class="shape" d="M${TIP} 0H${w-TIP}L${w} ${h/2}L${w-TIP} ${h}H${TIP}L0 ${h/2}Z"/>`;
+    else if(n.t==='e'||n.t==='s'||n.t==='g') sh=`<rect class="shape" width="${w}" height="${h}" rx="${Math.min(h/2,16)}"/>`;
+    else if(n.t==='c') sh=`<rect class="shape" width="${w}" height="${h}" rx="3"/><path class="barre" d="M9 0V${h}M${w-9} 0V${h}"/>`;
+    else sh=`<rect class="shape" width="${w}" height="${h}" rx="6"/>`;
+    const tot=n.ll.length*LH+n.ml.length*MH, y0=(h-tot)/2+12;
+    let tx='';
+    n.ll.forEach((l,i)=>{tx+=`<text class="lab" x="${w/2}" y="${y0+i*LH}"></text>`;});
+    n.ml.forEach((l,i)=>{tx+=`<text class="met" x="${w/2}" y="${y0+n.ll.length*LH+i*MH-1}"></text>`;});
+    g.innerHTML=sh+tx;
+    const ts=g.querySelectorAll('text');
+    [...n.ll,...n.ml].forEach((l,i)=>{ts[i].textContent=l;});
+    gN.appendChild(g);
+    TOUS.set(n.uid,{n,g});
+  });
+  hote.innerHTML='';hote.appendChild(svg);
+  return nodes;
+}
+
+/* ===================== Page ===================== */
+const racine=document.getElementById('phases');
+let compte={};
+function tout(){
+  TOUS.clear();CIBLES.clear();RANG=0;compte={karim:0,claude:0,code:0,ext:0,crit:0};
+  racine.innerHTML='';
+  const compter=ns=>ns.forEach(n=>{if(compte[n.who]!==undefined&&n.t!=='g'&&n.t!=='s')compte[n.who]++;});
+  PHASES.forEach(p=>{
+    const s=document.createElement('section');s.className='phase';s.id='phase-'+p.n;
+    s.innerHTML=`<div class="phase-tete"><span class="rang">${p.n}</span><h2></h2><p></p></div><figure><div class="dia"></div></figure>`;
+    s.querySelector('h2').textContent=p.titre;s.querySelector('p').textContent=p.but;
+    racine.appendChild(s);
+    compter(dessiner(p.steps,s.querySelector('.dia'),p.n,"Phase "+p.n+", "+p.titre+" : "+p.but));
+  });
+  dessiner(VUE,document.getElementById('vue'),0,"Vue d’ensemble des seize phases de la chaîne de devis, de la demande à l’envoi au client, avec les trois arrêts où Samuel doit agir.");
+  const tot=compte.karim+compte.claude+compte.code+compte.ext+compte.crit;
+  document.getElementById('stats').textContent=`${tot} étapes et décisions, dont ${compte.karim} pour Samuel et ${compte.claude} qui consomment des tokens. Confronté au code le 03/11/2026, CRM actif : HubSpot.`;
+  legende();appliquerFiltre();
+}
+function legende(){
+  document.getElementById('leg-qui').innerHTML=[
+    ['karim',"Samuel","décide ou agit à la main"],
+    ['claude',"Claude","lit, juge, rédige : consomme des tokens"],
+    ['code',"Code local","déterministe, sans token"],
+    ['ext',"Service externe","écrit dans HubSpot, WhatsApp ou Gmail, par script (Notion n’est plus que lu, pour les anciens dossiers)"],
+    ['crit',"Panne ou refus","arrêt, ou alerte Slack"]
+  ].map(([w,a,b])=>`<li><svg viewBox="0 0 34 20" aria-hidden="true"><g class="n-${w}"><rect class="shape" x="1" y="2" width="32" height="16" rx="4"/></g></svg><span><b>${a}</b> : ${b} <span class="cpt">(${compte[w]})</span></span></li>`).join('');
+  const f=(s,a,b,cl)=>`<li><svg viewBox="0 0 34 20" aria-hidden="true"><g class="${cl}">${s}</g></svg><span><b>${a}</b> : ${b}</span></li>`;
+  document.getElementById('leg-forme').innerHTML=[
+    f('<rect class="shape" x="1" y="2" width="32" height="16" rx="4"/>',"Action","une étape",'n-code'),
+    f('<path class="shape" d="M7 2H27L33 10L27 18H7L1 10Z"/>',"Décision","la colonne de gauche continue, l’exception part à droite",'n-code dec'),
+    f('<rect class="shape" x="1" y="2" width="32" height="16" rx="4"/>',"Arrêt humain","rien n’avance sans Samuel",'n-karim gate'),
+    f('<rect class="shape" x="1" y="2" width="32" height="16" rx="2"/><path class="barre" d="M6 2V18M28 2V18"/>',"Sous-programme","détaillé dans une autre phase",'n-code'),
+    f('<rect class="shape" x="1" y="3" width="32" height="14" rx="7"/>',"Départ ou fin","",'n-fin'),
+    f('<rect class="shape" x="1" y="3" width="32" height="14" rx="7"/>',"Renvoi","cliquez pour y aller",'chip'),
+  ].join('');
+}
+/* filtres et navigation */
+const FILTRES=[['',"Tout"],['karim',"Samuel"],['claude',"Claude"],['code',"Code"],['ext',"Services"],['crit',"Pannes"]];
+let filtre='';
+const navF=document.getElementById('nav-filtres');
+FILTRES.forEach(([k,l])=>{
+  const b=document.createElement('button');b.className='filtre';b.type='button';b.dataset.f=k;b.setAttribute('aria-pressed',k===''?'true':'false');
+  b.innerHTML=(k?`<span class="pastille p-${k}"></span>`:'')+l;
+  b.onclick=()=>{filtre=k;navF.querySelectorAll('.filtre').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));appliquerFiltre();};
+  navF.appendChild(b);
+});
+function appliquerFiltre(){
+  document.querySelectorAll('.node').forEach(g=>g.classList.toggle('dim',!!filtre&&g.dataset.who!==filtre));
+  document.querySelectorAll('.edge,.elab').forEach(e=>e.classList.toggle('dim',!!filtre));
+}
+const navP=document.getElementById('nav-phases');
+PHASES.forEach(p=>{
+  const b=document.createElement('button');b.className='num';b.type='button';b.textContent=p.n;b.title=p.titre;b.setAttribute('aria-label',"Phase "+p.n+", "+p.titre);
+  b.onclick=()=>allerA('phase-'+p.n);navP.appendChild(b);
+});
+document.getElementById('vers-points').onclick=()=>document.getElementById('points').scrollIntoView();
+function allerA(to){
+  const sec=document.getElementById(to);
+  if(sec){sec.scrollIntoView();return;}
+  const c=CIBLES.get(to);if(!c)return;
+  const g=document.querySelector(`.node[data-uid="${c.uid}"]`);
+  const rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  g.scrollIntoView({block:'center',inline:'center',behavior:rm?'auto':'smooth'});
+  g.classList.add('flash');setTimeout(()=>g.classList.remove('flash'),1600);
+}
+/* tiroir */
+const tir=document.getElementById('tiroir');let sel=null,dernier=null;
+function ouvrir(n,g){
+  if(sel)sel.classList.remove('sel');sel=g;g.classList.add('sel');dernier=g;
+  const q=document.getElementById('t-qui');
+  q.innerHTML=(QUI[n.who]?`<span class="pastille p-${n.who==='fin'||n.who==='off'?'code':n.who}"></span>`:'')+'<span></span>';
+  q.lastChild.textContent=(QUI[n.who]||'')+(n.phase?", phase "+n.phase:"");
+  document.getElementById('t-titre').textContent=n.l;
+  const t=document.getElementById('t-txt');
+  t.textContent=n.i||(n.m||"");
+  const o=document.getElementById('t-ou');o.hidden=!n.src&&!n.m;
+  o.innerHTML='';
+  if(n.m&&n.i){const c=document.createElement('code');c.textContent=n.m;o.append(c,document.createElement('br'));}
+  if(n.src){const s=document.createElement('span');s.textContent="Où : "+n.src;o.append(s);}
+  const al=document.getElementById('t-aller');al.hidden=!n.to;
+  if(n.to){al.textContent=/^phase-/.test(n.to)?"Aller à la phase "+n.to.slice(6):"Aller à cette étape";al.onclick=()=>{fermer();allerA(n.to);};}
+  tir.classList.add('ouvert');tir.setAttribute('aria-hidden','false');
+}
+function fermer(){tir.classList.remove('ouvert');tir.setAttribute('aria-hidden','true');if(sel)sel.classList.remove('sel');sel=null;if(dernier&&document.activeElement===document.getElementById('fermer'))dernier.focus();}
+document.getElementById('fermer').onclick=fermer;
+addEventListener('keydown',e=>{if(e.key==='Escape')fermer();});
+function clic(ev){
+  const g=ev.target.closest('.node');if(!g)return;
+  const r=TOUS.get(g.dataset.uid);if(!r)return;
+  if(r.n.t==='g'){allerA(r.n.to);return;}
+  if(g.closest('#vue')&&r.n.to){allerA(r.n.to);return;}
+  ouvrir(r.n,g);
+}
+document.addEventListener('click',clic);
+document.addEventListener('keydown',ev=>{if((ev.key==='Enter'||ev.key===' ')&&ev.target.closest&&ev.target.closest('.node')){ev.preventDefault();clic(ev);}});
+/* phase courante dans la barre */
+const obs=('IntersectionObserver' in window)?new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const n=e.target.id.slice(6);navP.querySelectorAll('.num').forEach(b=>b.classList.toggle('ici',b.textContent===n));}});},{rootMargin:'-20% 0px -70% 0px'}):null;
+function suivre(){if(obs)document.querySelectorAll('section.phase').forEach(s=>obs.observe(s));}
+tout();suivre();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{tout();suivre();const h=location.hash.slice(1);if(h)allerA(h);});
+</script>

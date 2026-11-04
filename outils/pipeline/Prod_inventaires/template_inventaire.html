@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Inventaire {{ d.numero }} {{ d.client }}</title>
+<style>
+@font-face { font-family: "DejaVu Sans"; font-weight: normal; src: url("{{ assets }}/fonts/DejaVuSans.ttf"); }
+@font-face { font-family: "DejaVu Sans"; font-weight: bold; src: url("{{ assets }}/fonts/DejaVuSans-Bold.ttf"); }
+
+@page {
+  size: A4;
+  margin: 51.02pt 51.35pt 56.69pt 51.35pt;
+  @bottom-center {
+    content: "Page " counter(page) " / " counter(pages);
+    font-family: "DejaVu Sans"; font-size: 8.5pt; color: #7a8899;
+  }
+}
+
+:root {
+  --navy: #1c3f66;
+  --texte: #1f2d3d;
+  --gris: #46586e;
+  --label: #6f8199;
+  --pale: #8797ab;
+  --meta: #b9c9dc;
+  --bord: #dbe3ec;
+  --fond: #eef3f9;
+  --ligne: #e8edf3;
+  --rouge: #c0392b;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: "DejaVu Sans"; font-size: 10pt; line-height: 1.35; color: var(--texte); font-kerning: normal; }
+
+/* En-tête */
+.entete { display: flex; justify-content: space-between; align-items: flex-start;
+  margin-top: 6pt; padding-bottom: 6pt; border-bottom: 1.5pt solid var(--navy); margin-bottom: 7.5pt; }
+.entete img { height: 54.4pt; width: auto; display: block; }
+.societe { text-align: right; font-size: 0.8em; color: var(--gris); }
+.societe .nom { font-size: 15pt; font-weight: bold; color: var(--navy); margin-bottom: 1.5pt; }
+.societe b { font-weight: bold; }
+
+/* Bandeau titre */
+.bandeau { background: var(--navy); color: #fff; display: flex; justify-content: space-between;
+  align-items: center; padding: 7.5pt 10.5pt; }
+.bandeau h1 { font-size: 15pt; letter-spacing: 0.22pt; }
+.bandeau .meta { text-align: right; }
+.bandeau .lib { font-size: 7.3pt; color: var(--meta); letter-spacing: 0.365pt; text-transform: uppercase; }
+.bandeau .num { font-size: 10.5pt; font-weight: bold; margin: 0.75pt 0 2.25pt; }
+.bandeau .lib b { color: #fff; letter-spacing: 0.365pt; }
+
+/* Cartes dossier */
+.dossier { display: grid; grid-template-columns: 1fr 1fr; border: 0.75pt solid var(--bord); margin-top: 7.5pt; }
+.dossier > div { padding: 5.25pt 9pt; border-right: 0.75pt solid var(--bord); border-bottom: 0.75pt solid var(--bord); }
+.dossier .lib { font-size: 7.3pt; color: var(--label); letter-spacing: 0.292pt; text-transform: uppercase; }
+.dossier .val { font-size: 10pt; font-weight: bold; color: var(--navy); margin-top: 1.5pt; }
+
+/* Titres de section */
+.section { background: var(--navy); color: #fff; font-size: 9.3pt; font-weight: bold;
+  text-transform: uppercase; padding: 4.5pt 9pt; margin-top: 7.5pt; break-after: avoid; letter-spacing: 0.217pt; }
+
+/* Tableaux */
+table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+td, th { border: 0.75pt solid var(--bord); border-top: none; padding: 3.75pt 9pt; font-size: 9pt; font-weight: normal; }
+.materiel th { font-size: 7.6pt; color: var(--label); text-align: left; }
+.materiel .c2 { width: 94.53pt; text-align: right; }
+.materiel .c3 { width: 119.01pt; text-align: right; }
+.materiel td, .materiel th { border-left: none; border-right: none; }
+.materiel tr > :first-child { border-left: 0.75pt solid var(--bord); }
+.materiel tr > :last-child { border-right: 0.75pt solid var(--bord); }
+.materiel tr.total td { background: var(--navy); color: #fff; font-weight: bold; }
+
+/* Pièces */
+.pieces { columns: 2; column-gap: 0; column-fill: balance; border: 0.75pt solid var(--bord); border-top: none; }
+.piece { break-inside: avoid; border-right: 0.75pt solid var(--bord); border-bottom: 0.75pt solid var(--bord); }
+.piece .tete { display: flex; justify-content: space-between; align-items: center; background: var(--fond);
+  border-bottom: 0.75pt solid var(--bord); padding: 3.75pt 7.5pt; }
+.piece .tete .nom { font-size: 8.8pt; font-weight: bold; color: var(--navy); text-transform: uppercase; }
+.pastille { background: var(--navy); color: #fff; font-size: 6.8pt; font-weight: bold; letter-spacing: 0.225pt;
+  padding: 1.5pt 5.25pt; border-radius: 10pt; text-transform: uppercase; }
+.piece ul { list-style: none; padding: 4.5pt 7.5pt 6pt; }
+.piece li { display: flex; justify-content: space-between; align-items: flex-start; gap: 6pt;
+  padding: 2.25pt 0; border-bottom: 0.75pt dotted var(--ligne); font-size: 8.6pt; }
+.piece li:last-child { border-bottom: none; }
+.piece .art { color: var(--texte); }
+.piece .dim { display: block; font-size: 7.3pt; color: var(--pale); }
+.piece .qte { font-weight: bold; color: var(--navy); white-space: nowrap; }
+.fragile { display: inline-block; vertical-align: middle; background: var(--rouge); color: #fff; font-size: 6.2pt;
+  font-weight: bold; letter-spacing: 0.155pt; padding: 0.75pt 3.75pt; border-radius: 3pt; margin-left: 3.75pt; line-height: 1.35; }
+
+/* Récapitulatif */
+.fin { break-inside: avoid; }
+.recap { margin-top: 7.5pt; }
+.recap td { font-size: 9.3pt; font-weight: bold; padding: 5.25pt 9pt; border-top: 0.75pt solid var(--bord); }
+.recap td:first-child { color: var(--navy); }
+.recap td + td { width: 116.85pt; text-align: right; color: var(--texte); }
+.recap tr.total td { background: var(--navy); color: #fff; font-size: 10.3pt; }
+
+.note { margin-top: 7.5pt; background: var(--fond); border-left: 2.25pt solid var(--navy);
+  padding: 3.75pt 9pt; font-size: 7.8pt; color: var(--gris); }
+
+/* Signatures */
+.signatures { display: grid; grid-template-columns: 1fr 1fr; margin-top: 15pt; }
+.signatures > div { padding: 0 7.5pt; text-align: center; }
+.signatures .titre { border-top: 0.75pt solid var(--navy); padding-top: 3pt; font-size: 9pt; font-weight: bold; color: var(--navy); }
+.signatures .mention { font-size: 7.6pt; color: var(--pale); margin-top: 1.5pt; }
+.signatures .zone { height: 53.2pt; margin-top: 4.5pt; }
+.signatures .tampon { display: block; width: 113.4pt; height: auto; margin: 4.5pt auto 0; }
+
+/* Champs modifiables : la valeur est masquée, le PDF reçoit un champ de formulaire à sa place */
+.champ { display: inline-block; min-height: 1em; }
+.bloc { display: block; }
+.dossier .champ.bloc { min-height: 13.5pt; }
+.vide-num { min-width: 70pt; }
+.vide-date { min-width: 42pt; }
+{% if mode != "fige" %}.champ > .v { visibility: hidden; }{% endif %}
+{% if mode == "mesure" %}{% for nom, couleur in marqueurs.items() %}
+.champ[data-champ="{{ nom }}"] { background: {{ couleur }} !important; }{% endfor %}{% endif %}
+</style>
+</head>
+<body>
+
+<div class="entete">
+  <img src="{{ assets }}/logo.png" alt="Sam'Déménage">
+  <div class="societe">
+    <div class="nom">SARL SAM'DÉMÉNAGE</div>
+    <div>77 rue Reinette, 33100 Bordeaux</div>
+    <div><b>SIRET</b> 928 903 921 00049 &nbsp;·&nbsp; <b>TVA</b> FR36928903921</div>
+    <div>contact@samdemenage.fr</div>
+  </div>
+</div>
+
+<div class="bandeau">
+  <h1>INVENTAIRE DE DÉMÉNAGEMENT</h1>
+  <div class="meta">
+    <div class="lib">N° inventaire / devis</div>
+    <div class="num"><span class="champ bloc{% if not d.numero %} vide-num{% endif %}" data-champ="numero"><span class="v">{{ d.numero }}</span></span></div>
+    <div class="lib">Établi le <b><span class="champ{% if not d.etabli_le %} vide-date{% endif %}" data-champ="etabli_le"><span class="v">{{ d.etabli_le }}</span></span></b></div>
+  </div>
+</div>
+
+<div class="dossier">
+  <div><div class="lib">Dossier client</div><div class="val"><span class="champ bloc" data-champ="client"><span class="v">{{ d.client }}</span></span></div></div>
+  <div><div class="lib">Date de déménagement</div><div class="val"><span class="champ bloc" data-champ="date_demenagement"><span class="v">{{ d.date_demenagement }}</span></span></div></div>
+  <div><div class="lib">Adresse de départ</div><div class="val"><span class="champ bloc" data-champ="adresse_depart"><span class="v">{{ d.adresse_depart }}</span></span></div></div>
+  <div><div class="lib">Adresse d'arrivée</div><div class="val"><span class="champ bloc" data-champ="adresse_arrivee"><span class="v">{{ d.adresse_arrivee }}</span></span></div></div>
+</div>
+
+<div class="section">Matériel entreprise</div>
+<table class="materiel">
+  <tr><th>Nature</th><th class="c2">Quantité</th><th class="c3">Volume (m³)</th></tr>
+  {% for m in d.materiel %}<tr><td>{{ m.nature }}</td><td class="c2">{{ m.quantite }}</td><td class="c3">{{ m.volume_txt }}</td></tr>
+  {% endfor %}<tr class="total"><td colspan="2">TOTAL MATÉRIEL ENTREPRISE</td><td class="c3">{{ d.vol_materiel_txt }} m³</td></tr>
+</table>
+
+<div class="section">Inventaire du mobilier client — par pièce</div>
+<div class="pieces">
+{% for p in d.pieces %}  <div class="piece">
+    <div class="tete"><span class="nom">{{ p.nom }}</span><span class="pastille">{{ p.articles|length }} article{% if p.articles|length > 1 %}s{% endif %}</span></div>
+    <ul>
+    {% for a in p.articles %}  <li><div class="art">{{ a.nom }}{% if a.fragile %}<span class="fragile">FRAGILE</span>{% endif %}{% if a.dims %}<span class="dim">{{ a.dims }}</span>{% endif %}</div><span class="qte">{{ a.qte }}</span></li>
+    {% endfor %}</ul>
+  </div>
+{% endfor %}</div>
+
+<div class="fin">
+<table class="recap">
+  <tr><td>Matériel entreprise (protections, sangles, etc.)</td><td>{{ d.vol_materiel_txt }} m³</td></tr>
+  <tr><td>Mobilier client (estimation cumulée)</td><td>≈ {{ d.vol_mobilier_txt }} m³</td></tr>
+  <tr class="total"><td>VOLUME TOTAL ESTIMÉ</td><td>{{ d.vol_total_txt }} m³</td></tr>
+</table>
+
+<div class="note">Cet inventaire est annexé au devis n°&nbsp;<span class="champ{% if not d.numero %} vide-num{% endif %}" data-champ="numero_note"><span class="v">{{ d.numero }}</span></span> du <span class="champ{% if not d.etabli_le %} vide-date{% endif %}" data-champ="etabli_le_note"><span class="v">{{ d.etabli_le }}</span></span>. Toute modification du volume ou de la nature des biens à transporter le jour de la prestation pourra entraîner des coûts supplémentaires conformément aux conditions générales de vente.{% if d.note_precisions %} Les adresses précises de départ et d'arrivée, ainsi que les quantités et détails signalés «&nbsp;à préciser&nbsp;», restent à confirmer avant le jour J.{% endif %}{% if d.note_maj %} Cette version met à jour et remplace l'inventaire précédent du même dossier.{% endif %}</div>
+
+<div class="signatures">
+  <div><div class="titre">LE CLIENT</div><div class="mention">Mention « Lu et approuvé », date et signature</div><div class="zone"></div></div>
+  <div><div class="titre">L'ENTREPRISE</div><div class="mention">SARL Sam'déménage</div><img class="tampon" src="{{ assets }}/tampon.png" alt="Tampon"></div>
+</div>
+</div>
+
+</body>
+</html>

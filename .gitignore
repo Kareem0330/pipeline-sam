@@ -1,0 +1,29 @@
+# Clés : jamais dans le dépôt
+.env
+.env.*
+!.env.example
+.claude/settings.local.json
+
+# Journaux et état local de la chaîne
+.claude/scripts/*
+!.claude/scripts/.garder
+*.log
+*.jsonl
+__pycache__/
+*.pyc
+
+# Devis et documents de clients : ils restent sur ce PC. Seuls les documents d'envoi et le dernier numéro sont suivis.
+donnees/Devis SamDem/*.pdf
+donnees/Devis SamDem/specs/*
+!donnees/Devis SamDem/specs/.garder
+donnees/Inventaires/*
+!donnees/Inventaires/.garder
+donnees/Devis générés/*
+!donnees/Devis générés/exports/
+!donnees/Devis générés/validation/
+donnees/Devis générés/exports/*
+!donnees/Devis générés/exports/.garder
+donnees/Devis générés/validation/*
+!donnees/Devis générés/validation/.garder
+outils/pipeline/livrables/pj-envoi/*
+!outils/pipeline/livrables/pj-envoi/.garder
