@@ -30,6 +30,16 @@ Ne pas écrire : le traitement normal d'un dossier, une faute de frappe, une cor
 
 ## Entrées
 
+### 2026-11-04 · Adresse intermédiaire toujours affichée (Karim)
+**Changement** : toute adresse intermédiaire (stockage, passage, étape) s'affiche sur le devis entre le départ et l'arrivée. Nouveau champ `client.adresse_passage`, à côté de `client.adresse_stockage`.
+**Pourquoi** : un devis avec un passage ne le montrait que dans le forfait manutention.
+**Où** : `devis-pdf/generer_devis_pdf.py`, `devis-pdf-samdem/SKILL.md`.
+
+### 2026-11-04 · Civilité conservée dans le nom du client (Karim)
+**Changement** : une civilité précisée dans les notes de la transaction va sur le devis (« Mme NOM ») ; le nom seul uniquement si elle n'est pas précisée. Elle se porte dans le nom de la transaction : la fiche en tire `client.civilite`, le devis la reprend, le nom du fichier PDF ne la garde pas.
+**Pourquoi** : la note précisait la civilité et le devis ne portait que le nom.
+**Où** : `fiche_hubspot.py`, `devis_auto.py`, `devis-pdf/generer_devis_pdf.py`, `creer-fiche-client-samdem/references/regles-remplissage.md`.
+
 ### 2026-11-04 · Deux utilisateurs, deux chaînes (Karim)
 **Changement** : une règle métier se modifie dans la chaîne de base et passe à la copie de Samuel. Tout ce qui est propre à un utilisateur (prénom, chemins, destinataires, environnement) reste de son seul côté : la chaîne de base reste adaptée à Karim, et l'adaptation à Samuel se fait uniquement dans `pipeline-sam/construire.py` et son `modele/`.
 **Pourquoi** : mêmes règles au départ, mais besoins et environnements différents, et les deux chaînes vont diverger.

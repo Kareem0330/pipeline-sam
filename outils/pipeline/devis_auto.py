@@ -317,7 +317,7 @@ def construire_spec(ex, dossier, lignes, numero, date):
 
     spec = {"numero": numero, "date": date, "volume": volume, "formule": formule,
             "total_ttc": total_ttc,
-            "client": {"nom": " ".join(x for x in (c["nom"].upper(), c.get("prenom") or "") if x),
+            "client": {"nom": " ".join(x for x in (c.get("civilite"), c["nom"].upper(), c.get("prenom") or "") if x),
                        "adresse_depart": adresse_dep, "adresse_arrivee": adresse_arr,
                        "date_demenagement": date_dem,
                        "telephone": tel or "non communiqué",

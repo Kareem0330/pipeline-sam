@@ -277,6 +277,7 @@ tr.soustotal td {{ padding: 6px 0 14px; font-size: 8pt; font-weight: 600; text-a
   <h2>{e(c['nom'])}</h2>
   <p>Adresse de départ : {e(c['adresse_depart'])}</p>
   {f"<p>Adresse de stockage : {e(c['adresse_stockage'])}</p>" if c.get('adresse_stockage') else ""}
+  {f"<p>Adresse de passage : {e(c['adresse_passage'])}</p>" if c.get('adresse_passage') else ""}
   <p>Adresse d'arrivée : {e(c['adresse_arrivee'])}</p>
   <p>Date de déménagement : {e(c['date_demenagement'])}</p>
   <p>Tél : {e(c['telephone'])}</p>
@@ -367,7 +368,8 @@ def main():
         sys.exit("Formule Standard : la ligne formule vaut toujours 0 €, son montant va dans le forfait manutention (Karim, 04/11/2026).")
     sortie = Path(a.sortie)
     sortie.mkdir(parents=True, exist_ok=True)
-    nom = spec["client"]["nom"].split()[0]
+    # La civilité reste sur le devis, pas dans le nom du fichier (Karim, 04/11/2026).
+    nom = next(m for m in spec["client"]["nom"].split() if m.rstrip(".").lower() not in ("mme", "m", "mr", "mlle"))
     pdf = sortie / f"Devis {spec['numero']} {nom}.pdf"
     inventaire = spec.get("inventaire") or []
     if len(inventaire) > INVENTAIRE_MAX_LIGNES:

@@ -23,6 +23,7 @@ GENERATEUR = os.path.join(ICI, "devis-pdf", "generer_devis_pdf.py")
 CLIENT = {"nom": "CLIENT Exemple", "adresse_depart": "1 rue de l'Exemple, 33000 Bordeaux",
           "adresse_arrivee": "2 rue de l'Exemple, 75000 Paris", "telephone": "06.00.00.00.00",
           "email": "client@exemple.fr"}
+PASSAGE = "3 rue de l'Exemple, 33000 Bordeaux"
 NUMERO = "000000000000"
 ARTICLES = ["Canapé", "Table basse", "Télévision", "Tapis", "Chaise", "Cartons", "Armoire", "Commode", "Bureau", "Lit",
             "Buffet", "Étagère"]
@@ -42,8 +43,8 @@ def traces(spec):
     """Ce qui permettrait de reconnaître le client dans la spec."""
     c = spec.get("client") or {}
     mots = [m for m in re.split(r"[\s'-]+", c.get("nom") or "") if len(m) >= 3]
-    return mots + [v for v in (c.get("adresse_depart"), c.get("adresse_arrivee"), c.get("telephone"), c.get("email"),
-                               spec.get("numero")) if v]
+    return mots + [v for v in (c.get("adresse_depart"), c.get("adresse_passage"), c.get("adresse_arrivee"),
+                               c.get("telephone"), c.get("email"), spec.get("numero")) if v]
 
 
 def anonymiser(spec):
@@ -51,6 +52,8 @@ def anonymiser(spec):
     a_retirer = traces(spec)
     sortie = dict(spec, numero=NUMERO, inventaire=[_article(n, l) for n, l in enumerate(spec.get("inventaire") or [])])
     sortie["client"] = dict(spec.get("client") or {}, **CLIENT)
+    if sortie["client"].get("adresse_passage"):
+        sortie["client"]["adresse_passage"] = PASSAGE
     texte = json.dumps(sortie, ensure_ascii=False).lower()
     restes = [t for t in a_retirer if t.lower() in texte]
     if restes:

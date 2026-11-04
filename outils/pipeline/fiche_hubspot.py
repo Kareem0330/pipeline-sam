@@ -28,6 +28,7 @@ import hubspot_crm as hc
 
 RE_COMMERCIAL = re.compile(r"^\s*(?:- )?Commercial\s*:\s*(.+?)\s*$", re.I)
 RE_CLIENT = re.compile(r"^\s*Client\s*:\s*(.+?)\s*$", re.I)
+RE_CIVILITE = re.compile(r"^\s*(Mme|Mlle|Mr|M\.)\s+", re.I)
 PROPS_FICHE = ["dealname", "createdate", "sd_commercial", "sd_ref_dossier", "sd_axe_groupage",
                "date_demenagement", "lien_fiche_notion"]
 PROPS_CONTACT = ["firstname", "lastname", "phone", "email"]
@@ -95,7 +96,10 @@ def lire_fiche(deal_id, hs=None):
     prenom_c = contact.get("firstname") or ""
     nom_c = re.sub(r"\b%s\b" % re.escape(prenom_c), "", contact.get("lastname") or "", flags=re.I).strip() \
         if prenom_c else contact.get("lastname")
-    nom_d, prenom_d = fn._nom_prenom(p.get("dealname") or "")
+    # « Mme DUPONT » sur la transaction : la civilité suit le dossier, sans passer pour un prénom.
+    civilite = RE_CIVILITE.match(p.get("dealname") or "")
+    client["civilite"] = civilite.group(1) if civilite else None
+    nom_d, prenom_d = fn._nom_prenom(RE_CIVILITE.sub("", p.get("dealname") or ""))
     client["nom"] = nom or client.get("nom") or nom_c or nom_d
     client["prenom"] = prenom or client.get("prenom") or prenom_c or prenom_d
     client["tel"] = client.get("tel") or contact.get("phone")

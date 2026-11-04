@@ -22,6 +22,11 @@ Standard par défaut, et supprimer les sections concernées.
 bulle · `bouteilles` = cartons bouteilles · `penderies` = cartons penderies · `R+1` = RDC +
 1 étage sans ascenseur.
 
+## Nom du client
+
+Civilité précisée dans les notes de la transaction (« Mme DUPONT ») : la garder sur le dossier et le
+devis. Nom seul uniquement si elle n'est pas précisée (Karim, 04/11/2026).
+
 ## Nomenclature des étages — règle stricte
 
 - **Maison** → notation `R+1`, `R+2`, etc.

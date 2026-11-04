@@ -84,6 +84,9 @@ Si le dernier numéro n'est pas certain, le dire à Samuel : c'est une suppositi
 - `notes_manutention` : consignes dites par Samuel ou notées dans la fiche (aide du client, etc.), seulement si elles
   s'adressent au client. **Aucun détail logistique ni mention interne sur un document client** (Karim, 04/11/2026) :
   ni valeur d'un objet, ni kraft ou couverture, ni « à protéger », ni ordre de tournée, ni consigne d'équipe.
+- **Adresse intermédiaire : toujours affichée entre le départ et l'arrivée** (Karim, 04/11/2026), qu'on l'appelle adresse
+  de stockage, adresse de passage ou étape intermédiaire. Stockage : `client.adresse_stockage`. Passage ou étape :
+  `client.adresse_passage`. L'accès et le volume du passage vont dans `notes_manutention`.
 - **Stockage dans notre local** (Karim, 04/11/2026, 1er cas LE TRIVIDIC) : le calculateur ne le chiffre pas. Écrire
   `client.adresse_stockage` (147 route des Valentons, 33450 Saint-Loubès, affichée entre départ et arrivée) et une ligne
   `{"type": "autre", "libelle": "Stockage en garde-meuble du JJ/MM/AAAA au JJ/MM/AAAA", "montant": x}`. Le prix dépend du
