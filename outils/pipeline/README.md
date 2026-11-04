@@ -24,6 +24,7 @@ Tout ce qui sert à la chaîne de devis vit ici depuis le 03/11/2026 (décision 
 | `calculateurs/` | le maître `calculateur-devis.html`, l'atelier (généré), le terrain |
 | `itineraire/` | le module d'itinéraire (`calcul_itineraire.py`) |
 | `devis-pdf/` | le générateur du PDF de devis et le brouillon d'envoi |
+| `références/` | les devis validés aux formats particuliers, un dossier par cas, à reprendre comme modèles (Karim, 04/11/2026) ; tous anonymisés, rangés par `reference_devis.py` |
 | `Prod_inventaires/` | le générateur du PDF d'inventaire |
 | `livrables/` | les deux flowcharts, la spec, l'arbre de décision, `pj-envoi/` (pièces d'un brouillon, vidé après l'envoi ; ignoré par git) |
 | `sans-notion/` | le projet « chaîne sans Notion » (décision du 03/11/2026) : `plan-projet.md`, `taches.json`, `planning.html`, `correspondance-rapport.md` |
@@ -304,9 +305,9 @@ Le projet Cowork « FINALISATION FICHE SANDRINE » est devenu du code. Les règl
 prompt sont implémentées ; le modèle n'a plus à transcrire de montants ni à poser de divisions.
 
 **Depuis le 03/11/2026 (Samuel), elle n'écrit plus que la note « Fiche client » de la transaction HubSpot, puis le
-CRM.** `note_chiffree()` compose la nouvelle version de la note (bloc de chiffrage, variantes en `### 🔀 Nom`,
-section « Itinéraires » pour le devis retenu) et `fiche_hubspot.ecrire()` la pose : rien n'est posé si le texte n'a pas
-changé, et les versions précédentes restent. Plus aucune écriture dans Notion ni dans le Google Sheet : les propriétés
+CRM.** `note_chiffree()` compose le nouveau texte de la note (bloc de chiffrage, variantes en `### 🔀 Nom`,
+section « Itinéraires » pour le devis retenu) et `fiche_hubspot.ecrire()` la crée ou modifie celle qui existe : rien n'est écrit si le texte n'a pas
+changé. Plus aucune écriture dans Notion ni dans le Google Sheet : les propriétés
 Notion et `proprietes()` n'existent plus, les options `--sans-sheet` et `--sans-proprietes` sont retirées. Pour un
 ancien dossier, la page Notion est lue puis recopiée une fois sur sa transaction (voir « Lecture de la fiche »).
 
@@ -376,8 +377,8 @@ Plan du projet : `reprise-auto/plan-projet.md`.
 
 ## Lecture de la fiche — `fiche_notion.py` et `fiche_hubspot.py`
 
-**Depuis le 03/11/2026 (Samuel), la fiche est une note « Fiche client » sur la transaction HubSpot**, une nouvelle
-version à chaque changement ; plus aucune fiche n'est créée dans Notion. Son texte garde les lignes que lisait
+**Depuis le 03/11/2026 (Samuel), la fiche est une note « Fiche client » sur la transaction HubSpot**, une seule,
+modifiée à chaque changement (04/11/2026) ; plus aucune fiche n'est créée dans Notion. Son texte garde les lignes que lisait
 `fiche_notion.lire_corps` (`### Titre`, `- [x] Case`, `- Puce`, lignes libres) : `parser_corps` et ses règles n'ont
 pas changé, seule la source a changé. Le dossier est identifié par l'identifiant de transaction (que des chiffres),
 qui voyage dans `fiche.page_id` de l'export là où voyageait l'identifiant de page Notion. `fiche_notion.lire_corps`,
@@ -405,7 +406,7 @@ python "outils/pipeline/fiche_hubspot.py" --reprendre <id de page Notion>   # an
 `--creer` retrouve ou crée le contact et la transaction (souvent créés par le site), puis pose la fiche ; il rend
 `transaction`, `url` et `detail`, et sort en code 1 sans rien écrire si le contact ou la transaction sont ambigus.
 Le commercial s'écrit dans une section `### Suivi :` quand le corps n'en porte pas. Corriger une fiche : `--lire`,
-corriger les lignes, `--creer` avec les mêmes options ; une nouvelle version de la note, les précédentes restent.
+corriger les lignes, `--creer` avec les mêmes options ; la note existante est modifiée, aucune autre n'est créée.
 
 ### Ancien dossier : une seule recopie
 
@@ -688,8 +689,8 @@ client — cas d'une saisie manuelle, 09/10/2026 ; créée sinon) → **chiffrag
 `amount` en HT = le devis le plus cher de la fiche, D1/D2) et **suivi complété** (adresses,
 date, lien, réf., commercial, `entite`) → plus de note : depuis le 03/11/2026,
 `avancer_dossier` n'écrit plus la note, c'est la finalisation qui pose la note « Fiche client »
-(`fiche_hubspot.ecrire()`), avant le CRM ; une nouvelle version à chaque changement, posée en tête, les précédentes
-gardées en historique (D8 ; Karim, 09/10/2026), rien de posé si le texte n'a pas changé. La propriété `sd_type_devis` (« Type de devis »)
+(`fiche_hubspot.ecrire()`), avant le CRM ; une seule note, créée si elle manque, modifiée sinon
+(Karim, 04/11/2026), rien d'écrit si le texte n'a pas changé. La propriété `sd_type_devis` (« Type de devis »)
 vaut **Indicatif** si le devis a été généré par `pipeline.py --indicatif`, **Ferme** sinon
 (09/10/2026) : le drapeau passe par l'en-tête `fiche` du pré-remplissage, que le calculateur
 recopie dans son export → plus de tâche « Relancer » depuis le 03/11/2026 (`POSER_TACHE_RELANCE`, personne ne la lisait ; `relances-quotidiennes` lit encore `remind_date`, à revoir s'il reprend) → étape

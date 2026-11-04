@@ -41,6 +41,7 @@ import shutil
 import sys
 import tempfile
 from datetime import date
+from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "itineraire"))
 import regles                                     # noqa: E402
@@ -427,8 +428,15 @@ def _slug(s):
     return re.sub(r"[^A-Za-z0-9]+", "-", s).strip("-") or "variante"
 
 
+def url_fichier(chemin):
+    return Path(os.path.abspath(chemin)).as_uri()
+
+
 def ouvrir(chemin):
-    """Ouvre le devis dans le navigateur par defaut. Echec silencieux : le fichier reste la."""
+    """Ouvre le devis dans le navigateur par defaut. Echec silencieux : le fichier reste la.
+    Navigateur integre : rien ne s'ouvre ici, Claude l'ouvre avec ses outils et rend None."""
+    if regles.NAVIGATEUR_INTEGRE:
+        return None
     chemin = os.path.abspath(chemin)              # startfile echoue sur un chemin relatif
     try:
         if sys.platform.startswith("win"):
@@ -982,7 +990,8 @@ def main():
                           "controle": rapport_controle(ex, d) if ex else None, "refus": refus,
                           "itineraire": dossier.get("itineraire"), "devis": fichier,
                           "demontage": dossier.get("demontage"),
-                          "ouvert": ouvert, "prefill": prefill, "calculateur": CALCULATEUR_URL,
+                          "ouvert": ouvert, "navigateur_integre": url_fichier(fichier) if fichier and regles.NAVIGATEUR_INTEGRE else None,
+                          "prefill": prefill, "calculateur": CALCULATEUR_URL,
                           "fiche": meta},
                          ensure_ascii=False, indent=2))
         return CODE_REFUS if refus else 0
@@ -1064,6 +1073,8 @@ def main():
             print("  ⚠ Un devis existe déjà : faire fermer son onglet, il porte l'ancienne version.")
     if fichier:
         print("\nDevis pré-rempli : %s" % fichier)
+        if regles.NAVIGATEUR_INTEGRE and not a.pas_ouvrir:
+            print("  → à ouvrir dans le navigateur intégré de Claude : %s" % url_fichier(fichier))
         if phase_seule:
             print("  → %s" % ("Chargement seul : temps de déchargement mis à 0 min."
                               if phase_seule == "chargement"

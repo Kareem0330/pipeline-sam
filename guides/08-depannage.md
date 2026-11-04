@@ -4,6 +4,7 @@ Le premier réflexe : `python verifier_installation.py`. Le deuxième : décrire
 
 | Ce que tu vois | Cause probable | Que faire |
 |---|---|---|
+| Le calculateur n'apparaît pas | Panneau du navigateur intégré masqué | Appuie sur Ctrl+Maj+B, ou ferme ce qui occupe le panneau de droite puis clique sur le globe |
 | Rien ne se passe après « Exporter JSON » | Veilleur arrêté | Relance `installer.bat`, ou redémarre le PC. Journal : `.claude/scripts/devis-export.log` |
 | Claude ne présente pas le PDF | Export fait sans session Claude ouverte | Écris « qu'est-ce qui attend ma relecture ? » |
 | « Aucune fiche trouvée » | Pas de note « Fiche client » sur la transaction, ou ancien dossier sans accès Notion | Fais créer la fiche, ou suis le [guide 5](05-notion-anciens-dossiers.md) |
@@ -12,6 +13,7 @@ Le premier réflexe : `python verifier_installation.py`. Le deuxième : décrire
 | HubSpot répond 403 | Un droit manque sur la clé | Ajoute-le sur la même clé : [guide 2](02-cle-hubspot.md) |
 | Le message n'est pas parti, alerte Slack | Beeper fermé | Ouvre Beeper, puis `python outils/pipeline/notif.py --vider-file-attente` |
 | Le PDF n'est pas remplacé | Il est ouvert dans un lecteur | Ferme-le, puis relance |
+| « Génération refusée » | Valeurs pas encore contrôlées, point à trancher, ou devis déjà généré | Normal : Claude contrôle puis relance. Pour un devis refait, ferme l'ancien onglet : il porte l'ancienne version |
 | Le PDF reste « à la main » | Relivraison, étape, chargement seul, accès à confirmer | Normal : Claude le produit avec le skill `devis-pdf-samdem`, puis il passe par la même relecture |
 | Inventaire non produit | Dossier de Christophe, moins de 10 m³, ou rien trouvé | Normal : le motif est donné à la relecture. Journal : `.claude/scripts/inventaires-auto.log` |
 | Numéro de devis qui repart trop bas | Fichier de `donnees/Devis SamDem/` supprimé | Remets le fichier du dernier numéro. Garde tes PDF à cet endroit |

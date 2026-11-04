@@ -16,6 +16,11 @@ rejoint alors HubSpot, puis Sandrine l'envoie depuis son adresse (§ 7 sur deman
 dans le message : relivraison, étape, chargement seul, accès à confirmer…). Les notes de la fiche
 sont internes et ne vont jamais sur le devis (Karim, 02/11/2026). Voir `outils/pipeline/README.md`.
 
+**Références (Karim, 04/11/2026)** : avant d'écrire la spec d'un cas particulier, lire `outils/pipeline/références/README.md`
+et reprendre le format du cas le plus proche : sa présentation, jamais ses montants. Une fois un devis particulier validé,
+sans attendre qu'on le demande, le ranger **anonymisé** par `python "outils/pipeline/reference_devis.py" "<spec>" "<Formule + particularité>"`
+(jamais par une copie), ajouter sa ligne au README, puis le dire à Samuel. Un cas déjà couvert n'en crée pas de nouveau.
+
 ## 1. Réunir les données
 
 - **Montants** : le dernier export du client dans `donnees/Devis générés/exports/` (`AAAAMMJJ-HHMMSS NOM Prénom.json`,
@@ -27,7 +32,7 @@ sont internes et ne vont jamais sur le devis (Karim, 02/11/2026). Voir `outils/p
   créneaux), type de logement, étages, ascenseur, portage entrée et intérieur, intervenants,
   section Inventaire, Notes.
 - **Écart fiche / export** (ex. frais de dossier) : l'export fait foi s'il retombe sur le total ;
-  le signaler à Samuel pour corriger la fiche (nouvelle version de la note, `calcul-devis-samdem` § 1).
+  le signaler à Samuel pour corriger la fiche (note modifiée, `calcul-devis-samdem` § 1).
 - **Fiche marquée « indicatif »** : le dire à Samuel avant de produire ; un indicatif n'a ni
   acompte ni RIB.
 
@@ -71,7 +76,15 @@ Si le dernier numéro n'est pas certain, le dire à Samuel : c'est une suppositi
 - Matériel facturé : une ligne `{"type": "autre", "libelle": "Matériel", "detail": [...], "montant": x}`.
 - `conditions` : phrases propres au dossier, placées avant « Règlement par virement »
   (ex. « Réservation des places de stationnement effectuée par la cliente auprès de la mairie. »).
-- `notes_manutention` : consignes dites par Samuel ou notées dans la fiche (aide du client, etc.).
+- `notes_manutention` : consignes dites par Samuel ou notées dans la fiche (aide du client, etc.), seulement si elles
+  s'adressent au client. **Aucun détail logistique ni mention interne sur un document client** (Karim, 04/11/2026) :
+  ni valeur d'un objet, ni kraft ou couverture, ni « à protéger », ni ordre de tournée, ni consigne d'équipe.
+- **Stockage dans notre local** (Karim, 04/11/2026, 1er cas LE TRIVIDIC) : le calculateur ne le chiffre pas. Écrire
+  `client.adresse_stockage` (147 route des Valentons, 33450 Saint-Loubès, affichée entre départ et arrivée) et une ligne
+  `{"type": "autre", "libelle": "Stockage en garde-meuble du JJ/MM/AAAA au JJ/MM/AAAA", "montant": x}`. Le prix dépend du
+  dossier : le demander à Samuel, sans le déduire de la grille. **Offert** : `"detail": ["Offert"]`, `montant` 0, le TTC
+  de l'export ne bouge pas. **Facturé** : monter `total_ttc` de x × 1,2, `--ajouter-pdf` avec ce TTC, puis, après
+  validation, le reporter sur la transaction et la fiche, qui gardent celui de l'export. Un nouvel export repart sans ce supplément.
 - **Fourchette** (Karim, 28/10/2026, 1er cas RIBEZZI) : un seul devis, `volume` + `volume_max`,
   `total_ttc` + `total_ttc_max` (les TTC des deux exports), `montant_max` sur chaque ligne qui
   varie ; le PDF affiche « x à y ». Le transport reste la ligne `ajuste` aux deux bornes.

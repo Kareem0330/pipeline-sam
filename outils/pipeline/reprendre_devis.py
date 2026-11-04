@@ -179,7 +179,10 @@ def main():
     cible = generer(paquet_reprise(export, titre))
     print("Repris : %s" % os.path.basename(chemin))
     print("Devis : %s" % cible)
-    print("  → ouvert dans le navigateur" if pipeline.ouvrir(cible) else "  → à ouvrir à la main")
+    if pipeline.regles.NAVIGATEUR_INTEGRE:
+        print("  → à ouvrir dans le navigateur intégré de Claude : %s" % pipeline.url_fichier(cible))
+    else:
+        print("  → ouvert dans le navigateur" if pipeline.ouvrir(cible) else "  → à ouvrir à la main")
 
 
 if __name__ == "__main__":

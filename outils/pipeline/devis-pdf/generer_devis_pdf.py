@@ -274,6 +274,7 @@ tr.soustotal td {{ padding: 6px 0 14px; font-size: 8pt; font-weight: 600; text-a
   <p class="lab">ADRESSE DE FACTURATION</p>
   <h2>{e(c['nom'])}</h2>
   <p>Adresse de départ : {e(c['adresse_depart'])}</p>
+  {f"<p>Adresse de stockage : {e(c['adresse_stockage'])}</p>" if c.get('adresse_stockage') else ""}
   <p>Adresse d'arrivée : {e(c['adresse_arrivee'])}</p>
   <p>Date de déménagement : {e(c['date_demenagement'])}</p>
   <p>Tél : {e(c['telephone'])}</p>

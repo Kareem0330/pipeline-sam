@@ -45,10 +45,15 @@ Carton standard 1,25 · livres 1,00 · vaisselle 4,75 · bouteilles 1,75 · pend
 ## Devis
 
 - **Contrôle avant génération** : `pipeline.py --fiche "X"` affiche les valeurs sans rien ouvrir ; on les relit, on pose les questions ouvertes, puis `--devis` avec les mêmes options génère une seule fois. Devis existant : nouveau contrôle, `--remplacer`, et fermer l'ancien onglet.
+- **Navigateur** : le calculateur s'ouvre dans le navigateur intégré de Claude, jamais dans le navigateur externe. C'est Samuel qui clique sur « Exporter JSON ».
 - **Indicatif** : « fais un devis indicatif pour X » se contrôle avec `pipeline.py --fiche "X" --indicatif`, puis se génère avec `--devis --indicatif`. Sans ce drapeau, le devis repasse en « Ferme ». Son inventaire rejoint HubSpot sans partir sur WhatsApp.
 - **Chargement ou déchargement seul** : `--chargement-seul` ou `--dechargement-seul` met à 0 le temps de la phase absente. Le PDF se fait à la main.
 - **Ressortir un devis** : `python outils/pipeline/reprendre_devis.py "NOM Prénom"` rouvre le dernier export, modifiable, au lieu d'un résumé. Il n'existe que pour les exports faits dans ce dossier.
 - **Rien sur un devis qui trahisse sa préparation** : ni 🟡 ni émoji, ni « temps à chiffrer », ni temps d'options, ni nom de variante. Le client ne doit jamais deviner qu'une IA a préparé le devis. Le générateur refuse une spec qui en contient.
+- **Aucun détail logistique ni mention interne pour le client** : ni valeur d'un objet (« cher »), ni kraft ou couverture, ni « à protéger », ni ordre de tournée, ni consigne d'équipe. Ces éléments restent dans les notes de la fiche.
+- **Ne rien supposer** : ce que la source ne dit pas se demande à Samuel avant de générer le devis, sans retenir d'hypothèse.
+- **Stockage dans notre local** : le calculateur ne le chiffre pas. Le PDF porte l'adresse de stockage, 147 route des Valentons, 33450 Saint-Loubès, entre le départ et l'arrivée, et une ligne « Stockage en garde-meuble du … au … ». Offert ou facturé dépend du dossier : le demander à Samuel à chaque fois, sans déduire un prix de la grille. Le détail est dans le skill `devis-pdf-samdem`.
+- **Références** : `outils/pipeline/références/` garde les devis aux formats particuliers, un dossier par cas (« Standard + stockage + groupage »), tous anonymisés. À relire avant un cas similaire pour reprendre la présentation, jamais les montants. Après la validation d'un nouveau format, le ranger avec `reference_devis.py`, jamais par une copie.
 - **Envoi** : Sandrine envoie depuis son adresse. Pas de brouillon de mail sans demande explicite de Samuel.
 - **Relecture** : ce qui se corrige est le plus souvent du texte, par la spec du PDF et `validation_devis.py --regenerer`, sans rouvrir le calculateur.
 
@@ -72,6 +77,6 @@ SARL Sam'Déménage, SIRET **928 903 921 00049** (00015 est périmé : à corrig
 
 ## HubSpot
 
-- Une nouvelle version de la fiche est une **nouvelle note**, posée en tête. Les anciennes restent : jamais d'écrasement.
+- La fiche est **une seule note** par transaction : créée si elle manque, modifiée sinon. Jamais de seconde note identique.
 - Doublons de transactions : on les fusionne, l'originale en principale. La fusion change l'identifiant et garde l'étape de la principale : la vérifier ensuite.
 - Les transactions créées par le site ont Samuel Cohen pour propriétaire par défaut.

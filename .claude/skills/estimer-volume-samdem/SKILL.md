@@ -148,7 +148,7 @@ Le script gère seul deux situations, à ne pas passer sous silence dans ta rép
 
 - Reporter le **volume conservateur** sur la ligne `Volume de meuble : … m3 | source : …` de la fiche (note
   « Fiche client » de la transaction HubSpot), avec pour source « estimation Sam'Déménage sur inventaire client
-  (conservateur) ». Une correction de fiche est une nouvelle version de la note : `fiche_hubspot.py --lire
+  (conservateur) ». Une correction de fiche modifie la note : `fiche_hubspot.py --lire
   <transaction>`, corriger la ligne dans un fichier, puis `fiche_hubspot.py --creer <fichier>` avec les options
   de la création (`calcul-devis-samdem`, § 1).
 - Cocher `- [x] Inventaire : Oui`.

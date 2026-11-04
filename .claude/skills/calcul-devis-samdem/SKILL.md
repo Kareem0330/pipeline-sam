@@ -17,7 +17,7 @@ Ce skill remplace **uniquement** l'étape de saisie/calcul du devis (qui se fais
 ## 1. Étape 1 — Lecture de la fiche client : **par le code, pas par le modèle**
 
 **Ne jamais charger une fiche dans le contexte pour en extraire des champs.** Depuis le 03/11/2026
-(Samuel), la fiche est une **note « Fiche client » sur la transaction HubSpot**, une nouvelle version à
+(Samuel), la fiche est une **note « Fiche client » sur la transaction HubSpot**, une seule, modifiée à
 chaque changement : plus aucune fiche n'est créée ni écrite dans Notion. Sa trame est fixe : elle est
 parsée par `outils/pipeline/fiche_notion.py`, qui lit la note par `fiche_hubspot.py` quand l'identifiant
 est celui d'une transaction (que des chiffres) et rend un `dossier.json`. Cet identifiant voyage dans
@@ -63,7 +63,7 @@ transaction HubSpot, ni page dans l'ancienne base Notion ; le pipeline indique l
 1. `/creer-fiche-client-samdem`, avec pour source la commande que le pipeline imprime
    (`python "outils/pipeline/hubspot_crm.py" --description "NOM Prénom"` ; `nocrm.py` en retour arrière) ;
 2. inventaire sans volume → `/estimer-volume-samdem`, volume **conservateur** reporté dans la
-   fiche (nouvelle version de la note) avant le devis ;
+   fiche (note modifiée) avant le devis ;
 3. contrôler avec `pipeline.py --fiche "NOM Prénom"`, puis générer avec `--devis`.
 
 **Pas de fiche = le dossier est dans le CRM (Karim, 16/09/2026 : noCRM, colonne « Contacté
@@ -83,7 +83,7 @@ sa page Notion garde l'ancienne règle : propriétés Notion en simple repli, to
 `_meta.divergences`, le corps est retenu et la divergence signalée à Samuel, jamais tranchée en silence.
 
 **Ce qui reste au modèle**, et rien d'autre :
-- `_meta.divergences` (ancien dossier lu sur Notion) — dire à Samuel ce qui diverge ; le corps fait foi, la fiche se corrige par une nouvelle version de la note.
+- `_meta.divergences` (ancien dossier lu sur Notion) — dire à Samuel ce qui diverge ; le corps fait foi, la fiche se corrige en modifiant la note.
 - `_meta.signaux` — mentions repérées mais non tranchées (groupage, garde-meuble,
   monte-meuble, déchetterie, piano, week-end, Nextories). Le code repère, il ne décide pas.
 - `_meta.alertes` — les 🟡 de la fiche, à relayer dans le récapitulatif d'appel.
@@ -97,11 +97,11 @@ Règles inchangées :
 - Si le parseur rend `null` sur un champ bloquant, c'est un vrai manque : le pipeline produit
   déjà la relance à envoyer. Ne jamais combler un `null` par une valeur plausible.
 
-**Corriger une fiche** (volume estimé, adresse, date, accès…) : une nouvelle version de la note, jamais une
-modification dans Notion. `python "outils/pipeline/fiche_hubspot.py" --chercher "NOM Prénom"` donne l'identifiant
+**Corriger une fiche** (volume estimé, adresse, date, accès…) : on modifie la note sur HubSpot, jamais
+Notion. `python "outils/pipeline/fiche_hubspot.py" --chercher "NOM Prénom"` donne l'identifiant
 de transaction, `--lire <id>` rend les lignes de la fiche ; corriger les lignes dans un fichier du scratchpad,
 puis `fiche_hubspot.py --creer <fichier>` avec les mêmes options que la création (`--nom`, `--prenom`, `--tel`,
-`--email`…) : les versions précédentes restent. Ancien dossier encore sur sa page Notion : d'abord
+`--email`…) : la note existante est modifiée, aucune autre n'est créée (Karim, 04/11/2026). Ancien dossier encore sur sa page Notion : d'abord
 `fiche_hubspot.py --reprendre <id de la page>` (ou `pipeline.py --devis`), qui recopie la fiche sur sa transaction.
 
 ## 2. Étape 2 — Analyse de la structure de la mission
@@ -294,6 +294,11 @@ Il reste à :
 1. Rien : le devis s'ouvre seul, formulaire rempli. Pas de `start`, pas de « Charger un
    dossier », pas de collage. Si l'ouverture automatique échoue, le script le dit et donne le
    chemin — c'est le seul cas où on l'ouvre à la main.
+   **Sortie « à ouvrir dans le navigateur intégré de Claude : <url> »** (dossier de Samuel, Karim 04/11/2026), aussi
+   avec `reprendre_devis.py` : jamais le navigateur externe. Ouvrir l'url avec `preview_start`, puis lire
+   `tabs_context` : panneau masqué, demander Ctrl+Maj+B. Le fichier doit être dans le dossier du projet, sinon la page
+   reste figée. Régénération : fermer l'ancien onglet avec `tabs_close`. L'export part sur un vrai clic de Samuel,
+   jamais sur un clic de Claude : un clic automatique n'atteint pas le presse-papier de Windows.
 2. Ne jamais demander de confirmation du type « je génère le devis ? » une fois le contrôle
    relu et sans question ouverte. Une vraie ambiguïté se pose à Samuel **avant** de générer ; le
    pipeline refuse aussi sur `STOP`, `ESTIMATION_REQUISE` ou un point à trancher.
@@ -399,7 +404,7 @@ Samuel ait relu et validé. Le veilleur fait la finalisation sans modèle ; c'es
    ```
    Même numéro, rien n'est importé. Relire le texte du PDF, puis reprendre à l'étape 3. Code de sortie 1 : le
    dire (spec refusée, ou TTC modifié, à repasser par le calculateur).
-   - Adresse, date, téléphone, e-mail : corriger aussi la fiche (nouvelle version de la note, § 1) et le CRM,
+   - Adresse, date, téléphone, e-mail : corriger aussi la fiche (note modifiée, § 1) et le CRM,
      sinon le prochain export repart de l'ancienne valeur. Un nouvel export refait la spec, et ses corrections reviennent dans `corrections_perdues`.
    - Texte fixe du modèle (engagements, formule) : il n'est pas dans la spec et sert à tous les devis. Le dire à
      Samuel avant de toucher au générateur.

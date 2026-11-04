@@ -32,7 +32,7 @@ python verifier_installation.py
 Ouvre ce dossier dans Claude Code et écris simplement :
 
 - « Crée la fiche de DUPONT Jean » et colle les informations du client.
-- « Fais le devis de DUPONT Jean » : le calculateur s'ouvre, déjà rempli. Ajuste si besoin, puis clique sur « Exporter JSON ».
+- « Fais le devis de DUPONT Jean » : le calculateur s'ouvre dans le navigateur intégré à Claude, déjà rempli. Ajuste si besoin, puis clique sur « Exporter JSON ».
 - Claude te présente alors le PDF. Tu choisis : valider, corriger le texte, ou changer le chiffrage.
 - « Qu'est-ce qui attend ma relecture ? » pour rattraper un devis exporté plus tôt.
 - « Ressors le devis de DUPONT Jean » pour le modifier.

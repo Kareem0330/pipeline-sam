@@ -13,8 +13,8 @@ dictionnaire-de-donnees.md, décisions D1 à D16 du 05/10/2026) :
      le contact (une seule transaction ouverte). Créée si le client n'en a aucune ouverte.
      Le chiffrage (propriétés sd_*, montant) est réécrit à chaque devis : le calculateur fait
      foi. Le suivi (adresses, date, commercial, lien, référence) n'est que complété.
-  3. NOTE « Fiche client » — le corps de la fiche (D8), écrit par la finalisation : une nouvelle note par
-     version, en tête ; les précédentes restent en historique (Karim, 09/10/2026).
+  3. NOTE « Fiche client » — le corps de la fiche (D8), écrit par la finalisation : une seule note par
+     transaction, modifiée à chaque changement (Karim, 04/11/2026).
   4. TÂCHE « Relancer » — coupée le 03/11/2026 (POSER_TACHE_RELANCE) : personne ne la lit, les relances
      passeront par W3. Le code reste : J+2, reportée au lundi, mise à jour si elle existe déjà.
   5. ÉTAPE — « Devis en révision » pour tout dossier, groupage compris (C-041, Karim 29/10/2026) :
@@ -667,20 +667,23 @@ def notes_fiche(notes):
 
 
 def poser_note(hs, deal_id, corps):
-    """Note « Fiche client » : une nouvelle note par version de la fiche, posée en tête ;
-    les versions précédentes restent sur la transaction (historique, Karim 09/10/2026)."""
+    """Note « Fiche client » : une seule par transaction. Absente, elle est créée ; présente, elle
+    est modifiée, plusieurs fiches identiques ne font que polluer le fil (Karim, 04/11/2026).
+    Une copie « Fiche client (Notion) » ne se relit pas : elle reste telle quelle."""
     body = note_html(TITRE_NOTE, corps)
     notes = hs.lire_lot("notes", hs.associes("deals", deal_id, "notes"), ["hs_note_body", "hs_timestamp"])
-    versions = notes_fiche(notes)
-    if versions and texte_note(versions[0]["properties"].get("hs_note_body")) == texte_note(body):
-        return "note fiche client déjà à jour"
+    fiches = [n for n in notes_fiche(notes) if titre_note(n["properties"].get("hs_note_body")) == TITRE_NOTE]
+    if fiches:
+        if texte_note(fiches[0]["properties"].get("hs_note_body")) == texte_note(body):
+            return "note fiche client déjà à jour"
+        hs.req("PATCH", "/crm/v3/objects/notes/%s" % fiches[0]["id"], {"properties": {"hs_note_body": body}})
+        return "note fiche client modifiée"
     maintenant = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     hs.req("POST", "/crm/v3/objects/notes", {
         "properties": {"hs_note_body": body, "hs_timestamp": maintenant},
         "associations": [{"to": {"id": deal_id}, "types": [
             {"associationCategory": "HUBSPOT_DEFINED", "associationTypeId": NOTE_DEAL}]}]})
-    return ("nouvelle version de la note fiche client (%d précédente(s) conservée(s))" % len(versions)
-            if versions else "note fiche client créée")
+    return "note fiche client créée"
 
 
 def poser_relance(hs, deal_id, titre, owner_id, jour):

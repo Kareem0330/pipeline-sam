@@ -13,7 +13,7 @@ Il ne doit plus rester de ligne « À FAIRE » pour HubSpot, WhatsApp et le veil
 ## Les étapes
 
 1. **La fiche.** Dans Claude Code : « Crée la fiche de NOM Prénom », et colle les informations du client. Claude pose une note « Fiche client » sur la transaction.
-2. **Le devis.** « Fais le devis de NOM Prénom. » Le calculateur s'ouvre, déjà rempli. Vérifie la marge, les temps et les options.
+2. **Le devis.** « Fais le devis de NOM Prénom. » Claude contrôle d'abord les valeurs et te pose ses questions, s'il en a. Le calculateur s'ouvre ensuite dans le navigateur intégré à Claude, dans le panneau de droite, déjà rempli, une seule fois. S'il n'apparaît pas, appuie sur Ctrl+Maj+B. Vérifie la marge, les temps et les options.
 3. **L'export.** Clique sur **« Exporter JSON »**. Le veilleur fait le reste : note, propriétés, étape « Devis en révision », PDF. Laisse Claude Code ouvert : il attend l'export et te présente le PDF.
 4. **La relecture.** Relis le PDF. Choisis : valider, corriger le texte, ou changer le chiffrage.
 5. **La validation.** Le devis et l'inventaire rejoignent la transaction, et le message part à l'équipe.

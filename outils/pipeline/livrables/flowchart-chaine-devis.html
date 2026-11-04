@@ -318,13 +318,13 @@ const PHASES=[
  ]),
  A('code',"Produire le rapport","standard, conservateur, longue distance","Avec l’analyse de palier : un conservateur qui atteint 15, 20 ou 30 m³ fait recommander le palier supérieur.","volume.py"),
  A('claude',"Restituer le rapport tel quel",null,"Sans recalcul ni reformulation. Changement de palier et saturation sont signalés.","Skill estimer-volume-samdem, § 5 et 6"),
- A('claude',"Reporter le conservateur sur la fiche","ligne « Volume de meuble »","Nouvelle version de la note : la ligne « Volume de meuble : … m3 | source : … » avec la source « estimation Sam’Déménage sur inventaire client (conservateur) », et la case « Inventaire : Oui ». Le corps de la note fait foi.","Skill estimer-volume-samdem, § 7"),
+ A('claude',"Reporter le conservateur sur la fiche","ligne « Volume de meuble »","Dans la note de la transaction, modifiée : la ligne « Volume de meuble : … m3 | source : … » avec la source « estimation Sam’Déménage sur inventaire client (conservateur) », et la case « Inventaire : Oui ». Le corps de la note fait foi.","Skill estimer-volume-samdem, § 7"),
  G('lancer',"Retour : relancer le pipeline (phase 1)"),
 ]},
 /* ===================== 4 ===================== */
 {n:4,titre:"Lecture du dossier et verdict",but:"Tout est du code, sans token, jusqu’au verdict. Une correction faite à la main dans le texte de la fiche est captée d’office, car le corps fait foi.",steps:[
  S("Fiche identifiée (phase 1)","La suite ne charge jamais la fiche dans le contexte du modèle.","pipeline.py, main()"),
- A('code',"Lire la fiche","fiche_notion.lire_fiche()","En HTTP direct. Identifiant de transaction (que des chiffres) : la dernière version de la note « Fiche client », plus le contact et quelques propriétés de la transaction. Sinon, ancienne page Notion : propriétés et corps. Toute la fiche est lue à chaque passage.","fiche_notion.py, lire_fiche() ; fiche_hubspot.py, lire_fiche()",{id:'lire'}),
+ A('code',"Lire la fiche","fiche_notion.lire_fiche()","En HTTP direct. Identifiant de transaction (que des chiffres) : la note « Fiche client », plus le contact et quelques propriétés de la transaction. Sinon, ancienne page Notion : propriétés et corps. Toute la fiche est lue à chaque passage.","fiche_notion.py, lire_fiche() ; fiche_hubspot.py, lire_fiche()",{id:'lire'}),
  A('code',"Découper le corps par sections","parser_corps()","Découpage sur les titres ###, jamais un grep global : une ligne des Notes ne peut pas passer pour l’adresse. Rend le dossier.json, où un champ inconnu vaut null.","fiche_notion.py, parser_corps()"),
  A('code',"Croiser corps et propriétés","croiser()","Ancien dossier Notion : le corps est retenu, l’écart est signalé. Note HubSpot : rien à croiser, divergences et replis restent vides. Sortent aussi : replis, signaux (groupage, garde-meuble, monte-meuble, déchetterie, piano, week-end, Nextories), lignes 🟡, notes, lignes non reconnues, chiffrage déjà présent.","fiche_notion.py, croiser() ; champ _meta"),
  D('code',"--sans-etapes ?",null,"Variante directe d’une fiche qui porte des arrêts (Karim, 11/09/2026).","pipeline.py, traiter()","Non",[
@@ -350,7 +350,7 @@ const PHASES=[
      G('phase-6',"Aller à 6. Génération")]),
    ]),
    A('karim',"Envoyer la relance au client","WhatsApp","Samuel, ou le commercial, envoie le message rédigé.","Sortie de pipeline.py"),
-   A('karim',"Compléter la fiche à la réponse","corps de la fiche","La correction se fait dans le texte de la note, par une nouvelle version (fiche_hubspot.py --creer) : le parseur la lira au prochain passage.","fiche_hubspot.py"),
+   A('karim',"Compléter la fiche à la réponse","corps de la fiche","La correction se fait dans le texte de la note, qui est modifiée (fiche_hubspot.py --creer) : le parseur la lira au prochain passage.","fiche_hubspot.py"),
    G('lancer',"Retour : relancer le pipeline (phase 1)")],'crit'),
   B("ESTIMATION_REQUISE",[G('phase-3',"Aller à 3. Estimation du volume")]),
   B("GO_AVEC_RESERVES",[A('code',"Lister les fragilités","affichées dans la sortie","Itinéraire dégradé, adresse à la commune, péage à relever, volume sans inventaire, incohérence formule et options, plus de 30 m³, démontage hors barème, relivraison à vérifier, plus de 3 arrêts.","pipeline.py, evaluer_completude() et traiter()")]),
@@ -517,8 +517,8 @@ const PHASES=[
   B("Un bloc historique sans titre",[A('code',"L’adopter et le nommer",null,"Migration douce : pas de doublon à côté d’un devis valide.","finalisation.py, choisir_groupe()")]),
   B("Rien de tout cela",[A('code',"Créer un bloc complet en bas de fiche",null,"Les blocs déjà présents ne sont pas touchés.","finalisation.py, bloc_variante()")]),
  ],{noMain:true}),
- A('code',"Ajouter la section Itinéraires","patcher_itineraire()","Dernier export seulement (prevenir = vrai) : km, temps, péage, dans le format relu par le parseur, dans la même version de la note. Ces lignes ne sont jamais créées : une fiche sans section suit un autre modèle.","finalisation.py, patcher_itineraire() ; note_chiffree()"),
- A('ext',"Poser la nouvelle version de la note","fiche_hubspot.ecrire()","Note « Fiche client » de la transaction, posée en tête ; les versions précédentes restent. Rien n’est posé si le texte n’a pas changé.","finalisation.py, main() ; fiche_hubspot.py, ecrire()"),
+ A('code',"Ajouter la section Itinéraires","patcher_itineraire()","Dernier export seulement (prevenir = vrai) : km, temps, péage, dans le format relu par le parseur, dans la même écriture de la note. Ces lignes ne sont jamais créées : une fiche sans section suit un autre modèle.","finalisation.py, patcher_itineraire() ; note_chiffree()"),
+ A('ext',"Écrire la note de la fiche","fiche_hubspot.ecrire()","Une seule note « Fiche client » par transaction : créée si elle manque, modifiée sinon (Karim, 04/11/2026). Rien n’est écrit si le texte n’a pas changé.","finalisation.py, main() ; hubspot_crm.py, poser_note()"),
  D('code',"Note posée ?",null,"Avec jusqu’à 2 relances immédiates sur panne passagère. Cause la plus fréquente d’échec : clé HubSpot absente ou refusée.","finalisation.py, main() ; reprise.py","Oui",[
   B("Non",[E('crit',"Alerte Slack, arrêt : rien ne part","Ni équipe, ni CRM. La commande rendue rejoue toute la finalisation.","finalisation.py, _incident()")],'crit'),
  ]),

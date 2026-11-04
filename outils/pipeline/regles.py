@@ -19,6 +19,8 @@ COUT_DEPL_FORFAIT = 20         # EUR HT par camion, si aucun kilometrage connu
 # Copies du calculateur, exports et relectures : des livrables qui s'accumulent, gardes hors du coffre
 # (Karim, 04/11/2026), a cote des PDF de donnees/Devis SamDem.
 DEVIS_GENERES = __import__("os").path.normpath(__import__("os").path.join(__import__("os").path.dirname(__import__("os").path.abspath(__file__)), "..", "..", "donnees", "Devis générés"))
+# Vrai dans le dossier de Samuel (Karim, 04/11/2026) : le calculateur s'ouvre dans le navigateur integre de Claude.
+NAVIGATEUR_INTEGRE = True
 
 # --- Marge (decision Karim 08/09/2026, cible relevee le 09/09/2026) ----------
 

@@ -3,7 +3,7 @@
 """
 Fiche client sur la transaction HubSpot (Karim, 03/11/2026) : plus de fiche créée dans Notion.
 
-La fiche est une note « Fiche client » sur la transaction, une nouvelle version à chaque changement.
+La fiche est une seule note « Fiche client » sur la transaction, modifiée à chaque changement.
 Son texte garde les lignes de fiche_notion.lire_corps (« ### Titre », « - [x] Case », lignes libres) :
 parser_corps et ses règles n'ont pas changé, seule la source a changé.
 
@@ -55,7 +55,7 @@ def lire_lignes(deal_id, hs=None):
 
 
 def ecrire(deal_id, lignes, hs=None):
-    """Pose la nouvelle version de la fiche, sans rien faire si le texte n'a pas changé."""
+    """Crée la note ou modifie celle qui existe, sans rien faire si le texte n'a pas changé."""
     return hc.poser_note(_hs(hs, ecrire=True), str(deal_id), "\n".join(lignes))
 
 

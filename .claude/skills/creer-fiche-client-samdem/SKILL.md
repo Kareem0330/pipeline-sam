@@ -4,7 +4,7 @@ description: Crée la fiche d'un client déménagement sur HubSpot pour Sam'Dém
 ---
 
 Ce skill pilote la création de la fiche client. **Depuis le 03/11/2026 (Samuel), elle vit sur la transaction
-HubSpot** : une note « Fiche client », une nouvelle version à chaque changement. Plus aucune fiche créée dans Notion.
+HubSpot** : une seule note « Fiche client », créée si elle manque, modifiée sinon (Karim, 04/11/2026). Plus aucune fiche créée dans Notion.
 
 **Aucune question posée à Samuel sur les éléments manquants** : tout est signalé par 🟡 dans la
 fiche, le workflow reste autonome de bout en bout.
@@ -243,6 +243,6 @@ choisir.
 ## Règles générales
 
 - Toujours lire les règles et repartir du modèle avant de créer
-- Correction d'une fiche : `--lire`, corriger les lignes dans un fichier, puis `--creer` avec les mêmes options : une
-  nouvelle version de la note, les précédentes restent
+- Correction d'une fiche : `--lire`, corriger les lignes dans un fichier, puis `--creer` avec les mêmes options : la
+  note existante est modifiée, aucune autre n'est créée
 - En cas de correction de règle → mettre à jour `references/regles-remplissage.md` ET corriger la fiche concernée

@@ -16,6 +16,7 @@ Karim Bordeau : dans les documents, « (Samuel, date) » indique simplement l'or
 - Si Samuel demande d'installer ou de connecter un outil, suis le guide concerné, étape par étape, en attendant sa réponse entre deux.
 - Les règles métier sont dans `references/regles-metier.md`. Les pièges de la chaîne sont dans `.claude/skills/LECONS.md` : à lire avant de la modifier.
 - Chaque clé d'API va dans le fichier `.env` à la racine, jamais ailleurs. N'affiche jamais une clé.
+- Le calculateur s'ouvre dans ton navigateur intégré (`preview_start`), jamais dans le navigateur externe : suis la ligne « à ouvrir dans le navigateur intégré » que rend le pipeline.
 - Rien ne part à un client sans Samuel. Ne supprime aucune donnée sans son accord.
 - Les dates des règles sont celles de leur décision. Une date qui te semble dans le futur n'est pas une erreur.
 - Ce dossier ne contient pas tout l'historique : un renvoi vers `wiki/`, `crm-manager/`, `outils/Groupage/`, `outils/Workflow NextStories/`, `gros-dossiers-sam` ou `gros_dossiers.py` vise un document resté ailleurs. Ignore-le, et ne le cherche pas sur ce PC. Les devis Nextories et le groupage ne passent pas par ce dossier.
@@ -26,7 +27,7 @@ Karim Bordeau : dans les documents, « (Samuel, date) » indique simplement l'or
 | Où | Quoi |
 |---|---|
 | `.claude/skills/` | fiche client, volume, devis, PDF, inventaire |
-| `outils/pipeline/` | les scripts, les calculateurs, les flowcharts (`livrables/`) |
+| `outils/pipeline/` | les scripts, les calculateurs, les flowcharts (`livrables/`), les devis modèles anonymisés (`références/`) |
 | `donnees/` | PDF des devis et des inventaires, documents d'envoi (CGV, RIB…) |
 | `references/` | règles métier, spec d'exemple |
 | `guides/` | installation et connexion des outils, étape par étape |
@@ -52,7 +53,7 @@ le formulaire est rempli dès l'ouverture, sans « Charger un dossier » ni coll
 calcul reste celui du calculateur, à l'octet près. `--prefill` garde la voie « artefact en
 ligne » (JSON au presse-papier) quand le devis doit se faire sur tablette ou être partagé. Le
 devis validé sort par « Exporter JSON » et `outils/pipeline/finalisation.py` le reporte sur la
-transaction HubSpot : nouvelle version de la note « Fiche client », variantes et itinéraire compris,
+transaction HubSpot : note « Fiche client » créée ou modifiée, jamais dupliquée (Karim, 04/11/2026), variantes et itinéraire compris,
 propriétés de chiffrage, étape « Devis en révision ».
 
 **Fiche sur HubSpot (Karim, 03/11/2026)** — plus de fiche créée dans Notion, plus d'archive dans le

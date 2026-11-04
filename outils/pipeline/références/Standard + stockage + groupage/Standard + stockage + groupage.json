@@ -1,0 +1,78 @@
+{
+  "numero": "000000000000",
+  "date": "04/11/2026",
+  "volume": 5,
+  "formule": "Standard",
+  "total_ttc": 990.0,
+  "client": {
+    "nom": "CLIENT Exemple",
+    "adresse_depart": "1 rue de l'Exemple, 33000 Bordeaux",
+    "adresse_stockage": "147 route des Valentons, 33450 Saint-Loubès",
+    "adresse_arrivee": "2 rue de l'Exemple, 75000 Paris",
+    "date_demenagement": "chargement le 13/11/2026, livraison le 17/11/2026 au matin",
+    "telephone": "06.00.00.00.00",
+    "email": "client@exemple.fr"
+  },
+  "depart": {
+    "intervenants": 2,
+    "portage_entree": "10 mètres",
+    "portage_interieur": "10 mètres",
+    "logement": "Appartement",
+    "etage_sans_ascenseur": 4
+  },
+  "arrivee": {
+    "intervenants": 2,
+    "portage_entree": "10 mètres",
+    "portage_interieur": "10 mètres",
+    "logement": "Maison",
+    "etage_sans_ascenseur": "R+1"
+  },
+  "notes_manutention": [],
+  "lignes": [
+    {
+      "type": "transport",
+      "libelle": "Forfait transport groupage 5 m3",
+      "montant": 0,
+      "ajuste": true
+    },
+    {
+      "type": "manutention",
+      "montant": 340.0
+    },
+    {
+      "type": "formule",
+      "montant": 0
+    },
+    {
+      "type": "autre",
+      "libelle": "Stockage en garde-meuble du 13/11/2026 au 17/11/2026",
+      "montant": 0,
+      "detail": [
+        "Offert"
+      ]
+    },
+    {
+      "type": "autre",
+      "libelle": "Frais de déplacement",
+      "montant": 160.0
+    },
+    {
+      "type": "autre",
+      "libelle": "Frais de dossier",
+      "montant": 34.0
+    }
+  ],
+  "annulation": "J-14 avant la date du déménagement.",
+  "conditions": [],
+  "formule_non_incluses_retirer": [
+    "Tarif préférentiel (groupage)."
+  ],
+  "inventaire": [
+    "Canapé : 1",
+    "Table basse : 1",
+    "Télévision : 1",
+    "Tapis : 2",
+    "Chaise : 1",
+    "Cartons : 10"
+  ]
+}
