@@ -5,6 +5,8 @@ description: Estime le volume en m³ d'un déménagement à partir d'un inventai
 
 # Estimation de volume — Sam'Déménage
 
+**Journal (Karim, 04/11/2026)** : `../calcul-devis-samdem/JOURNAL.md`, à alimenter sans attendre qu'on le demande dès qu'une règle d'estimation change.
+
 ## 0. Principe
 
 **Prompt de référence : `references/prompt-projet.md`** — les instructions du projet Claude de

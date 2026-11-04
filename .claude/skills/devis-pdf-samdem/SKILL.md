@@ -16,6 +16,8 @@ rejoint alors HubSpot, puis Sandrine l'envoie depuis son adresse (§ 7 sur deman
 dans le message : relivraison, étape, chargement seul, accès à confirmer…). Les notes de la fiche
 sont internes et ne vont jamais sur le devis (Karim, 02/11/2026). Voir `outils/pipeline/README.md`.
 
+**Journal (Karim, 04/11/2026)** : `../calcul-devis-samdem/JOURNAL.md`, à lire avant de commencer et à alimenter sans attendre qu'on le demande dès qu'une règle, un script ou un texte du devis change.
+
 **Références (Karim, 04/11/2026)** : avant d'écrire la spec d'un cas particulier, lire `outils/pipeline/références/README.md`
 et reprendre le format du cas le plus proche : sa présentation, jamais ses montants. Une fois un devis particulier validé,
 sans attendre qu'on le demande, le ranger **anonymisé** par `python "outils/pipeline/reference_devis.py" "<spec>" "<Formule + particularité>"`
@@ -26,6 +28,9 @@ sans attendre qu'on le demande, le ranger **anonymisé** par `python "outils/pip
 - **Montants** : le dernier export du client dans `donnees/Devis générés/exports/` (`AAAAMMJJ-HHMMSS NOM Prénom.json`,
   le plus récent). Prendre `champs_fiche` : `manut_ht`, `deplacement_ht`, `dossier_ht`,
   `materiel_ht`, `formule_ht`, et `total_ttc`. Le transport est recalculé par le script.
+- **Formule Standard : la ligne formule vaut toujours 0 € sur le devis** (Karim, 04/11/2026). Le `formule_ht` de
+  l'export s'ajoute à `manut_ht` dans la ligne « Forfait manutention », le total ne bouge pas. Le script refuse une
+  spec Standard dont la ligne formule n'est pas à 0. Confort et Premium gardent leur montant.
 - **Client et accès** : fiche client, note « Fiche client » de la transaction HubSpot (`fiche.page_id` de
   l'export est l'identifiant de transaction ; `python "outils/pipeline/fiche_hubspot.py" --lire <id>`). La vérité
   est dans le **corps de la fiche**, pas dans les propriétés : adresses, téléphone, e-mail, dates (tous les
@@ -120,6 +125,7 @@ Si le dernier numéro n'est pas certain, le dire à Samuel : c'est une suppositi
 |---|---|
 | 10 lignes ou moins, devis de 3 pages ou moins | **Inventaire court** : liste sous « Forfait transport » |
 | Plus de 10 lignes, ou devis qui dépasserait 3 pages | **Normale** : « Voir inventaire <n°> » |
+| Aucun inventaire (case « Pas d'inventaire » de la fiche) | **Sans renvoi** : `"sans_inventaire": true`, rien sous « Forfait transport » (Karim, 04/11/2026) |
 
 Mettre toujours l'inventaire dans la spec : le script tranche et affiche la version retenue.
 S'il affiche `INVENTAIRE SÉPARÉ À PRODUIRE`, enchaîner avec le skill `inventaire-samdem`,

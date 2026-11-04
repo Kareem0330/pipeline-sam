@@ -20,7 +20,9 @@ comme le reste — il est simplement masqué par l'explorateur et par Obsidian.
 | `calcul-devis-samdem/` | Chiffre le devis et génère le calculateur pré-rempli | `outils/pipeline/pipeline.py` · `outils/pipeline/calculateurs/calculateur-devis.html` |
 | `gros-dossiers-sam/` | Liste les gros devis en attente et les envoie à Samuel sur WhatsApp | `outils/pipeline/gros_dossiers.py` · MCP Beeper |
 | `inventaire-samdem/` | Met au propre l'inventaire d'un client en PDF (modèle maison, champs modifiables, tampon) | `outils/pipeline/Prod_inventaires/` (skill complet, gabarit, script) |
-| `devis-pdf-samdem/` | Produit le PDF du devis à envoyer ; inventaire court listé dedans (≤ 10 lignes, ≤ 3 pages), sinon « Voir inventaire » + inventaire séparé | `outils/pipeline/devis-pdf/generer_devis_pdf.py` · export du calculateur · fiche client (note HubSpot) |
+| `devis-pdf-samdem/` | Produit le PDF du devis à envoyer ; inventaire court listé dedans (≤ 10 lignes, ≤ 3 pages), sinon « Voir inventaire » + inventaire séparé, rien si la fiche coche « Pas d'inventaire » | `outils/pipeline/devis-pdf/generer_devis_pdf.py` · export du calculateur · fiche client (note HubSpot) |
+
+Historique des changements et leçons de la chaîne : `calcul-devis-samdem/JOURNAL.md`, alimenté à chaque changement important. Pièges structurels : `LECONS.md`.
 
 Un skill peut embarquer ses fichiers compagnons dans son propre dossier — c'est ce que fait
 `creer-fiche-client-samdem/references/`, qui porte les règles détaillées de remplissage

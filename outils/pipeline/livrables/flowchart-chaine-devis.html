@@ -601,7 +601,7 @@ const PHASES=[
    ])]),
  ]),
  A('code',"Attribuer le numéro","numéro gardé tant que non validé","Devis pas encore validé : il garde son numéro et son PDF est remplacé. Sinon le plus haut du dossier plus un, suivi de la date.","devis_auto.py, produire() ; validation_devis.py, numeros_en_cours()"),
- A('code',"Construire la spec","construire_spec()","Même spec que le skill devis-pdf-samdem. Les notes de la fiche restent internes. Note la liste « à vérifier » : adresse, date, téléphone, e-mail, options.","devis_auto.py, construire_spec()"),
+ A('code',"Construire la spec","construire_spec()","Même spec que le skill devis-pdf-samdem. Les notes de la fiche restent internes. Formule Standard : ligne à 0 €, montant reporté en manutention (Karim, 04/11/2026). Note la liste « à vérifier » : adresse, date, téléphone, e-mail, options.","devis_auto.py, construire_spec()"),
  D('code',"Mise en page possible sans erreur ?",null,"Sinon le message donne le motif et le PDF reste à faire à la main.","devis_auto.py, HorsAuto","Oui",[
   B("Non",[
    A('code',"Rester à la main, avec le motif","relivraison, étape, phase unique, identité, logement, accès 🟡, montants","Relivraison ; étape intermédiaire ; chargement ou déchargement seul ; nom ou adresse absents ; type de logement absent ; accès encore 🟡 ; montants qui ne retombent pas sur l’export à 1 € près.","devis_auto.py, construire_spec()"),
@@ -618,7 +618,7 @@ const PHASES=[
  ]),
  D('code',"Inventaire de 10 lignes au plus, devis de 3 pages au plus ?",null,"Tranché par le générateur (Karim, 28/10/2026).","generer_devis_pdf.py, main()",null,[
   B("Oui",[A('code',"Lister l’inventaire dans le devis",null,"Sous le forfait transport. Pas de PDF d’inventaire séparé.","generer_devis_pdf.py")]),
-  B("Non",[A('code',"Écrire « Voir inventaire <n°> »",null,"L’inventaire reprendra le même numéro.","generer_devis_pdf.py")]),
+  B("Non",[A('code',"Écrire « Voir inventaire <n°> »",null,"L’inventaire reprendra le même numéro. Case « Pas d’inventaire » cochée et aucune liste : rien d’écrit (Karim, 04/11/2026).","generer_devis_pdf.py")]),
  ],{noMain:true}),
  A('code',"Garder le PDF en local","donnees/Devis SamDem\\","Rien ne part encore. Une correction remplace le fichier.","devis_auto.py, rendre()"),
  A('code',"Noter le devis « à relire »","validation_devis.enregistrer()","Le dernier export d’une variante remplace le précédent. Si son PDF a échoué, l’ancien est retiré : un devis périmé ne peut pas être validé. Garde aussi de quoi composer le message.","validation_devis.py, enregistrer()",{id:'etat'}),

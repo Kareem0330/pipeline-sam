@@ -9,6 +9,8 @@ HubSpot** : une seule note « Fiche client », créée si elle manque, modifiée
 **Aucune question posée à Samuel sur les éléments manquants** : tout est signalé par 🟡 dans la
 fiche, le workflow reste autonome de bout en bout.
 
+**Journal (Karim, 04/11/2026)** : `../calcul-devis-samdem/JOURNAL.md`, à alimenter sans attendre qu'on le demande dès qu'une règle de la fiche change.
+
 ---
 
 ## Références

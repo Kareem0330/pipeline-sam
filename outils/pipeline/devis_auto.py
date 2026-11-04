@@ -291,9 +291,15 @@ def construire_spec(ex, dossier, lignes, numero, date):
     if m.get("groupage"):
         transport["libelle"] = "Forfait transport groupage %s m3" % volume
         retirer.append("Tarif préférentiel (groupage).")
+    formule_ht, manut_ht = nombre(ch.get("formule_ht")), nombre(ch.get("manut_ht"))
+    # Confort sans aucune option facturée : le client signe un devis Standard (PEREGO, 30/10).
+    formule = (m.get("formule") or "Standard") if formule_ht else "Standard"
+    # Formule Standard : toujours 0 € sur le devis, son montant passe en manutention (Karim, 04/11/2026).
+    if formule == "Standard":
+        manut_ht, formule_ht = round(manut_ht + formule_ht, 2), 0.0
     postes = [transport,
-              {"type": "manutention", "montant": nombre(ch.get("manut_ht"))},
-              {"type": "formule", "montant": nombre(ch.get("formule_ht"))}]
+              {"type": "manutention", "montant": manut_ht},
+              {"type": "formule", "montant": formule_ht}]
     if nombre(ch.get("materiel_ht")):
         postes.append({"type": "autre", "libelle": "Matériel", "detail": detail_materiel(ex),
                        "montant": nombre(ch["materiel_ht"])})
@@ -309,8 +315,6 @@ def construire_spec(ex, dossier, lignes, numero, date):
     if abs(transport_pdf - nombre(ch.get("transport_ht"))) > ECART_TRANSPORT_MAX:
         raise HorsAuto("les montants ne retombent pas sur le total de l'export")
 
-    # Confort sans aucune option facturée : le client signe un devis Standard (PEREGO, 30/10).
-    formule = (m.get("formule") or "Standard") if nombre(ch.get("formule_ht")) else "Standard"
     spec = {"numero": numero, "date": date, "volume": volume, "formule": formule,
             "total_ttc": total_ttc,
             "client": {"nom": " ".join(x for x in (c["nom"].upper(), c.get("prenom") or "") if x),
@@ -339,7 +343,11 @@ def construire_spec(ex, dossier, lignes, numero, date):
         brut = ia.section_inventaire(lignes)
         spec["inventaire"] = lignes_inventaire(brut) or []
         if not brut:
-            a_verifier.append("inventaire absent de la fiche")
+            # Case « Pas d'inventaire » de la fiche : le devis ne renvoie à rien (Karim, 04/11/2026).
+            if any(re.match(r"^-\s*\[x\]\s*pas d.inventaire", l.strip(), re.I) for l in lignes):
+                spec["sans_inventaire"] = True
+            else:
+                a_verifier.append("inventaire absent de la fiche")
     return spec, a_verifier
 
 

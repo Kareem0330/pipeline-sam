@@ -14,6 +14,11 @@ Ce skill remplace **uniquement** l'étape de saisie/calcul du devis (qui se fais
 - Le rôle de Claude est de : lire la fiche client, déduire les paramètres d'entrée selon les règles ci-dessous, générer une copie du maître avec ces valeurs, puis restituer un récapitulatif des **inputs saisis** (jamais des résultats chiffrés — ceux-ci sont visibles directement en ouvrant le fichier HTML généré, qui les calcule en temps réel).
 - Ne jamais halluciner une valeur. Si une donnée obligatoire manque et n'a pas de défaut applicable, la demander explicitement à l'utilisateur plutôt que de l'inventer ou de l'estimer.
 
+## 0 bis. Journal de la chaîne (Karim, 04/11/2026)
+
+**Lire `JOURNAL.md` (à côté de ce fichier) avant de commencer.** Il garde les changements importants de la chaîne et les leçons.
+**L'alimenter sans attendre qu'on le demande**, avant de conclure la session, dès qu'une règle, un script, un skill ou un texte client de la chaîne change, ou qu'un piège apparaît : ses règles sont en tête du fichier. Dépôt partagé : aucune donnée de client.
+
 ## 1. Étape 1 — Lecture de la fiche client : **par le code, pas par le modèle**
 
 **Ne jamais charger une fiche dans le contexte pour en extraire des champs.** Depuis le 03/11/2026
@@ -366,6 +371,9 @@ Une fois le fichier généré, présenter à l'utilisateur :
 4. Le chemin du fichier généré (et confirmer qu'il a été ouvert automatiquement si c'est le cas).
 
 ## 13 bis. Étape 6 — Après l'export : relecture et validation (Karim, 03/11/2026)
+
+**Sur le PDF, formule Standard = 0 €** (Karim, 04/11/2026) : son montant passe dans « Forfait manutention »,
+le total ne bouge pas. `devis_auto.py` le fait seul, le détail est dans `devis-pdf-samdem` § 1.
 
 L'export du calculateur est la version officielle. Rien n'arrive sur HubSpot ni à l'équipe avant que
 Samuel ait relu et validé. Le veilleur fait la finalisation sans modèle ; c'est ici que Claude reprend la main.

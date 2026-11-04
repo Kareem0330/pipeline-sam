@@ -786,7 +786,10 @@ fiche (client, adresses, date, accès, options, inventaire), puis appelle
   l'export.
 - **Inventaire** : liste de 10 lignes au plus dans le devis, sans PDF séparé. Sinon « Voir inventaire
   <n°> », et `inventaire_auto.py` reprend le même numéro. Liste écartée si elle est trop libre ou
-  cite quelqu'un de l'équipe (note interne).
+  cite quelqu'un de l'équipe (note interne). Case « Pas d'inventaire » cochée et aucune liste : aucun
+  renvoi sous le transport (`sans_inventaire`, Karim, 04/11/2026).
+- **Formule Standard** : ligne formule à 0 € sur le PDF, son montant passe dans « Forfait manutention »
+  (Karim, 04/11/2026). L'export et la note de la fiche gardent le détail du calculateur.
 - **Dossier de Christophe** (`regles.dossier_christophe` : commercial, source du volume ou « visite
   de Christophe » dans les notes) : le devis écrit « Volume estimé lors de notre visite », aucun
   inventaire n'est généré ni envoyé. `inventaire_auto.py --forcer` reste possible sur demande.

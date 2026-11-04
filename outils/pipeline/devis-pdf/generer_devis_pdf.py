@@ -137,6 +137,8 @@ def rendu_ligne(l, spec):
             corps = "".join(f"<p>{e(x)}</p>" for x in spec["note_transport"])
         elif spec.get("inventaire"):
             corps = "<p class='sous'>Inventaire :</p><ul>" + "".join(f"<li>{e(x)}</li>" for x in spec["inventaire"]) + "</ul>"
+        elif spec.get("sans_inventaire"):   # aucun inventaire : rien à quoi renvoyer (Karim, 04/11/2026)
+            corps = ""
         else:
             corps = f"<p>Voir inventaire {e(spec['numero'])}.</p>"
         volume = spec["volume"] if spec.get("volume_max") in (None, spec["volume"]) else f"{spec['volume']} à {spec['volume_max']}"
@@ -360,6 +362,9 @@ def main():
     traces = traces_de_preparation(spec)
     if traces:
         sys.exit(f"Mention interne dans la spec, à retirer : le client ne doit voir aucune trace de préparation (Karim, 03/11/2026) : {traces}")
+    if spec.get("formule", "Standard") == "Standard" and any(
+            l["type"] == "formule" and l["montant"] for l in toutes_lignes(spec)):
+        sys.exit("Formule Standard : la ligne formule vaut toujours 0 €, son montant va dans le forfait manutention (Karim, 04/11/2026).")
     sortie = Path(a.sortie)
     sortie.mkdir(parents=True, exist_ok=True)
     nom = spec["client"]["nom"].split()[0]
@@ -377,6 +382,8 @@ def main():
         print("Version : texte libre sous le transport (note_transport)")
     elif spec.get("inventaire"):
         print(f"Version : inventaire court ({len(inventaire)} lignes dans le devis)")
+    elif spec.get("sans_inventaire"):
+        print("Version : sans inventaire, aucun renvoi")
     else:
         print(f"Version : normale (« Voir inventaire {spec['numero']} »)")
         if inventaire:
